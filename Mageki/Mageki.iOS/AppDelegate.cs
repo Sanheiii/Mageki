@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 
 using Foundation;
+
 using UIKit;
 
 namespace Mageki.iOS
@@ -25,31 +26,19 @@ namespace Mageki.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
-            ForcePermissions("192.168.50.104", 4354).Wait();
+            ForcePermissions("192.168.50.104", 4354);
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
             return base.FinishedLaunching(app, options);
         }
-        public async static Task ForcePermissions(string ps_IPAddress, int pi_Port)
+        public static void ForcePermissions(string ps_IPAddress, int pi_Port)
         {
-            try
-            {
+            IPAddress ipAddress = IPAddress.Parse(ps_IPAddress);
+            //This is only done to force the local network permissions access in iOS 14. 
+            IPEndPoint remoteEndPoint = new IPEndPoint(ipAddress, pi_Port);
 
-                IPAddress ipAddress = IPAddress.Parse(ps_IPAddress);
-                //This is only done to force the local network permissions access in iOS 14. 
-                IPEndPoint remoteEndPoint = new IPEndPoint(ipAddress, pi_Port);
-
-                // Create a TCP/IP socket.  
-                var client = new Socket(ipAddress.AddressFamily,
-                                    SocketType.Stream, ProtocolType.Tcp);
-
-                await client.ConnectAsync(remoteEndPoint).ConfigureAwait(false);
-
-            }
-            catch (Exception ex)
-            {
-
-            }
+            // Create a TCP/IP socket.  
+            new UdpClient().SendAsync(new byte[] { 255, 0 }, 2, remoteEndPoint);
         }
     }
 }

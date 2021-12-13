@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -53,11 +54,9 @@ namespace Mageki
         /// 保存多点触摸的数据
         /// </summary>
         Dictionary<long, (TouchArea touchArea, SKPoint position)> touchPoints = new Dictionary<long, (TouchArea, SKPoint)>();
-        TcpClient client;
-        NetworkStream networkStream;
+        UdpClient client;
+        IPEndPoint remoteEP;
 
-
-        public bool IsConnected => client?.Connected ?? false;
         public delegate void ClickEventHandler(object sender, EventArgs args);
         public event ClickEventHandler LogoClickd;
 
@@ -71,26 +70,16 @@ namespace Mageki
             //捕获点击
             touchEffect.TouchAction += TouchEffect_TouchAction;
             Effects.Add(touchEffect);
-            Connect();
+
+            remoteEP = new IPEndPoint(IPAddress.Parse("192.168.50.104"), 4354);
+            client = new UdpClient();
+            RequestColors();
             new Thread(PollThread).Start();
         }
-        public void Connect()
-        {
-            client = new TcpClient("192.168.50.104", 4354);
-            networkStream = client.GetStream();
-        }
-        private void Disconnect()
-        {
-            if (IsConnected)
-            {
-                networkStream?.Dispose();
-                client?.Dispose();
-                client = null;
-                networkStream = null;
-            }
-        }
+
         int oldWidth = -1;
         int oldHeight = -1;
+        bool requireGenRects = false;
         /// <summary>
         /// 绘图
         /// </summary>
@@ -104,8 +93,9 @@ namespace Mageki
             SKCanvas canvas = surface.Canvas;
             //清空画布
             canvas.Clear(SKColors.White);
-            if (oldWidth != info.Width || oldHeight != info.Height)
+            if (oldWidth != info.Width || oldHeight != info.Height || requireGenRects)
             {
+                requireGenRects = false;
                 GenRects(info.Width, info.Height);
             }
             foreach (IDrawable drawable in decorations)
@@ -149,8 +139,9 @@ namespace Mageki
             buttons[2].Center = new SKPoint(panelMargin + buttonSpacing * 2 + buttonWidth * 2.5f, buttonBottom - buttonHeight / 2);
             // Left side 不作绘制
             buttons[3].Center = default;
-            // Left menu 不作绘制
+            // Left menu
             buttons[4].Width = buttons[4].Height = menuSideLength;
+            buttons[4].BorderColor = new SKColor(0xFF880000);
             buttons[4].Color = ButtonColors.Red;
             buttons[4].Center = new SKPoint(panelMargin + buttonWidth - buttonSpacing, buttonBottom - buttonHeight - bmSpacing - menuSideLength / 2);
             ;
@@ -166,8 +157,9 @@ namespace Mageki
             buttons[7].Center = new SKPoint(panelMargin + buttonSpacing * 4 + buttonWidth * 5.5f + lrSpacing, buttonBottom - buttonHeight / 2);
             // Right side 不作绘制
             buttons[8].Center = default;
-            // Right menu 不作绘制
+            // Right menu
             buttons[9].Width = buttons[9].Height = menuSideLength;
+            buttons[9].BorderColor = new SKColor(0xFF888800);
             buttons[9].Color = ButtonColors.Yellow;
             buttons[9].Center = new SKPoint(width - (panelMargin + buttonWidth - buttonSpacing), buttonBottom - buttonHeight - bmSpacing - menuSideLength / 2);
             // Lever
@@ -236,8 +228,9 @@ namespace Mageki
                         TouchArea area = currentArea;
                         touchPoints.Add(args.Id, (area, pixelLocation));
                         // 按下按键
-                        if ((int)area < 10)
+                        if ((byte)area < 10)
                         {
+                            SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 1 });
                             buttons[(int)area].IsHold = true;
                         }
                         break;
@@ -246,9 +239,9 @@ namespace Mageki
                     {
                         if (touchPoints.ContainsKey(args.Id))
                         {
-                            TouchArea area = touchPoints[args.Id].touchArea;
                             // 在任意位置拖动触发摇杆
                             MoveLever(pixelLocation.X - touchPoints[args.Id].position.X);
+                            TouchArea area = touchPoints[args.Id].touchArea;
                             touchPoints.Remove(args.Id);
                             touchPoints.Add(args.Id, (area, pixelLocation));
                         }
@@ -261,6 +254,7 @@ namespace Mageki
                         TouchArea area = touchPoints[args.Id].touchArea;
                         if ((int)area < 10 && touchPoints.Count(p => p.Value.touchArea == area) < 2)
                         {
+                            SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 0 });
                             buttons[(int)area].IsHold = false;
                         }
                         if (currentArea == area && area == TouchArea.Logo)
@@ -276,16 +270,18 @@ namespace Mageki
             }
             //通知重绘画布
             canvasView.InvalidateSurface();
-            SendMessage();
         }
 
         private void MoveLever(float x)
         {
             var oldValue = slider.Value;
-            slider.Value += (short)(x * 100);
+            slider.Value += (short)(x * 50);
             // check会导致iOS端崩溃，使用土方法检查溢出
             if (x < 0 && oldValue < slider.Value) slider.Value = short.MinValue;
             else if (x > 0 && oldValue > slider.Value) slider.Value = short.MaxValue;
+            SendMessage(
+                new byte[] { (byte)MessageType.MoveLever }.
+                Concat(BitConverter.GetBytes(slider.Value)).ToArray());
         }
 
         private TouchArea GetArea(SKPoint pixelLocation, float width, float height)
@@ -293,14 +289,23 @@ namespace Mageki
             bool inRgythmGame = InRhythmGame();
             TouchArea area = TouchArea.Others;
             // 大概点到中间六键的范围就会触发
-            if (pixelLocation.Y > buttons[0].BorderRect.Top - buttons[0].BorderRect.Left / 2)
+            if (pixelLocation.Y > buttons[0].BorderRect.Top - buttons[0].BorderRect.Left)
             {
-                if (pixelLocation.X < (buttons[0].BorderRect.Right + buttons[1].BorderRect.Left) / 2) area = TouchArea.LButton1;
-                else if (pixelLocation.X < (buttons[1].BorderRect.Right + buttons[2].BorderRect.Left) / 2) area = TouchArea.LButton2;
-                else if (pixelLocation.X < (buttons[2].BorderRect.Right + buttons[5].BorderRect.Left) / 2) area = TouchArea.LButton3;
-                else if (pixelLocation.X < (buttons[5].BorderRect.Right + buttons[6].BorderRect.Left) / 2) area = TouchArea.RButton1;
-                else if (pixelLocation.X < (buttons[6].BorderRect.Right + buttons[7].BorderRect.Left) / 2) area = TouchArea.RButton2;
-                else area = TouchArea.RButton3;
+                if (InRhythmGame())
+                {
+                    if (pixelLocation.X < width / 4 * 1) area = buttons[5].IsHold ?         TouchArea.LButton1 : TouchArea.RButton1;
+                    else if (pixelLocation.X < width / 4 * 3) area = buttons[6].IsHold ?    TouchArea.LButton2 : TouchArea.RButton2;
+                    else area = buttons[7].IsHold ?                                         TouchArea.LButton3 : TouchArea.RButton3;
+                }
+                else
+                {
+                    if (pixelLocation.X < (buttons[0].BorderRect.Right + buttons[1].BorderRect.Left) / 2) area = TouchArea.LButton1;
+                    else if (pixelLocation.X < (buttons[1].BorderRect.Right + buttons[2].BorderRect.Left) / 2) area = TouchArea.LButton2;
+                    else if (pixelLocation.X < (buttons[2].BorderRect.Right + buttons[5].BorderRect.Left) / 2) area = TouchArea.LButton3;
+                    else if (pixelLocation.X < (buttons[5].BorderRect.Right + buttons[6].BorderRect.Left) / 2) area = TouchArea.RButton1;
+                    else if (pixelLocation.X < (buttons[6].BorderRect.Right + buttons[7].BorderRect.Left) / 2) area = TouchArea.RButton2;
+                    else area = TouchArea.RButton3;
+                }
             }
             //else if (pixelLocation.X <= slider.BackRect.Right && pixelLocation.X >= slider.BackRect.Left) area = TouchArea.Lever;
             else if (!inRgythmGame && buttons[4].BorderRect.Contains(pixelLocation)) area = TouchArea.LMenu;
@@ -312,31 +317,11 @@ namespace Mageki
             return area;
         }
 
-        object locker = new object();
-        private void SendMessage()
+        private void SendMessage(byte[] data)
         {
-            lock (locker)
-            {
-                byte[] buffer = new byte[10];
-                //检测被按下的按键将对应的值设为1
-                foreach (var point in touchPoints)
-                {
-                    if ((int)point.Value.touchArea < 10)
-                        buffer[(int)point.Value.touchArea] = 1;
-                }
-                bool isScan = touchPoints.Any(v => v.Value.touchArea == TouchArea.Others);
-                byte[] aimeId = new byte[10];
-                buffer = buffer//buffer已有对应十个按键的值
-                    .Concat(BitConverter.GetBytes(slider.Value))//摇杆的值
-                    .Concat(BitConverter.GetBytes(false))//是否在刷卡
-                    .Concat(aimeId)//aime id
-                    .Concat(BitConverter.GetBytes(isScan))//是否按下test键
-                    .ToArray();
-                networkStream.Write(buffer, 0, buffer.Length);
-            }
+            client.Send(data, data.Length, remoteEP);
         }
 
-        private byte[] _inBuffer = new byte[4];
         /// <summary>
         /// 用于接收数据并设置LED
         /// </summary>
@@ -344,24 +329,31 @@ namespace Mageki
         {
             while (true)
             {
-                if (!IsConnected)
-                {
-                    //Connect();
-                    continue;
-                }
-                IAsyncResult result = networkStream.BeginRead(_inBuffer, 0, 4, new AsyncCallback((res) => { }), null);
-                int len = networkStream.EndRead(result);
-                if (len <= 0)
-                {
-                    Disconnect();
-                    continue;
-                }
-                uint ledData = BitConverter.ToUInt32(_inBuffer, 0);
-                SetLed(ledData);
-                //// 用于直接打开测试显示按键
-                //Mu3IO._test.UpdateData();
+                var ep = new IPEndPoint(IPAddress.Any, 0);
+                byte[] buffer = client.Receive(ref ep);
+                if (remoteEP.Address.Address != ep.Address.Address || remoteEP.Port != ep.Port) return;
+                ParseBuffer(buffer);
             }
         }
+
+        private void ParseBuffer(byte[] buffer)
+        {
+            if ((buffer?.Length ?? 0) == 0) return;
+            if (buffer[0] == (byte)MessageType.SetLed && buffer.Length == 5)
+            {
+                uint ledData = BitConverter.ToUInt32(buffer, 1);
+                SetLed(ledData);
+            }
+            //// 用于直接打开测试显示按键
+            //Mu3IO._test.UpdateData();
+        }
+
+        private void RequestColors()
+        {
+            SendMessage(new byte[] { (byte)MessageType.RequestColors });
+        }
+
+
         public void SetLed(uint data)
         {
 
@@ -384,7 +376,21 @@ namespace Mageki
 
 
 
-        enum TouchArea
+        enum MessageType : byte
+        {
+            // 控制器向IO发送的
+            ButtonStatus = 1,
+            MoveLever = 2,
+            Scan = 3,
+            Test = 4,
+            RequestColors = 5,
+            // IO向控制器发送的
+            SetLed = 6,
+            // 心跳检测连接状态(
+            DokiDoki = 255
+        }
+
+        enum TouchArea : byte
         {
             LButton1 = 0,
             LButton2 = 1,

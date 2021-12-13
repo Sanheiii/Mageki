@@ -8,7 +8,7 @@ namespace Mageki.Drawables
 {
     class Button:IDrawable
     {
-        Dictionary<ButtonColors, SKColor> Colors { get; } = new Dictionary<ButtonColors, SKColor>()
+        public static Dictionary<ButtonColors, SKColor> Colors { get; } = new Dictionary<ButtonColors, SKColor>()
         {
             { ButtonColors.Red, new SKColor(0xFFFF455B) },
             { ButtonColors.Green, new SKColor(0xFF45FF75) },
@@ -57,6 +57,8 @@ namespace Mageki.Drawables
                 paint.Shader = SKShader.CreateRadialGradient(new SKPoint(BorderRect.MidX, BorderRect.MidY), BorderRect.Width, new SKColor[] { color, color1 }, SKShaderTileMode.Mirror);
             }
         }
+
+        public SKColor BorderColor { set => backPaint.Color = value; }
 
         public bool IsHold { get; set; }
         public bool Visible { get; set; } = true;
