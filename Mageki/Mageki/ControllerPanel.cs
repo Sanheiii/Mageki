@@ -57,8 +57,9 @@ namespace Mageki
         Dictionary<long, (TouchArea touchArea, SKPoint position)> touchPoints = new Dictionary<long, (TouchArea, SKPoint)>();
 
         UdpClient client;
-        IPEndPoint remoteEP;
+        IPEndPoint remoteEP = new IPEndPoint(IPAddress.Broadcast, 4354);
         bool inRhythmGame;
+        byte dkRandomValue;
 
         public delegate void ClickEventHandler(object sender, EventArgs args);
         public event ClickEventHandler LogoClickd;
@@ -74,12 +75,18 @@ namespace Mageki
             touchEffect.TouchAction += TouchEffect_TouchAction;
             Effects.Add(touchEffect);
 
-            remoteEP = new IPEndPoint(IPAddress.Parse("192.168.50.104"), 4354);
+            dkRandomValue = (byte)(new Random().Next() % 255);
             client = new UdpClient();
-            RequestColors();
+            ScanServer();
             new Thread(PollThread).Start();
         }
 
+        private void ScanServer()
+        {
+            SendMessage(new byte[] { (byte)MessageType.DokiDoki, dkRandomValue });
+        }
+
+        SKColor backColor = SKColors.Black;
         int oldWidth = -1;
         int oldHeight = -1;
         bool requireGenRects = false;
@@ -95,7 +102,7 @@ namespace Mageki
             SKSurface surface = e.Surface;
             SKCanvas canvas = surface.Canvas;
             //清空画布
-            canvas.Clear(SKColors.White);
+            canvas.Clear(backColor);
             if (oldWidth != info.Width || oldHeight != info.Height || requireGenRects)
             {
                 requireGenRects = false;
@@ -224,6 +231,8 @@ namespace Mageki
             }
         }
         private List<(float value, long touchID)> leverCache = new List<(float value, long touchID)>();
+        private byte[] aimeId = new byte[10];
+        DateTime scanTime;
         /// <summary>
         /// 处理画布点击
         /// </summary>
@@ -249,6 +258,12 @@ namespace Mageki
                             SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 1 });
                             buttons[(int)area].IsHold = true;
                             if (inRhythmGame && (int)area % 5 < 3) buttonsInRhythmGame[(int)area % 5].IsHold = true;
+                        }
+                        // 按下logo根据放开时间刷卡或显示菜单
+                        else if (area == TouchArea.Logo)
+                        {
+                            scanTime = DateTime.Now;
+                            SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(aimeId).ToArray());
                         }
                         break;
                     }
@@ -287,9 +302,12 @@ namespace Mageki
                             buttons[(int)area].IsHold = false;
                             if (inRhythmGame && (int)area % 5 < 3) buttonsInRhythmGame[(int)area % 5].IsHold = false;
                         }
-                        if (currentArea == area && area == TouchArea.Logo)
+                        else if (currentArea == area && area == TouchArea.Logo)
                         {
-                            LogoClickd.Invoke(this, EventArgs.Empty);
+                            SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(aimeId).ToArray());
+                            // 按下超过三秒不触发菜单
+                            if (DateTime.Now - scanTime < TimeSpan.FromSeconds(1))
+                                LogoClickd.Invoke(this, EventArgs.Empty);
                         }
                         if (touchPoints.ContainsKey(args.Id))
                         {
@@ -304,8 +322,9 @@ namespace Mageki
 
         private void MoveLever(float x)
         {
+            var pixelWidth = Width * Xamarin.Essentials.DeviceDisplay.MainDisplayInfo.Density;
             var oldValue = slider.Value;
-            slider.Value += (short)(x * 50);
+            slider.Value += (short)(x * (pixelWidth / 30));
             // check会导致iOS端崩溃，使用土方法检查溢出
             if (x < 0 && oldValue < slider.Value) slider.Value = short.MinValue;
             else if (x > 0 && oldValue > slider.Value) slider.Value = short.MaxValue;
@@ -348,9 +367,16 @@ namespace Mageki
 
         private void SendMessage(byte[] data)
         {
+            // 没有连接到就再试一次
+            if (remoteEP.Address.Address == IPAddress.Broadcast.Address && data[0] != (byte)MessageType.DokiDoki)
+            {
+                ScanServer();
+                return;
+            }
             client.Send(data, data.Length, remoteEP);
         }
 
+        IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
         /// <summary>
         /// 用于接收数据并设置LED
         /// </summary>
@@ -358,9 +384,7 @@ namespace Mageki
         {
             while (true)
             {
-                var ep = new IPEndPoint(IPAddress.Any, 0);
                 byte[] buffer = client.Receive(ref ep);
-                if (remoteEP.Address.Address != ep.Address.Address || remoteEP.Port != ep.Port) return;
                 ParseBuffer(buffer);
             }
         }
@@ -373,16 +397,22 @@ namespace Mageki
                 uint ledData = BitConverter.ToUInt32(buffer, 1);
                 SetLed(ledData);
             }
-            if (buffer[0] == (byte)MessageType.SetLever && buffer.Length == 3)
+            else if (buffer[0] == (byte)MessageType.SetLever && buffer.Length == 3)
             {
                 short lever = BitConverter.ToInt16(buffer, 1);
                 slider.Value = lever;
+            }
+            else if (buffer[0] == (byte)MessageType.DokiDoki && buffer.Length == 2 && buffer[1] == dkRandomValue)
+            {
+                remoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
+                backColor = SKColors.White;
+                RequestValues();
             }
             //// 用于直接打开测试显示按键
             //Mu3IO._test.UpdateData();
         }
 
-        private void RequestColors()
+        private void RequestValues()
         {
             SendMessage(new byte[] { (byte)MessageType.RequestValues });
         }
@@ -431,7 +461,7 @@ namespace Mageki
             // IO向控制器发送的
             SetLed = 6,
             SetLever = 7,
-            // 心跳检测连接状态(
+            // 寻找在线设备
             DokiDoki = 255
         }
 
