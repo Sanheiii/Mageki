@@ -24,6 +24,7 @@ namespace Mageki
     class ControllerPanel : Grid
     {
         private Button[] buttons = Enumerable.Range(0, 10).Select((n) => new Button()).ToArray();
+        private Button[] buttonsInRhythmGame = Enumerable.Range(0, 3).Select((n) => new Button()).ToArray();
         private IDrawable[] decorations = new IDrawable[]
         {
             new Circles(),
@@ -54,8 +55,10 @@ namespace Mageki
         /// 保存多点触摸的数据
         /// </summary>
         Dictionary<long, (TouchArea touchArea, SKPoint position)> touchPoints = new Dictionary<long, (TouchArea, SKPoint)>();
+
         UdpClient client;
         IPEndPoint remoteEP;
+        bool inRhythmGame;
 
         public delegate void ClickEventHandler(object sender, EventArgs args);
         public event ClickEventHandler LogoClickd;
@@ -102,9 +105,10 @@ namespace Mageki
             {
                 drawable.Draw(canvas);
             }
-            for (int i = 0; i < buttons.Length; i++)
+            var drawingButtons = inRhythmGame ? buttonsInRhythmGame : buttons;
+            for (int i = 0; i < drawingButtons.Length; i++)
             {
-                buttons[i].Draw(canvas);
+                drawingButtons[i].Draw(canvas);
             }
             //canvas.DrawRect(slider.BackRect, slider.BackPaint);
             //canvas.DrawRect(slider.LeverRect, slider.LeverPaint);
@@ -128,6 +132,39 @@ namespace Mageki
             float buttonSpacing = buttonHeight * ButtonSpacingCoef;
 
             float buttonBottom = height - bottomMargin;
+            if (inRhythmGame)
+            {
+                // 打歌时以特殊布局绘制
+                float specialButtonWidth = (width - panelMargin * 2 - buttonSpacing * 2) / 4;
+                // Button 1
+                buttonsInRhythmGame[0].Color = buttons[0].Color;
+                buttonsInRhythmGame[0].Height = buttonHeight;
+                buttonsInRhythmGame[0].Width = specialButtonWidth;
+                buttonsInRhythmGame[0].Center = new SKPoint(panelMargin + buttonSpacing * 0 + specialButtonWidth * 0.5f, buttonBottom - buttonHeight / 2);
+                // Button 2
+                buttonsInRhythmGame[1].Color = buttons[1].Color;
+                buttonsInRhythmGame[1].Height = buttonHeight;
+                buttonsInRhythmGame[1].Width = specialButtonWidth * 2;
+                buttonsInRhythmGame[1].Center = new SKPoint(panelMargin + buttonSpacing * 1 + specialButtonWidth * 2f, buttonBottom - buttonHeight / 2);
+                // Button 3
+                buttonsInRhythmGame[2].Color = buttons[2].Color;
+                buttonsInRhythmGame[2].Height = buttonHeight;
+                buttonsInRhythmGame[2].Width = specialButtonWidth;
+                buttonsInRhythmGame[2].Center = new SKPoint(panelMargin + buttonSpacing * 2 + specialButtonWidth * 3.5f, buttonBottom - buttonHeight / 2);
+                // menu键的背景，打歌时无需绘制
+                if (decorations[2] is MenuBackground background0)
+                {
+                    background0.Center = buttons[4].Center;
+                    background0.Height = buttons[4].Height * 1.6f;
+                    background0.Width = buttons[4].Width * 1.6f;
+                }
+                if (decorations[3] is MenuBackground background1)
+                {
+                    background1.Center = buttons[9].Center;
+                    background1.Height = buttons[9].Height * 1.6f;
+                    background1.Width = buttons[9].Width * 1.6f;
+                }
+            }
             // Left 1
             buttons[0].Width = buttons[0].Height = buttonWidth;
             buttons[0].Center = new SKPoint(panelMargin + buttonSpacing * 0 + buttonWidth * 0.5f, buttonBottom - buttonHeight / 2);
@@ -144,7 +181,7 @@ namespace Mageki
             buttons[4].BorderColor = new SKColor(0xFF880000);
             buttons[4].Color = ButtonColors.Red;
             buttons[4].Center = new SKPoint(panelMargin + buttonWidth - buttonSpacing, buttonBottom - buttonHeight - bmSpacing - menuSideLength / 2);
-            ;
+
             //-------------------
             // Right 1
             buttons[5].Width = buttons[5].Height = buttonWidth;
@@ -162,8 +199,7 @@ namespace Mageki
             buttons[9].BorderColor = new SKColor(0xFF888800);
             buttons[9].Color = ButtonColors.Yellow;
             buttons[9].Center = new SKPoint(width - (panelMargin + buttonWidth - buttonSpacing), buttonBottom - buttonHeight - bmSpacing - menuSideLength / 2);
-            // Lever
-            // Lever 不作绘制
+
             // 绘制装饰用的环
             if (decorations[0] is Circles circles0)
             {
@@ -179,19 +215,6 @@ namespace Mageki
                 circles1.DrawLeftArc = false;
                 circles1.DrawRightArc = true;
             }
-            // menu键的背景
-            if (decorations[2] is MenuBackground background0)
-            {
-                background0.Center = buttons[4].Center;
-                background0.Height = buttons[4].Height * 1.6f;
-                background0.Width = buttons[4].Width * 1.6f;
-            }
-            if (decorations[3] is MenuBackground background1)
-            {
-                background1.Center = buttons[9].Center;
-                background1.Height = buttons[9].Height * 1.6f;
-                background1.Width = buttons[9].Width * 1.6f;
-            }
             // logo
             if (decorations[4] is Drawables.Svg svg)
             {
@@ -200,14 +223,7 @@ namespace Mageki
                 svg.Center = new SKPoint(width / 2, buttonBottom - buttonHeight - bmSpacing - svg.MaxHeight * 1.5f);
             }
         }
-        private bool InRhythmGame()
-        {
-            var midButtons = buttons[0..3].Concat(buttons[5..8]);
-            return
-                midButtons.Count(b => b.Color == ButtonColors.Red) == 2 &&
-                midButtons.Count(b => b.Color == ButtonColors.Blue) == 2 &&
-                midButtons.Count(b => b.Color == ButtonColors.Green) == 2;
-        }
+        private List<(float value, long touchID)> leverCache = new List<(float value, long touchID)>();
         /// <summary>
         /// 处理画布点击
         /// </summary>
@@ -232,15 +248,28 @@ namespace Mageki
                         {
                             SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 1 });
                             buttons[(int)area].IsHold = true;
+                            if (inRhythmGame && (int)area % 5 < 3) buttonsInRhythmGame[(int)area % 5].IsHold = true;
                         }
                         break;
                     }
                 case TouchActionType.Moved:
                     {
+                        // 在任意位置拖动触发摇杆，多个手指在同一帧移动时只会取最大值
                         if (touchPoints.ContainsKey(args.Id))
                         {
-                            // 在任意位置拖动触发摇杆
-                            MoveLever(pixelLocation.X - touchPoints[args.Id].position.X);
+                            lock (leverCache)
+                            {
+                                bool idDuplicated = leverCache.Any(c => c.touchID == args.Id);
+                                leverCache.Add((pixelLocation.X - touchPoints[args.Id].position.X, args.Id));
+                                if (idDuplicated)
+                                {
+                                    var max = leverCache.Max((a) => MathF.Abs(a.value));
+                                    var value = leverCache.Find(a => MathF.Abs(a.value) == max).value;
+                                    var currentValue = pixelLocation.X - touchPoints[args.Id].position.X;
+                                    MoveLever(value);
+                                    leverCache.Clear();
+                                }
+                            }
                             TouchArea area = touchPoints[args.Id].touchArea;
                             touchPoints.Remove(args.Id);
                             touchPoints.Add(args.Id, (area, pixelLocation));
@@ -256,6 +285,7 @@ namespace Mageki
                         {
                             SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 0 });
                             buttons[(int)area].IsHold = false;
+                            if (inRhythmGame && (int)area % 5 < 3) buttonsInRhythmGame[(int)area % 5].IsHold = false;
                         }
                         if (currentArea == area && area == TouchArea.Logo)
                         {
@@ -286,16 +316,15 @@ namespace Mageki
 
         private TouchArea GetArea(SKPoint pixelLocation, float width, float height)
         {
-            bool inRgythmGame = InRhythmGame();
             TouchArea area = TouchArea.Others;
             // 大概点到中间六键的范围就会触发
             if (pixelLocation.Y > buttons[0].BorderRect.Top - buttons[0].BorderRect.Left)
             {
-                if (InRhythmGame())
+                if (inRhythmGame)
                 {
-                    if (pixelLocation.X < width / 4 * 1) area = buttons[5].IsHold ?         TouchArea.LButton1 : TouchArea.RButton1;
-                    else if (pixelLocation.X < width / 4 * 3) area = buttons[6].IsHold ?    TouchArea.LButton2 : TouchArea.RButton2;
-                    else area = buttons[7].IsHold ?                                         TouchArea.LButton3 : TouchArea.RButton3;
+                    if (pixelLocation.X < width / 4 * 1) area = buttons[5].IsHold ? TouchArea.LButton1 : TouchArea.RButton1;
+                    else if (pixelLocation.X < width / 4 * 3) area = buttons[6].IsHold ? TouchArea.LButton2 : TouchArea.RButton2;
+                    else area = buttons[7].IsHold ? TouchArea.LButton3 : TouchArea.RButton3;
                 }
                 else
                 {
@@ -308,9 +337,9 @@ namespace Mageki
                 }
             }
             //else if (pixelLocation.X <= slider.BackRect.Right && pixelLocation.X >= slider.BackRect.Left) area = TouchArea.Lever;
-            else if (!inRgythmGame && buttons[4].BorderRect.Contains(pixelLocation)) area = TouchArea.LMenu;
-            else if (!inRgythmGame && buttons[9].BorderRect.Contains(pixelLocation)) area = TouchArea.RMenu;
-            else if (!inRgythmGame && decorations[4] is Drawables.Svg logo && logo.Rect.Contains(pixelLocation)) area = TouchArea.Logo;
+            else if (!inRhythmGame && buttons[4].BorderRect.Contains(pixelLocation)) area = TouchArea.LMenu;
+            else if (!inRhythmGame && buttons[9].BorderRect.Contains(pixelLocation)) area = TouchArea.RMenu;
+            else if (!inRhythmGame && decorations[4] is Drawables.Svg logo && logo.Rect.Contains(pixelLocation)) area = TouchArea.Logo;
             else if (pixelLocation.X < width / 2) area = TouchArea.LSide;
             else area = TouchArea.RSide;
             Debug.WriteLine(area);
@@ -344,13 +373,18 @@ namespace Mageki
                 uint ledData = BitConverter.ToUInt32(buffer, 1);
                 SetLed(ledData);
             }
+            if (buffer[0] == (byte)MessageType.SetLever && buffer.Length == 3)
+            {
+                short lever = BitConverter.ToInt16(buffer, 1);
+                slider.Value = lever;
+            }
             //// 用于直接打开测试显示按键
             //Mu3IO._test.UpdateData();
         }
 
         private void RequestColors()
         {
-            SendMessage(new byte[] { (byte)MessageType.RequestColors });
+            SendMessage(new byte[] { (byte)MessageType.RequestValues });
         }
 
 
@@ -363,7 +397,17 @@ namespace Mageki
             buttons[5].Color = (ButtonColors)((data >> 14 & 1) << 2 | (data >> 13 & 1) << 1 | (data >> 12 & 1) << 0);
             buttons[6].Color = (ButtonColors)((data >> 11 & 1) << 2 | (data >> 10 & 1) << 1 | (data >> 9 & 1) << 0);
             buttons[7].Color = (ButtonColors)((data >> 8 & 1) << 2 | (data >> 7 & 1) << 1 | (data >> 6 & 1) << 0);
-            if (InRhythmGame())
+
+            // 判断是否在游戏中
+            var midButtons = buttons[0..3].Concat(buttons[5..8]);
+            bool temp =
+                midButtons.Count(b => b.Color == ButtonColors.Red) == 2 &&
+                midButtons.Count(b => b.Color == ButtonColors.Blue) == 2 &&
+                midButtons.Count(b => b.Color == ButtonColors.Green) == 2;
+            requireGenRects = temp != inRhythmGame;
+            inRhythmGame = temp;
+
+            if (inRhythmGame)
             {
                 buttons[4].Visible = buttons[9].Visible = decorations[2].Visible = decorations[3].Visible = false;
             }
@@ -383,9 +427,10 @@ namespace Mageki
             MoveLever = 2,
             Scan = 3,
             Test = 4,
-            RequestColors = 5,
+            RequestValues = 5,
             // IO向控制器发送的
             SetLed = 6,
+            SetLever = 7,
             // 心跳检测连接状态(
             DokiDoki = 255
         }

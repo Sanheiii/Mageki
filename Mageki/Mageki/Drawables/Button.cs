@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Mageki.Drawables
 {
-    class Button:IDrawable
+    class Button : IDrawable
     {
         public static Dictionary<ButtonColors, SKColor> Colors { get; } = new Dictionary<ButtonColors, SKColor>()
         {
@@ -36,7 +36,7 @@ namespace Mageki.Drawables
             get => borderRect;
             private set
             {
-                var strokeWidth = value.Width * StrokeWidthCoef;
+                var strokeWidth = value.Height * StrokeWidthCoef;
                 borderRect = value;
                 buttonRect = SKRect.Inflate(value, -strokeWidth / 2, -strokeWidth / 2);
                 backPaint.StrokeWidth = strokeWidth * 2;
@@ -54,7 +54,7 @@ namespace Mageki.Drawables
                 var color1 = Colors[value];
                 SKColor color;
                 color = new SKColor((byte)(color1.Red * colorSaturation + 255 * (1 - colorSaturation)), (byte)(color1.Green * colorSaturation + 255 * (1 - colorSaturation)), (byte)(color1.Blue * colorSaturation + 255 * (1 - colorSaturation)));
-                paint.Shader = SKShader.CreateRadialGradient(new SKPoint(BorderRect.MidX, BorderRect.MidY), BorderRect.Width, new SKColor[] { color, color1 }, SKShaderTileMode.Mirror);
+                paint.Shader = SKShader.CreateRadialGradient(new SKPoint(BorderRect.MidX, BorderRect.MidY), MathF.Max(BorderRect.Height, BorderRect.Width), new SKColor[] { color, color1 }, SKShaderTileMode.Mirror);
             }
         }
 
@@ -95,11 +95,11 @@ namespace Mageki.Drawables
         {
             if (!Visible) return;
             if (propertyChanged) OnPropertyChanged();
-            canvas.DrawRoundRect(borderRect, new SKSize(BorderRect.Width * CornerCoef, BorderRect.Height * CornerCoef), backPaint);
-            canvas.DrawRoundRect(buttonRect, new SKSize(buttonRect.Width * CornerCoef, buttonRect.Height * CornerCoef), paint);
+            canvas.DrawRoundRect(borderRect, new SKSize(BorderRect.Height * CornerCoef, BorderRect.Height * CornerCoef), backPaint);
+            canvas.DrawRoundRect(buttonRect, new SKSize(buttonRect.Height * CornerCoef, buttonRect.Height * CornerCoef), paint);
             if (IsHold)
             {
-                canvas.DrawRoundRect(buttonRect, new SKSize(BorderRect.Width * CornerCoef, BorderRect.Height * CornerCoef), holdMaskPaint);
+                canvas.DrawRoundRect(buttonRect, new SKSize(BorderRect.Height * CornerCoef, BorderRect.Height * CornerCoef), holdMaskPaint);
             }
         }
 
