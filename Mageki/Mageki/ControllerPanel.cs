@@ -83,7 +83,11 @@ namespace Mageki
 
         private void ScanServer()
         {
-            SendMessage(new byte[] { (byte)MessageType.DokiDoki, dkRandomValue });
+            try
+            {
+                SendMessage(new byte[] { (byte)MessageType.DokiDoki, dkRandomValue });
+            }
+            catch (Exception ex) { }
         }
 
         SKColor backColor = SKColors.Black;
@@ -305,7 +309,7 @@ namespace Mageki
                         else if (currentArea == area && area == TouchArea.Logo)
                         {
                             SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(aimeId).ToArray());
-                            // 按下超过三秒不触发菜单
+                            // 按下超过一秒不触发菜单
                             if (DateTime.Now - scanTime < TimeSpan.FromSeconds(1))
                                 LogoClickd.Invoke(this, EventArgs.Empty);
                         }

@@ -1,13 +1,6 @@
 ﻿using SkiaSharp;
-using SkiaSharp.Extended.Svg;
 
-using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.IO;
-using System.Text;
-
-using Xamarin.Forms;
 
 using SKSvg = SkiaSharp.Extended.Svg.SKSvg;
 

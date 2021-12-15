@@ -26,18 +26,15 @@ namespace Mageki.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
-            ForcePermissions("192.168.50.104", 4354);
+            Rg.Plugins.Popup.Popup.Init();
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
             return base.FinishedLaunching(app, options);
         }
-        public static void ForcePermissions(string ps_IPAddress, int pi_Port)
+        public static void ForcePermissions()
         {
-            IPAddress ipAddress = IPAddress.Parse(ps_IPAddress);
             //This is only done to force the local network permissions access in iOS 14. 
-            IPEndPoint remoteEndPoint = new IPEndPoint(ipAddress, pi_Port);
-
-            // Create a TCP/IP socket.  
+            IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 4354);
             new UdpClient().SendAsync(new byte[] { 255, 0 }, 2, remoteEndPoint);
         }
     }

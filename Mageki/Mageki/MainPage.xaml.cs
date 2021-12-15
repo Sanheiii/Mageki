@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using Rg.Plugins.Popup.Extensions;
+
+using System;
 
 using Xamarin.Forms;
 
@@ -18,7 +16,7 @@ namespace Mageki
 
         private void ControllerPanel_LogoClickd(object sender, EventArgs args)
         {
-
+            Navigation.PushPopupAsync(new SettingsPopup());
         }
     }
 }
