@@ -57,7 +57,7 @@ namespace Mageki
         Dictionary<long, (TouchArea touchArea, SKPoint position)> touchPoints = new Dictionary<long, (TouchArea, SKPoint)>();
 
         UdpClient client;
-        IPEndPoint remoteEP = new IPEndPoint(IPAddress.Broadcast, 4354);
+        IPEndPoint remoteEP = new IPEndPoint(IPAddress.Broadcast, Settings.Port);
         bool inRhythmGame;
         byte dkRandomValue;
 
@@ -359,7 +359,6 @@ namespace Mageki
                     else area = TouchArea.RButton3;
                 }
             }
-            //else if (pixelLocation.X <= slider.BackRect.Right && pixelLocation.X >= slider.BackRect.Left) area = TouchArea.Lever;
             else if (!inRhythmGame && buttons[4].BorderRect.Contains(pixelLocation)) area = TouchArea.LMenu;
             else if (!inRhythmGame && buttons[9].BorderRect.Contains(pixelLocation)) area = TouchArea.RMenu;
             else if (!inRhythmGame && decorations[4] is Drawables.Svg logo && logo.Rect.Contains(pixelLocation)) area = TouchArea.Logo;
