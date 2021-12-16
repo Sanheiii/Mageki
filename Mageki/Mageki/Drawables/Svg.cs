@@ -48,4 +48,15 @@ namespace Mageki.Drawables
             }
         }
     }
+
+    interface Language
+    {
+        public string Font { get; }
+        public string Settings { get; }
+    }
+    class Chinese : Language
+    {
+        public string Font => "宋体";
+        public string Settings => "设置";
+    }
 }

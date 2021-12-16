@@ -17,6 +17,7 @@
                 Padding="0,2,0,0"
                 FontFamily="MaterialIcons"
                 FontSize="20"
+                TextColor="LightGray"
                 Text="&#xE5E0;"
                 VerticalOptions="CenterAndExpand" />
         </ContentView>

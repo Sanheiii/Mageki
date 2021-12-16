@@ -15,6 +15,7 @@ namespace Mageki
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SettingsPopup : PopupPage
     {
+        SettingsViewModel ViewModel=>BindingContext as SettingsViewModel;
         public SettingsPopup()
         {
             InitializeComponent();
@@ -29,6 +30,11 @@ namespace Mageki
         private void Close_Tapped(object sender, EventArgs e)
         {
             Dismiss();
+        }
+
+        private void UseSimplifiedLayout_Tapped(object sender, EventArgs e)
+        {
+            ViewModel.UseSimplifiedLayout = !ViewModel.UseSimplifiedLayout;
         }
     }
 }

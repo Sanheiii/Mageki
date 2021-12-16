@@ -20,10 +20,20 @@
             <TableView HasUnevenRows="True" Intent="Settings">
                 <TableRoot>
                     <TableSection Title="{x:Static resources:AppResources.Connection}">
-                        <EntryCell Label="{x:Static resources:AppResources.Port}" Keyboard="Numeric" Text="{Binding Port}"/>
+                        <ViewCell>
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="0" HeightRequest="48">
+                                <Label TextColor="LightGray" Text="{x:Static resources:AppResources.Port}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                <Entry Keyboard="Numeric" MaxLength="5" Grid.Column="1" Text="{Binding Port}" Placeholder="4354" TextColor="LightGray" PlaceholderColor="Gray" VerticalOptions="Center"/>
+                            </Grid>
+                        </ViewCell>
                     </TableSection>
                     <TableSection Title="{x:Static resources:AppResources.Gameplay}">
-                        <SwitchCell Text="{x:Static resources:AppResources.SimpleLayout}" On="{Binding UseSimplifiedLayout}"/>
+                        <ViewCell Tapped="UseSimplifiedLayout_Tapped">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="0" HeightRequest="48">
+                                <Label TextColor="LightGray" Text="{x:Static resources:AppResources.SimpleLayout}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                <Switch IsToggled="{Binding UseSimplifiedLayout}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
+                            </Grid>
+                        </ViewCell>
                     </TableSection>
                 </TableRoot>
             </TableView>
