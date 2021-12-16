@@ -162,19 +162,6 @@ namespace Mageki
                 buttonsInRhythmGame[2].Height = buttonHeight;
                 buttonsInRhythmGame[2].Width = specialButtonWidth;
                 buttonsInRhythmGame[2].Center = new SKPoint(panelMargin + buttonSpacing * 2 + specialButtonWidth * 3.5f, buttonBottom - buttonHeight / 2);
-                // menu键的背景，打歌时无需绘制
-                if (decorations[2] is MenuBackground background0)
-                {
-                    background0.Center = buttons[4].Center;
-                    background0.Height = buttons[4].Height * 1.6f;
-                    background0.Width = buttons[4].Width * 1.6f;
-                }
-                if (decorations[3] is MenuBackground background1)
-                {
-                    background1.Center = buttons[9].Center;
-                    background1.Height = buttons[9].Height * 1.6f;
-                    background1.Width = buttons[9].Width * 1.6f;
-                }
             }
             // Left 1
             buttons[0].Width = buttons[0].Height = buttonWidth;
@@ -210,7 +197,22 @@ namespace Mageki
             buttons[9].BorderColor = new SKColor(0xFF888800);
             buttons[9].Color = ButtonColors.Yellow;
             buttons[9].Center = new SKPoint(width - (panelMargin + buttonWidth - buttonSpacing), buttonBottom - buttonHeight - bmSpacing - menuSideLength / 2);
-
+            if (!inRhythmGame)
+            {
+                // menu键的背景，打歌时无需绘制
+                if (decorations[2] is MenuBackground background0)
+                {
+                    background0.Center = buttons[4].Center;
+                    background0.Height = buttons[4].Height * 1.6f;
+                    background0.Width = buttons[4].Width * 1.6f;
+                }
+                if (decorations[3] is MenuBackground background1)
+                {
+                    background1.Center = buttons[9].Center;
+                    background1.Height = buttons[9].Height * 1.6f;
+                    background1.Width = buttons[9].Width * 1.6f;
+                }
+            }
             // 绘制装饰用的环
             if (decorations[0] is Circles circles0)
             {
