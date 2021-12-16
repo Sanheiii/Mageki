@@ -19,11 +19,11 @@
         <ScrollView Grid.Row="1">
             <TableView HasUnevenRows="True" Intent="Settings">
                 <TableRoot>
-                    <TableSection Title="连接">
-                        <EntryCell Label="端口"  Text="{Binding Port}"/>
+                    <TableSection Title="{x:Static resources:AppResources.Connection}">
+                        <EntryCell Label="{x:Static resources:AppResources.Port}" Keyboard="Numeric" Text="{Binding Port}"/>
                     </TableSection>
-                    <TableSection Title="游戏性">
-                        <SwitchCell Text="使用简易布局" On="{Binding UseSimplifiedLayout}"/>
+                    <TableSection Title="{x:Static resources:AppResources.Gameplay}">
+                        <SwitchCell Text="{x:Static resources:AppResources.SimpleLayout}" On="{Binding UseSimplifiedLayout}"/>
                     </TableSection>
                 </TableRoot>
             </TableView>

@@ -61,11 +61,47 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Connection 的本地化字符串。
+        /// </summary>
+        public static string Connection {
+            get {
+                return ResourceManager.GetString("Connection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Gameplay 的本地化字符串。
+        /// </summary>
+        public static string Gameplay {
+            get {
+                return ResourceManager.GetString("Gameplay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Port 的本地化字符串。
+        /// </summary>
+        public static string Port {
+            get {
+                return ResourceManager.GetString("Port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Settings 的本地化字符串。
         /// </summary>
         public static string Settings {
             get {
                 return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Simple layout 的本地化字符串。
+        /// </summary>
+        public static string SimpleLayout {
+            get {
+                return ResourceManager.GetString("SimpleLayout", resourceCulture);
             }
         }
     }
