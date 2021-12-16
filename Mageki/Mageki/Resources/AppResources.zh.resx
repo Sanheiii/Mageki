@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Connection" xml:space="preserve">
-    <value>连接</value>
+    <value>连接（修改需要重启）</value>
   </data>
   <data name="Gameplay" xml:space="preserve">
     <value>游戏性</value>

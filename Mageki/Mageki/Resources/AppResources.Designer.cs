@@ -79,7 +79,7 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Port 的本地化字符串。
+        ///   查找类似 Port (Restart App Required) 的本地化字符串。
         /// </summary>
         public static string Port {
             get {

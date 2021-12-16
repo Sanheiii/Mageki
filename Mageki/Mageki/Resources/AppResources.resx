@@ -124,7 +124,7 @@
     <value>Gameplay</value>
   </data>
   <data name="Port" xml:space="preserve">
-    <value>Port</value>
+    <value>Port (Restart App Required)</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>

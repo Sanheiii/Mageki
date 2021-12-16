@@ -31,7 +31,7 @@ namespace Mageki
             new Circles(),
             new MenuBackground(){ Side=Side.Left},
             new MenuBackground(){ Side=Side.Right},
-            Drawables.Svg.FromResource("Mageki.Resources.オンゲキ.svg")
+            new Logo()
         };
         private Slider slider = new Slider();
         #region 常量
@@ -116,7 +116,7 @@ namespace Mageki
             {
                 drawable.Draw(canvas);
             }
-            var drawingButtons = inRhythmGame ? buttonsInRhythmGame : buttons;
+            var drawingButtons = (inRhythmGame && Settings.UseSimplifiedLayout) ? buttonsInRhythmGame : buttons;
             for (int i = 0; i < drawingButtons.Length; i++)
             {
                 drawingButtons[i].Draw(canvas);
@@ -143,7 +143,7 @@ namespace Mageki
             float buttonSpacing = buttonHeight * ButtonSpacingCoef;
 
             float buttonBottom = height - bottomMargin;
-            if (inRhythmGame)
+            if (inRhythmGame && Settings.UseSimplifiedLayout)
             {
                 // 打歌时以特殊布局绘制
                 float specialButtonWidth = (width - panelMargin * 2 - buttonSpacing * 2) / 4;
@@ -227,11 +227,11 @@ namespace Mageki
                 circles1.DrawRightArc = true;
             }
             // logo
-            if (decorations[4] is Drawables.Svg svg)
+            if (decorations[4] is Drawables.Logo logo)
             {
-                svg.MaxHeight = menuSideLength;
-                svg.MaxWidth = width;
-                svg.Center = new SKPoint(width / 2, buttonBottom - buttonHeight - bmSpacing - svg.MaxHeight * 1.5f);
+                logo.MaxHeight = menuSideLength;
+                logo.MaxWidth = width;
+                logo.Center = new SKPoint(width / 2, buttonBottom - buttonHeight - bmSpacing - logo.MaxHeight * 1.5f);
             }
         }
         private List<(float value, long touchID)> leverCache = new List<(float value, long touchID)>();
@@ -343,7 +343,7 @@ namespace Mageki
             // 大概点到中间六键的范围就会触发
             if (pixelLocation.Y > buttons[0].BorderRect.Top - buttons[0].BorderRect.Left)
             {
-                if (inRhythmGame)
+                if (inRhythmGame && Settings.UseSimplifiedLayout)
                 {
                     if (pixelLocation.X < width / 4 * 1) area = buttons[5].IsHold ? TouchArea.LButton1 : TouchArea.RButton1;
                     else if (pixelLocation.X < width / 4 * 3) area = buttons[6].IsHold ? TouchArea.LButton2 : TouchArea.RButton2;
@@ -361,7 +361,7 @@ namespace Mageki
             }
             else if (!inRhythmGame && buttons[4].BorderRect.Contains(pixelLocation)) area = TouchArea.LMenu;
             else if (!inRhythmGame && buttons[9].BorderRect.Contains(pixelLocation)) area = TouchArea.RMenu;
-            else if (!inRhythmGame && decorations[4] is Drawables.Svg logo && logo.Rect.Contains(pixelLocation)) area = TouchArea.Logo;
+            else if (!inRhythmGame && decorations[4] is Drawables.Logo logo && logo.Rect.Contains(pixelLocation)) area = TouchArea.Logo;
             else if (pixelLocation.X < width / 2) area = TouchArea.LSide;
             else area = TouchArea.RSide;
             Debug.WriteLine(area);
@@ -409,6 +409,10 @@ namespace Mageki
             {
                 remoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
                 backColor = SKColors.White;
+                if (decorations[4] is Logo logo)
+                {
+                    logo.Color = SKColors.Black;
+                }
                 RequestValues();
             }
             //// 用于直接打开测试显示按键
