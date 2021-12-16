@@ -2,6 +2,8 @@
 using Rg.Plugins.Popup.Extensions;
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
@@ -14,9 +16,15 @@ namespace Mageki
             InitializeComponent();
         }
 
-        private void ControllerPanel_LogoClickd(object sender, EventArgs args)
+        private SettingsPopup settingPopup;
+        private async void ControllerPanel_LogoClickd(object sender, EventArgs args)
         {
-            Navigation.PushPopupAsync(new SettingsPopup());
+            var popup = settingPopup ?? (settingPopup = new SettingsPopup());
+            try
+            {
+                await Navigation.PushPopupAsync(popup);
+            }
+            catch { }
         }
     }
 }
