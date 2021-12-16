@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    x:Class="Mageki.NavigationBar"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="http://xamarin.com/schemas/2020/toolkit"
+    x:Name="this"
+    BackgroundColor="#25BDFC"
+    mc:Ignorable="d">
+    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
+        <ContentView
+            Margin="10,5,10,10"
+            HorizontalOptions="Start"
+            VerticalOptions="FillAndExpand">
+            <Label
+                Padding="0,2,0,0"
+                FontFamily="MaterialIcons"
+                FontSize="20"
+                Text="&#xE5E0;"
+                TextColor="White"
+                VerticalOptions="CenterAndExpand" />
+        </ContentView>
+        <Label
+            FontSize="18"
+            HorizontalOptions="CenterAndExpand"
+            Text="{Binding Source={x:Reference this}, Path=Title}"
+            TextColor="White"
+            VerticalOptions="CenterAndExpand" />
+    </Grid>
+</ContentView>

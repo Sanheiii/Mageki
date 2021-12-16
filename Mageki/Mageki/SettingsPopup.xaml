@@ -3,12 +3,24 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:rg="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
-    xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup" xmlns:mageki="clr-namespace:Mageki"
+    xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup" 
+    xmlns:mageki="clr-namespace:Mageki"
+    BackgroundColor="White"
+    xmlns:resources="clr-namespace:Mageki.Resources"
     x:Class="Mageki.SettingsPopup">
     <rg:PopupPage.BindingContext>
         <mageki:SettingsViewModel/>
     </rg:PopupPage.BindingContext>
-    <StackLayout>
-        <Label Text="{Binding TestText}" />
-    </StackLayout>
+    <Grid RowDefinitions="Auto,*">
+        <mageki:NavigationBar Title="{x:Static resources:AppResources.Settings}">
+            <mageki:NavigationBar.GestureRecognizers>
+                <TapGestureRecognizer Tapped="Close_Tapped"/>
+            </mageki:NavigationBar.GestureRecognizers>
+        </mageki:NavigationBar>
+        <ScrollView Grid.Row="1">
+            <StackLayout>
+                <Label Text="{Binding TestText}" TextColor="Black" />
+            </StackLayout>
+        </ScrollView>
+    </Grid>
 </rg:PopupPage>

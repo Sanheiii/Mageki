@@ -1,4 +1,5 @@
 ﻿using Rg.Plugins.Popup.Pages;
+using Rg.Plugins.Popup.Services;
 
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,17 @@ namespace Mageki
         public SettingsPopup()
         {
             InitializeComponent();
+        }
+
+        public void Dismiss()
+        {
+            if (PopupNavigation.Instance.PopupStack.Count > 0)
+                PopupNavigation.Instance.RemovePageAsync(this);
+        }
+
+        private void Close_Tapped(object sender, EventArgs e)
+        {
+            Dismiss();
         }
     }
 }
