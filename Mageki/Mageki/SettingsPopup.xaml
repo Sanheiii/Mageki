@@ -5,7 +5,6 @@
     xmlns:rg="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
     xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup" 
     xmlns:mageki="clr-namespace:Mageki"
-    BackgroundColor="White"
     xmlns:resources="clr-namespace:Mageki.Resources"
     x:Class="Mageki.SettingsPopup">
     <rg:PopupPage.BindingContext>
@@ -18,9 +17,16 @@
             </mageki:NavigationBar.GestureRecognizers>
         </mageki:NavigationBar>
         <ScrollView Grid.Row="1">
-            <StackLayout>
-                <Label Text="{Binding TestText}" TextColor="Black" />
-            </StackLayout>
+            <TableView HasUnevenRows="True" Intent="Settings">
+                <TableRoot>
+                    <TableSection Title="连接">
+                        <EntryCell Label="端口"  Text="{Binding Port}"/>
+                    </TableSection>
+                    <TableSection Title="游戏性">
+                        <SwitchCell Text="使用简易布局" On="{Binding UseSimplifiedLayout}"/>
+                    </TableSection>
+                </TableRoot>
+            </TableView>
         </ScrollView>
     </Grid>
 </rg:PopupPage>

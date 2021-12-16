@@ -7,9 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="http://xamarin.com/schemas/2020/toolkit"
     x:Name="this"
-    BackgroundColor="#25BDFC"
     mc:Ignorable="d">
-    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
+    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand" Padding="0,10,0,0">
         <ContentView
             Margin="10,5,10,10"
             HorizontalOptions="Start"
@@ -19,14 +18,12 @@
                 FontFamily="MaterialIcons"
                 FontSize="20"
                 Text="&#xE5E0;"
-                TextColor="White"
                 VerticalOptions="CenterAndExpand" />
         </ContentView>
         <Label
             FontSize="18"
             HorizontalOptions="CenterAndExpand"
             Text="{Binding Source={x:Reference this}, Path=Title}"
-            TextColor="White"
             VerticalOptions="CenterAndExpand" />
     </Grid>
 </ContentView>
