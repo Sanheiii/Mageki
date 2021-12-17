@@ -299,7 +299,7 @@ namespace Mageki
                                 if (BigInteger.TryParse(Settings.AimeId, out BigInteger integer))
                                 {
                                     var bcd = ToBcd(integer);
-                                    var bytes = bcd.Concat(new byte[10 - bcd.Length]);
+                                    var bytes = new byte[10 - bcd.Length].Concat(bcd);
                                     aimeId = bytes.ToArray();
                                 }
                                 SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(aimeId).ToArray());
