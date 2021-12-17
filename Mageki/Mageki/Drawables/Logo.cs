@@ -26,7 +26,7 @@ namespace Mageki.Drawables
 
         private SKPaint paint = new SKPaint
         {
-            Color = SKColors.White,
+            Color = SKColors.LightGray,
             Style = SKPaintStyle.Fill
         };
 

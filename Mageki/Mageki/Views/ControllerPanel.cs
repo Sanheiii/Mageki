@@ -114,7 +114,6 @@ namespace Mageki
             SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
             nfcScanning = false;
         }
-        SKColor backColor = SKColors.Black;
         int oldWidth = -1;
         int oldHeight = -1;
         bool requireGenRects = false;
@@ -130,7 +129,7 @@ namespace Mageki
             SKSurface surface = e.Surface;
             SKCanvas canvas = surface.Canvas;
             //清空画布
-            canvas.Clear(backColor);
+            canvas.Clear(SKColors.White);
             if (oldWidth != info.Width || oldHeight != info.Height || requireGenRects)
             {
                 requireGenRects = false;
@@ -445,7 +444,6 @@ namespace Mageki
             else if (buffer[0] == (byte)MessageType.DokiDoki && buffer.Length == 2 && buffer[1] == dkRandomValue)
             {
                 remoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
-                backColor = SKColors.White;
                 if (decorations[4] is Logo logo)
                 {
                     logo.Color = SKColors.Black;
