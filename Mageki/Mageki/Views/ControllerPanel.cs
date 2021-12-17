@@ -17,6 +17,7 @@ using System.Net.Sockets;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -24,6 +25,7 @@ using Xamarin.Forms;
 using Button = Mageki.Drawables.Button;
 using SKSvg = SkiaSharp.Extended.Svg.SKSvg;
 using Slider = Mageki.Drawables.Slider;
+using Timer = System.Timers.Timer;
 
 namespace Mageki
 {
@@ -68,6 +70,9 @@ namespace Mageki
         IPEndPoint remoteEP = new IPEndPoint(IPAddress.Broadcast, Settings.Port);
         bool inRhythmGame;
         byte dkRandomValue;
+        bool IsConnected => remoteEP.Address.Address != IPAddress.Broadcast.Address;
+        Timer heartbeatTimer = new Timer(400) { AutoReset = true };
+        Timer disconnectTimer = new Timer(1500) { AutoReset = false };
         private bool nfcScanning = false;
         private bool simulateScanning = false;
 
@@ -87,7 +92,9 @@ namespace Mageki
 
             dkRandomValue = (byte)(new Random().Next() % 255);
             client = new UdpClient();
-            ScanServer();
+            heartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
+            heartbeatTimer.Start();
+            disconnectTimer.Elapsed += DisconnectTimer_Elapsed; ;
             new Thread(PollThread).Start();
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
@@ -95,14 +102,27 @@ namespace Mageki
                 this.subscription = this.felicaReader.WhenCardFound().Subscribe(new FelicaCardMediaObserver(this));
             }
         }
-        private void ScanServer()
+
+        // 在没有连接的时候请求连接,有连接是发送心跳保存连接
+        private void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             try
             {
                 SendMessage(new byte[] { (byte)MessageType.DokiDoki, dkRandomValue });
             }
-            catch (Exception ex) { }
+            catch (Exception ex) { Debug.WriteLine(ex); }
         }
+
+        private void DisconnectTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            remoteEP = new IPEndPoint(IPAddress.Broadcast, Settings.Port);
+            if (decorations[4] is Logo logo)
+            {
+                logo.Color = SKColors.Gray;
+                MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
+            }
+        }
+
         public async void ScanFelica(byte[] felicaId)
         {
             if (nfcScanning || simulateScanning) return;
@@ -346,7 +366,7 @@ namespace Mageki
                             simulateScanning = false;
                             SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
                             // 按下超过一秒不触发菜单
-                            if (DateTime.Now - scanTime < TimeSpan.FromSeconds(1) && currentArea == area)
+                            if (DateTime.Now - scanTime < TimeSpan.FromSeconds(0.3) && currentArea == area)
                                 LogoClickd.Invoke(this, EventArgs.Empty);
                         }
                         if (touchPoints.ContainsKey(args.Id))
@@ -406,10 +426,9 @@ namespace Mageki
 
         private void SendMessage(byte[] data)
         {
-            // 没有连接到就再试一次
-            if (remoteEP.Address.Address == IPAddress.Broadcast.Address && data[0] != (byte)MessageType.DokiDoki)
+            // 没有连接到就不发送数据
+            if (!IsConnected && data[0] != (byte)MessageType.DokiDoki)
             {
-                ScanServer();
                 return;
             }
             client.Send(data, data.Length, remoteEP);
@@ -443,12 +462,17 @@ namespace Mageki
             }
             else if (buffer[0] == (byte)MessageType.DokiDoki && buffer.Length == 2 && buffer[1] == dkRandomValue)
             {
-                remoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
-                if (decorations[4] is Logo logo)
+                if (!IsConnected)
                 {
-                    logo.Color = SKColors.Black;
+                    remoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
+                    RequestValues();
+                    if (decorations[4] is Logo logo)
+                    {
+                        logo.Color = SKColors.Black;
+                    }
                 }
-                RequestValues();
+                disconnectTimer.Stop();
+                disconnectTimer.Start();
             }
             //// 用于直接打开测试显示按键
             //Mu3IO._test.UpdateData();
@@ -487,7 +511,7 @@ namespace Mageki
             {
                 buttons[4].Visible = buttons[9].Visible = decorations[2].Visible = decorations[3].Visible = true;
             }
-            Xamarin.Essentials.MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
+            MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
 
         public static byte[] ToBcd(BigInteger value)

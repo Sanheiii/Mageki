@@ -49,7 +49,6 @@ namespace Mageki.Drawables
         private SKPoint center;
         private float maxWidth;
         private float maxHeight;
-        private SKColor color;
 
         public SKMatrix GetTransform()
         {
