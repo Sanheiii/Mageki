@@ -20,6 +20,8 @@ namespace Mageki
         // 0 => 1 , -10 => 0.1 , 10 => 10
         public float LeverSensitivity { get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase); set => Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value); }
 
+        public string Aimeid { get => Settings.AimeId; set => Settings.AimeId = value; }
+
         public bool UseSimplifiedLayout { get => Settings.UseSimplifiedLayout; set => Settings.UseSimplifiedLayout = value; }
 
         public SettingsViewModel()
@@ -43,6 +45,11 @@ namespace Mageki
         {
             get => Preferences.Get("leverSensitivity", 1f);
             set => Preferences.Set("leverSensitivity", value);
+        }
+        public static string AimeId
+        {
+            get => Preferences.Get("aimeId", "00000000000000000000");
+            set => Preferences.Set("aimeId", value);
         }
     }
 }

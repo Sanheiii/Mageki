@@ -41,6 +41,12 @@
                                 <Slider Maximum="10" Minimum="-10" Grid.Column="2" Value="{Binding LeverSensitivity}" VerticalOptions="Center"/>
                             </Grid>
                         </ViewCell>
+                        <ViewCell>
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="0" HeightRequest="48">
+                                <Label TextColor="LightGray" Text="{x:Static resources:AppResources.AimeID}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                <Entry Keyboard="Numeric" MaxLength="20" Grid.Column="1" Text="{Binding Aimeid}" Placeholder="00000000000000000000" TextColor="LightGray" PlaceholderColor="Gray" VerticalOptions="Center"/>
+                            </Grid>
+                        </ViewCell>
                     </TableSection>
                 </TableRoot>
             </TableView>

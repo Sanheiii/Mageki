@@ -37,6 +37,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\AppResources.zh.Designer.cs">
+      <DependentUpon>AppResources.zh.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +49,7 @@
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\AppResources.zh.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppResources.zh.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="SettingsPopup.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
