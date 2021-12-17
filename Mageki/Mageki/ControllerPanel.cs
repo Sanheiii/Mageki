@@ -1,6 +1,9 @@
 ﻿using Mageki.Drawables;
 using Mageki.TouchTracking;
 
+using Plugin.FelicaReader;
+using Plugin.FelicaReader.Abstractions;
+
 using SkiaSharp;
 using SkiaSharp.Extended.Svg;
 using SkiaSharp.Views.Forms;
@@ -12,7 +15,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 using Button = Mageki.Drawables.Button;
@@ -25,6 +30,8 @@ namespace Mageki
     {
         private Button[] buttons = Enumerable.Range(0, 10).Select((n) => new Button()).ToArray();
         private Button[] buttonsInRhythmGame = Enumerable.Range(0, 3).Select((n) => new Button()).ToArray();
+        private IFelicaReader felicaReader;
+        private IDisposable subscription;
         private IDrawable[] decorations = new IDrawable[]
         {
             new Circles(),
@@ -60,6 +67,8 @@ namespace Mageki
         IPEndPoint remoteEP = new IPEndPoint(IPAddress.Broadcast, Settings.Port);
         bool inRhythmGame;
         byte dkRandomValue;
+        private bool nfcScanning = false;
+        private bool simulateScanning = false;
 
         public delegate void ClickEventHandler(object sender, EventArgs args);
         public event ClickEventHandler LogoClickd;
@@ -79,8 +88,12 @@ namespace Mageki
             client = new UdpClient();
             ScanServer();
             new Thread(PollThread).Start();
+            if (DeviceInfo.Platform == DevicePlatform.Android)
+            {
+                this.felicaReader = CrossFelicaReader.Current;
+                this.subscription = this.felicaReader.WhenCardFound().Subscribe(new FelicaCardMediaObserver(this));
+            }
         }
-
         private void ScanServer()
         {
             try
@@ -89,7 +102,16 @@ namespace Mageki
             }
             catch (Exception ex) { }
         }
-
+        public async void ScanFelica(byte[] felicaId)
+        {
+            if (nfcScanning || simulateScanning) return;
+            nfcScanning = true;
+            var id = new byte[10 - felicaId.Length].Concat(felicaId).ToArray();
+            SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(id).ToArray());
+            await Task.Delay(3000);
+            SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
+            nfcScanning = false;
+        }
         SKColor backColor = SKColors.Black;
         int oldWidth = -1;
         int oldHeight = -1;
@@ -268,8 +290,12 @@ namespace Mageki
                         // 按下logo根据放开时间刷卡或显示菜单
                         else if (area == TouchArea.Logo)
                         {
-                            scanTime = DateTime.Now;
-                            SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(aimeId).ToArray());
+                            if (!(nfcScanning || simulateScanning))
+                            {
+                                simulateScanning = true;
+                                scanTime = DateTime.Now;
+                                SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(aimeId).ToArray());
+                            }
                         }
                         break;
                     }
@@ -308,11 +334,12 @@ namespace Mageki
                             buttons[(int)area].IsHold = false;
                             if (inRhythmGame && (int)area % 5 < 3) buttonsInRhythmGame[(int)area % 5].IsHold = false;
                         }
-                        else if (currentArea == area && area == TouchArea.Logo)
+                        else if (area == TouchArea.Logo && touchPoints.Count(p => p.Value.touchArea == area) < 2)
                         {
+                            simulateScanning = false;
                             SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(aimeId).ToArray());
                             // 按下超过一秒不触发菜单
-                            if (DateTime.Now - scanTime < TimeSpan.FromSeconds(1))
+                            if (DateTime.Now - scanTime < TimeSpan.FromSeconds(1) && currentArea == area)
                                 LogoClickd.Invoke(this, EventArgs.Empty);
                         }
                         if (touchPoints.ContainsKey(args.Id))
