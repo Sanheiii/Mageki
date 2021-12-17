@@ -294,6 +294,7 @@ namespace Mageki
                             {
                                 simulateScanning = true;
                                 scanTime = DateTime.Now;
+                                
                                 SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(aimeId).ToArray());
                             }
                         }
