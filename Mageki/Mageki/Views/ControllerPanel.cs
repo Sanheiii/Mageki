@@ -107,8 +107,9 @@ namespace Mageki
         {
             if (nfcScanning || simulateScanning) return;
             nfcScanning = true;
-            var id = felicaId.Concat(new byte[10 - felicaId.Length]).ToArray();
-            SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(id).ToArray());
+            var id = new BigInteger(felicaId);
+            var bcd = ToBcd(id);
+            SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(bcd).Concat(new byte[10 - bcd.Length]).ToArray());
             await Task.Delay(3000);
             SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
             nfcScanning = false;
@@ -297,8 +298,9 @@ namespace Mageki
                                 scanTime = DateTime.Now;
                                 if (BigInteger.TryParse(Settings.AimeId, out BigInteger integer))
                                 {
-                                    var bytes = integer.ToByteArray();
-                                    aimeId = bytes.Concat(new byte[10 - bytes.Length]).ToArray();
+                                    var bcd = ToBcd(integer);
+                                    var bytes = bcd.Concat(new byte[10 - bcd.Length]);
+                                    aimeId = bytes.ToArray();
                                 }
                                 SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(aimeId).ToArray());
                             }
@@ -490,6 +492,19 @@ namespace Mageki
             Xamarin.Essentials.MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
 
+        public static byte[] ToBcd(BigInteger value)
+        {
+            var length = value.ToString().Length / 2 + value.ToString().Length % 2;
+            byte[] ret = new byte[length];
+            for (int i = 0; i < length; i++)
+            {
+                ret[i] = (byte)(value % 10);
+                value /= 10;
+                ret[i] |= (byte)((value % 10) << 4);
+                value /= 10;
+            }
+            return ret;
+        }
 
 
         enum MessageType : byte
