@@ -48,7 +48,7 @@ namespace Mageki
         }
         public static string AimeId
         {
-            get => Preferences.Get("aimeId", "00000000000000000000");
+            get => Preferences.Get("aimeId", string.Empty);
             set => Preferences.Set("aimeId", value);
         }
     }

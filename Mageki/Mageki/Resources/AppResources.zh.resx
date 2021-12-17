@@ -136,6 +136,9 @@
     <value>使用简易布局</value>
   </data>
   <data name="AimeID" xml:space="preserve">
-      <value>Aime 卡号</value>
+    <value>Aime 卡号</value>
+  </data>
+  <data name="AimeIDPlaceHolder" xml:space="preserve">
+    <value>使用DEVICE\aime.txt中储存的值</value>
   </data>
 </root>

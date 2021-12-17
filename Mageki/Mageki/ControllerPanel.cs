@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -106,7 +107,7 @@ namespace Mageki
         {
             if (nfcScanning || simulateScanning) return;
             nfcScanning = true;
-            var id = new byte[10 - felicaId.Length].Concat(felicaId).ToArray();
+            var id = felicaId.Concat(new byte[10 - felicaId.Length]).ToArray();
             SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(id).ToArray());
             await Task.Delay(3000);
             SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
@@ -259,7 +260,6 @@ namespace Mageki
             }
         }
         private List<(float value, long touchID)> leverCache = new List<(float value, long touchID)>();
-        private byte[] aimeId = new byte[10];
         DateTime scanTime;
         /// <summary>
         /// 处理画布点击
@@ -292,9 +292,14 @@ namespace Mageki
                         {
                             if (!(nfcScanning || simulateScanning))
                             {
+                                byte[] aimeId = new byte[10];
                                 simulateScanning = true;
                                 scanTime = DateTime.Now;
-                                
+                                if (BigInteger.TryParse(Settings.AimeId, out BigInteger integer))
+                                {
+                                    var bytes = integer.ToByteArray();
+                                    aimeId = bytes.Concat(new byte[10 - bytes.Length]).ToArray();
+                                }
                                 SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(aimeId).ToArray());
                             }
                         }
@@ -338,7 +343,7 @@ namespace Mageki
                         else if (area == TouchArea.Logo && touchPoints.Count(p => p.Value.touchArea == area) < 2)
                         {
                             simulateScanning = false;
-                            SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(aimeId).ToArray());
+                            SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
                             // 按下超过一秒不触发菜单
                             if (DateTime.Now - scanTime < TimeSpan.FromSeconds(1) && currentArea == area)
                                 LogoClickd.Invoke(this, EventArgs.Empty);

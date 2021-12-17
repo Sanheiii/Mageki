@@ -136,6 +136,9 @@
     <value>Simple Layout</value>
   </data>
   <data name="AimeID" xml:space="preserve">
-      <value>Aime ID</value>
+    <value>Aime ID</value>
+  </data>
+  <data name="AimeIDPlaceHolder" xml:space="preserve">
+    <value>{AimeIDPlaceHolder}</value>
   </data>
 </root>
