@@ -293,7 +293,7 @@ namespace Mageki
                         {
                             if (!(nfcScanning || simulateScanning))
                             {
-                                byte[] aimeId = new byte[10];
+                                byte[] aimeId = Enumerable.Range(0, 10).Select((i) => (byte)255).ToArray();
                                 simulateScanning = true;
                                 scanTime = DateTime.Now;
                                 if (BigInteger.TryParse(Settings.AimeId, out BigInteger integer))
