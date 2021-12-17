@@ -109,7 +109,7 @@ namespace Mageki
             nfcScanning = true;
             var id = new BigInteger(felicaId);
             var bcd = ToBcd(id);
-            SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(bcd).Concat(new byte[10 - bcd.Length]).ToArray());
+            SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(new byte[10 - bcd.Length]).Concat(bcd).ToArray());
             await Task.Delay(3000);
             SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
             nfcScanning = false;
@@ -496,7 +496,7 @@ namespace Mageki
         {
             var length = value.ToString().Length / 2 + value.ToString().Length % 2;
             byte[] ret = new byte[length];
-            for (int i = 0; i < length; i++)
+            for (int i = length - 1; i >= 0; i--)
             {
                 ret[i] = (byte)(value % 10);
                 value /= 10;
