@@ -34,6 +34,13 @@
                                 <Switch IsToggled="{Binding UseSimplifiedLayout}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
                             </Grid>
                         </ViewCell>
+                        <ViewCell>
+                            <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="0" HeightRequest="48">
+                                <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverSensitivity}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                <Entry Keyboard="Numeric" Placeholder="0" PlaceholderColor="Gray" TextColor="LightGray" Text="{Binding LeverSensitivity,StringFormat='{0:F1}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
+                                <Slider Maximum="10" Minimum="-10" Grid.Column="2" Value="{Binding LeverSensitivity}" VerticalOptions="Center"/>
+                            </Grid>
+                        </ViewCell>
                     </TableSection>
                 </TableRoot>
             </TableView>

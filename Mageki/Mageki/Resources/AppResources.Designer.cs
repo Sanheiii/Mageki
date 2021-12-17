@@ -61,7 +61,7 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Connection 的本地化字符串。
+        ///   查找类似 Connection (Restart App Required) 的本地化字符串。
         /// </summary>
         public static string Connection {
             get {
@@ -79,7 +79,16 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Port (Restart App Required) 的本地化字符串。
+        ///   查找类似 Lever Sensitivity 的本地化字符串。
+        /// </summary>
+        public static string LeverSensitivity {
+            get {
+                return ResourceManager.GetString("LeverSensitivity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Port 的本地化字符串。
         /// </summary>
         public static string Port {
             get {

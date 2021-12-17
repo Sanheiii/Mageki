@@ -330,7 +330,7 @@ namespace Mageki
         {
             var pixelWidth = Width * Xamarin.Essentials.DeviceDisplay.MainDisplayInfo.Density;
             var oldValue = slider.Value;
-            slider.Value += (short)(x * (pixelWidth / 30));
+            slider.Value += (short)(x * (pixelWidth / 30) * Settings.LeverSensitivity);
             // check会导致iOS端崩溃，使用土方法检查溢出
             if (x < 0 && oldValue < slider.Value) slider.Value = short.MinValue;
             else if (x > 0 && oldValue > slider.Value) slider.Value = short.MaxValue;

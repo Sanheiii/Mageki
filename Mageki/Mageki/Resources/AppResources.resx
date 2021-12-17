@@ -118,13 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Connection" xml:space="preserve">
-    <value>Connection</value>
+    <value>Connection (Restart App Required)</value>
   </data>
   <data name="Gameplay" xml:space="preserve">
     <value>Gameplay</value>
   </data>
+  <data name="LeverSensitivity" xml:space="preserve">
+    <value>Lever Sensitivity</value>
+  </data>
   <data name="Port" xml:space="preserve">
-    <value>Port (Restart App Required)</value>
+    <value>Port</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
