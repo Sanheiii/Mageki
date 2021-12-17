@@ -51,7 +51,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>AppResources.zh.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="SettingsPopup.xaml">
+    <EmbeddedResource Update="Views\SettingsPopup.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>

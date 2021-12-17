@@ -139,6 +139,6 @@
     <value>Aime 卡号</value>
   </data>
   <data name="AimeIDPlaceHolder" xml:space="preserve">
-    <value>使用DEVICE\aime.txt中储存的值</value>
+    <value>使用 DEVICE\aime.txt</value>
   </data>
 </root>

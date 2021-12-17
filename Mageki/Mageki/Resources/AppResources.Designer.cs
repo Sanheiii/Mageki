@@ -70,7 +70,7 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
-        ///   查找类似 {AimeIDPlaceHolder} 的本地化字符串。
+        ///   查找类似 Use DEVICE\aime.txt 的本地化字符串。
         /// </summary>
         public static string AimeIDPlaceHolder {
             get {

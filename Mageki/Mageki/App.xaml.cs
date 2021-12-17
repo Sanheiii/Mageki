@@ -10,7 +10,6 @@ namespace Mageki
         public App()
         {
             InitializeComponent();
-
             MainPage = new MainPage();
         }
 

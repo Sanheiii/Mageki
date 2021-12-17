@@ -5,26 +5,22 @@
     xmlns:rg="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
     xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup" 
     xmlns:mageki="clr-namespace:Mageki"
+    BackgroundColor="#AA000000"
     xmlns:resources="clr-namespace:Mageki.Resources"
     x:Class="Mageki.SettingsPopup">
     <rg:PopupPage.BindingContext>
         <mageki:SettingsViewModel/>
     </rg:PopupPage.BindingContext>
-    <Grid RowDefinitions="Auto,*">
-        <mageki:NavigationBar Title="{x:Static resources:AppResources.Settings}">
+    <Grid RowDefinitions="Auto,*" BackgroundColor="Transparent">
+        <mageki:NavigationBar Title="{x:Static resources:AppResources.Settings}" BackgroundColor="Transparent">
             <mageki:NavigationBar.GestureRecognizers>
                 <TapGestureRecognizer Tapped="Close_Tapped"/>
             </mageki:NavigationBar.GestureRecognizers>
         </mageki:NavigationBar>
-        <TableView HasUnevenRows="True" Intent="Settings">
+        <TableView HasUnevenRows="True" Intent="Settings" Grid.Row="1" BackgroundColor="Transparent">
             <TableRoot>
                 <TableSection Title="{x:Static resources:AppResources.Connection}">
-                    <ViewCell>
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="0" HeightRequest="48">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.Port}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Entry Keyboard="Numeric" MaxLength="5" Grid.Column="1" Text="{Binding Port}" Placeholder="4354" TextColor="LightGray" PlaceholderColor="Gray" VerticalOptions="Center"/>
-                        </Grid>
-                    </ViewCell>
+                    <mageki:EntryCell Label="{x:Static resources:AppResources.Port}" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="5" Text="{Binding Port}" Placeholder="4354"/>
                 </TableSection>
                 <TableSection Title="{x:Static resources:AppResources.Gameplay}">
                     <ViewCell Tapped="UseSimplifiedLayout_Tapped">
@@ -40,12 +36,7 @@
                             <Slider Maximum="10" Minimum="-10" Grid.Column="2" Value="{Binding LeverSensitivity}" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
-                    <ViewCell>
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="0" HeightRequest="48">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.AimeID}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Entry Keyboard="Numeric" MaxLength="20" Grid.Column="1" Text="{Binding Aimeid}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}" TextColor="LightGray" PlaceholderColor="Gray" VerticalOptions="Center"/>
-                        </Grid>
-                    </ViewCell>
+                    <mageki:EntryCell Label="{x:Static resources:AppResources.AimeID}" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="20" Text="{Binding Aimeid}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
                 </TableSection>
             </TableRoot>
         </TableView>

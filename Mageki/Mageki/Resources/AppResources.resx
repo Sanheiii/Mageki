@@ -139,6 +139,6 @@
     <value>Aime ID</value>
   </data>
   <data name="AimeIDPlaceHolder" xml:space="preserve">
-    <value>{AimeIDPlaceHolder}</value>
+    <value>Use DEVICE\aime.txt</value>
   </data>
 </root>
