@@ -198,7 +198,7 @@ namespace Mageki
             float buttonHeight = buttonWidth;
             float menuSideLength = buttonHeight * MenuSizeCoef;
             float panelMargin = buttonHeight * PanelMarginCoef;
-            float bottomMargin = buttonHeight * Settings.ButtonBottomMargin;
+            float bottomMargin = height * Settings.ButtonBottomMargin;
             float lrSpacing = buttonHeight * LRSpacingCoef;
             float bmSpacing = buttonHeight * BMSpacingCoef;
             float buttonSpacing = buttonHeight * ButtonSpacingCoef;
