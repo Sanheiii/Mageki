@@ -356,7 +356,7 @@ namespace Mageki
                 case TouchActionType.Moved:
                     {
                         // 在任意位置拖动触发摇杆，多个手指在同一帧移动时只会取最大值
-                        if (touchPoints.ContainsKey(args.Id) && (int)touchPoints[args.Id].touchArea == 8 || (int)touchPoints[args.Id].touchArea == 3)
+                        if (touchPoints.ContainsKey(args.Id) /*&& (int)touchPoints[args.Id].touchArea == 8 || (int)touchPoints[args.Id].touchArea == 3*/)
                         {
                             lock (leverCache)
                             {
