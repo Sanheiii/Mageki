@@ -20,7 +20,7 @@
         <TableView HasUnevenRows="True" Intent="Settings" Grid.Row="1" BackgroundColor="Transparent">
             <TableRoot>
                 <TableSection Title="{x:Static resources:AppResources.Connection}">
-                    <mageki:EntryCell Label="{x:Static resources:AppResources.Port}" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="5" Text="{Binding Port}" Placeholder="4354"/>
+                    <mageki:EntryCell Label="{x:Static resources:AppResources.Port}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="5" Text="{Binding Port}" Placeholder="4354"/>
                 </TableSection>
                 <TableSection Title="{x:Static resources:AppResources.Gameplay}">
                     <ViewCell Tapped="UseSimplifiedLayout_Tapped">
@@ -36,7 +36,14 @@
                             <Slider Maximum="10" Minimum="-10" Grid.Column="2" Value="{Binding LeverSensitivity}" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
-                    <mageki:EntryCell Label="{x:Static resources:AppResources.AimeID}" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="20" Text="{Binding Aimeid}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
+                    <ViewCell>
+                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="0" HeightRequest="48">
+                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.ButtonBottomMargin}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                            <Label TextColor="LightGray" Text="{Binding ButtonBottomMargin,StringFormat='{0:F1}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
+                            <Slider Maximum="5" Minimum="0" Grid.Column="2" Value="{Binding ButtonBottomMargin}" VerticalOptions="Center"/>
+                        </Grid>
+                    </ViewCell>
+                    <mageki:EntryCell Label="{x:Static resources:AppResources.AimeID}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="20" Text="{Binding Aimeid}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
                 </TableSection>
             </TableRoot>
         </TableView>

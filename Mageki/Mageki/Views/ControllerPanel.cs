@@ -29,7 +29,7 @@ using Timer = System.Timers.Timer;
 
 namespace Mageki
 {
-    class ControllerPanel : Grid
+    public class ControllerPanel : Grid
     {
         private Button[] buttons = Enumerable.Range(0, 10).Select((n) => new Button()).ToArray();
         private Button[] buttonsInRhythmGame = Enumerable.Range(0, 3).Select((n) => new Button()).ToArray();
@@ -44,9 +44,9 @@ namespace Mageki
             new Logo()
         };
         private Slider slider = new Slider();
+
         #region 常量
         const float PanelMarginCoef = 0.5f;
-        const float DownMarginCoef = 0.75f;
         const float LRSpacingCoef = 0.5f;
         const float BMSpacingCoef = 0.75f;
         const float ButtonSpacingCoef = 0.25f;
@@ -98,9 +98,28 @@ namespace Mageki
             new Thread(PollThread).Start();
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
-                this.felicaReader = CrossFelicaReader.Current;
-                this.subscription = this.felicaReader.WhenCardFound().Subscribe(new FelicaCardMediaObserver(this));
+                try
+                {
+                    this.felicaReader = CrossFelicaReader.Current;
+                    this.subscription = this.felicaReader.WhenCardFound().Subscribe(new FelicaCardMediaObserver(this));
+                }
+                catch (Exception ex) { }
             }
+            Settings.ValueChanged += Settings_ValueChanged;
+        }
+
+        private void Settings_ValueChanged(string name)
+        {
+            if (name == nameof(Settings.ButtonBottomMargin))
+            {
+                ForceGenRects();
+            }
+        }
+
+        public void ForceGenRects()
+        {
+            requireGenRects = true;
+            MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
 
         // 在没有连接的时候请求连接,有连接是发送心跳保存连接
@@ -136,7 +155,6 @@ namespace Mageki
         }
         int oldWidth = -1;
         int oldHeight = -1;
-        bool requireGenRects = false;
         /// <summary>
         /// 绘图
         /// </summary>
@@ -180,7 +198,7 @@ namespace Mageki
             float buttonHeight = buttonWidth;
             float menuSideLength = buttonHeight * MenuSizeCoef;
             float panelMargin = buttonHeight * PanelMarginCoef;
-            float bottomMargin = buttonHeight * DownMarginCoef;
+            float bottomMargin = buttonHeight * Settings.ButtonBottomMargin;
             float lrSpacing = buttonHeight * LRSpacingCoef;
             float bmSpacing = buttonHeight * BMSpacingCoef;
             float buttonSpacing = buttonHeight * ButtonSpacingCoef;
@@ -329,7 +347,7 @@ namespace Mageki
                 case TouchActionType.Moved:
                     {
                         // 在任意位置拖动触发摇杆，多个手指在同一帧移动时只会取最大值
-                        if (touchPoints.ContainsKey(args.Id))
+                        if (touchPoints.ContainsKey(args.Id) && (int)touchPoints[args.Id].touchArea == 8 || (int)touchPoints[args.Id].touchArea == 3)
                         {
                             lock (leverCache)
                             {
@@ -435,6 +453,8 @@ namespace Mageki
         }
 
         IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
+        private bool requireGenRects = false;
+
         /// <summary>
         /// 用于接收数据并设置LED
         /// </summary>
@@ -500,7 +520,7 @@ namespace Mageki
                 midButtons.Count(b => b.Color == ButtonColors.Red) == 2 &&
                 midButtons.Count(b => b.Color == ButtonColors.Blue) == 2 &&
                 midButtons.Count(b => b.Color == ButtonColors.Green) == 2;
-            requireGenRects = temp != inRhythmGame;
+            if (temp != inRhythmGame) ForceGenRects();
             inRhythmGame = temp;
 
             if (inRhythmGame)

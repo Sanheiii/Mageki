@@ -141,4 +141,7 @@
   <data name="AimeIDPlaceHolder" xml:space="preserve">
     <value>使用 DEVICE\aime.txt</value>
   </data>
+  <data name="ButtonBottomMargin" xml:space="preserve">
+    <value>按钮下边距</value>
+  </data>
 </root>

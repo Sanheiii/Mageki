@@ -79,6 +79,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Button bottom margin 的本地化字符串。
+        /// </summary>
+        public static string ButtonBottomMargin {
+            get {
+                return ResourceManager.GetString("ButtonBottomMargin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Connection (Restart App Required) 的本地化字符串。
         /// </summary>
         public static string Connection {
