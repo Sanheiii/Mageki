@@ -1,10 +1,13 @@
-﻿using Rg.Plugins.Popup.Pages;
+﻿using Mageki.DependencyServices;
+
+using Rg.Plugins.Popup.Pages;
 using Rg.Plugins.Popup.Services;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -15,9 +18,12 @@ namespace Mageki
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SettingsPopup : PopupPage
     {
-        SettingsViewModel ViewModel=>BindingContext as SettingsViewModel;
-        public SettingsPopup()
+        private ControllerPanel controller;
+
+        SettingsViewModel ViewModel => BindingContext as SettingsViewModel;
+        public SettingsPopup(ControllerPanel controller)
         {
+            this.controller = controller;
             InitializeComponent();
         }
 
@@ -35,6 +41,21 @@ namespace Mageki
         private void UseSimplifiedLayout_Tapped(object sender, EventArgs e)
         {
             ViewModel.UseSimplifiedLayout = !ViewModel.UseSimplifiedLayout;
+        }
+
+        private async void OptButton_Tapped(object sender, EventArgs e)
+        {
+            if(sender is ViewCell cell)
+            {
+                cell.IsEnabled= false;
+                await controller.PressAndReleaseOptionButtonAsync();
+                cell.IsEnabled= true;
+            }
+        }
+
+        private void Exit_Tapped(object sender, EventArgs e)
+        {
+            DependencyService.Get<ICloseApplication>().Close();
         }
     }
 }

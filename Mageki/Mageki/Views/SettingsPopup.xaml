@@ -29,14 +29,14 @@
                             <Switch IsToggled="{Binding UseSimplifiedLayout}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
-                    <ViewCell>
+                    <ViewCell IsEnabled="False">
                         <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="0" HeightRequest="48">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverSensitivity}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Label TextColor="LightGray" Text="{Binding LeverSensitivity,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
                             <Slider Maximum="10" Minimum="-10" Grid.Column="2" Value="{Binding LeverSensitivity}" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
-                    <ViewCell>
+                    <ViewCell IsEnabled="False">
                         <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="0" HeightRequest="48">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.ButtonBottomMargin}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Label TextColor="LightGray" Text="{Binding ButtonBottomMargin,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
@@ -44,6 +44,18 @@
                         </Grid>
                     </ViewCell>
                     <mageki:EntryCell Label="{x:Static resources:AppResources.AimeID}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="20" Text="{Binding Aimeid}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
+                </TableSection>
+                <TableSection Title="{x:Static resources:AppResources.Others}">
+                    <ViewCell Tapped="OptButton_Tapped">
+                        <ContentView  HeightRequest="48">
+                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.GameTestMenu}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                        </ContentView>
+                    </ViewCell>
+                    <ViewCell Tapped="Exit_Tapped">
+                        <ContentView  HeightRequest="48">
+                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.Exit}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                        </ContentView>
+                    </ViewCell>
                 </TableSection>
             </TableRoot>
         </TableView>

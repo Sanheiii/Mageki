@@ -19,7 +19,7 @@ namespace Mageki
         private SettingsPopup settingPopup;
         private async void ControllerPanel_LogoClickd(object sender, EventArgs args)
         {
-            var popup = settingPopup ?? (settingPopup = new SettingsPopup());
+            var popup = settingPopup ?? (settingPopup = new SettingsPopup(Controller));
             try
             {
                 await Navigation.PushPopupAsync(popup);

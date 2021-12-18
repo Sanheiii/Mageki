@@ -97,6 +97,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Exit 的本地化字符串。
+        /// </summary>
+        public static string Exit {
+            get {
+                return ResourceManager.GetString("Exit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Gameplay 的本地化字符串。
         /// </summary>
         public static string Gameplay {
@@ -106,11 +115,29 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Game test menu 的本地化字符串。
+        /// </summary>
+        public static string GameTestMenu {
+            get {
+                return ResourceManager.GetString("GameTestMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Lever Sensitivity 的本地化字符串。
         /// </summary>
         public static string LeverSensitivity {
             get {
                 return ResourceManager.GetString("LeverSensitivity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Others 的本地化字符串。
+        /// </summary>
+        public static string Others {
+            get {
+                return ResourceManager.GetString("Others", resourceCulture);
             }
         }
         

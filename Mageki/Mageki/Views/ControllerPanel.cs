@@ -43,6 +43,7 @@ namespace Mageki
             new MenuBackground(){ Side=Side.Right},
             new Logo()
         };
+
         private Slider slider = new Slider();
 
         #region 常量
@@ -153,6 +154,14 @@ namespace Mageki
             SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
             nfcScanning = false;
         }
+
+        public async Task PressAndReleaseOptionButtonAsync()
+        {
+            SendMessage(new byte[] { (byte)MessageType.Test, 1 }.ToArray());
+            await Task.Delay(1000);
+            SendMessage(new byte[] { (byte)MessageType.Test, 0 }.ToArray());
+        }
+
         int oldWidth = -1;
         int oldHeight = -1;
         /// <summary>

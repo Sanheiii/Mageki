@@ -144,4 +144,13 @@
   <data name="ButtonBottomMargin" xml:space="preserve">
     <value>Button bottom margin</value>
   </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="GameTestMenu" xml:space="preserve">
+    <value>Game test menu</value>
+  </data>
+  <data name="Others" xml:space="preserve">
+    <value>Others</value>
+  </data>
 </root>

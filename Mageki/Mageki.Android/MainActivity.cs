@@ -38,6 +38,7 @@ namespace Mageki.Droid
             Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.Immersive | SystemUiFlags.Fullscreen | SystemUiFlags.HideNavigation);
             Window.SetFlags(WindowManagerFlags.Fullscreen, WindowManagerFlags.Fullscreen);
         }
+
         private void ProcessActionTechDiscoveredIntent(Intent intent)
         {
             string action = intent.Action;
