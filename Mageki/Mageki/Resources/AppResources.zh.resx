@@ -153,4 +153,10 @@
   <data name="Others" xml:space="preserve">
     <value>其它</value>
   </data>
+  <data name="SeparateButtonsAndLever" xml:space="preserve">
+    <value>分离按键与摇杆</value>
+  </data>
+  <data name="HapticFeedback" xml:space="preserve">
+    <value>触摸反馈</value>
+  </data>
 </root>

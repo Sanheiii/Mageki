@@ -28,6 +28,10 @@ namespace Mageki
 
         public bool UseSimplifiedLayout { get => Settings.UseSimplifiedLayout; set => Settings.UseSimplifiedLayout = value; }
 
+        public bool SeparateButtonsAndLever { get => Settings.SeparateButtonsAndLever; set => Settings.SeparateButtonsAndLever = value; }
+
+        public bool HapticFeedback { get => Settings.HapticFeedback; set => Settings.HapticFeedback = value; }
+
         public SettingsViewModel()
         {
 
@@ -51,6 +55,24 @@ namespace Mageki
             set
             {
                 Preferences.Set("useSimplifiedLayout", value);
+                OnValueChanged();
+            }
+        }
+        public static bool SeparateButtonsAndLever
+        {
+            get => Preferences.Get("separateButtonsAndLever", false);
+            set
+            {
+                Preferences.Set("separateButtonsAndLever", value);
+                OnValueChanged();
+            }
+        }
+        public static bool HapticFeedback
+        {
+            get => Preferences.Get("hapticFeedback", false);
+            set
+            {
+                Preferences.Set("hapticFeedback", value);
                 OnValueChanged();
             }
         }

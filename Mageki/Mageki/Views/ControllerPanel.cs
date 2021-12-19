@@ -349,14 +349,30 @@ namespace Mageki
                                     aimeId = bytes.ToArray();
                                 }
                                 SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(aimeId).ToArray());
+                                if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
                             }
                         }
                         break;
                     }
                 case TouchActionType.Moved:
                     {
-                        // 在任意位置拖动触发摇杆，多个手指在同一帧移动时只会取最大值
-                        if (touchPoints.ContainsKey(args.Id) /*&& (int)touchPoints[args.Id].touchArea == 8 || (int)touchPoints[args.Id].touchArea == 3*/)
+                        TouchArea area = touchPoints[args.Id].touchArea;
+                        if (Settings.SeparateButtonsAndLever && (int)area < 8 && (int)area % 5 < 3)
+                        {
+                            TouchArea xArea = GetArea(pixelLocation.X, canvasView.CanvasSize.Width);
+                            // 如果按键区不触发摇杆则允许搓
+                            if (area != xArea && (int)xArea < 8&& (int)xArea % 5 < 3)
+                            {
+                                SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)xArea, 1 });
+                                SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 0 });
+                                buttons[(int)xArea].IsHold = true;
+                                buttons[(int)area].IsHold = false;
+                                touchPoints.Remove(args.Id);
+                                touchPoints.Add(args.Id, (xArea, pixelLocation));
+                            }
+                        }
+                        // 拖动触发摇杆，多个手指在同一帧移动时只会取最大值
+                        else if (touchPoints.ContainsKey(args.Id))
                         {
                             lock (leverCache)
                             {
@@ -371,7 +387,6 @@ namespace Mageki
                                     leverCache.Clear();
                                 }
                             }
-                            TouchArea area = touchPoints[args.Id].touchArea;
                             touchPoints.Remove(args.Id);
                             touchPoints.Add(args.Id, (area, pixelLocation));
                         }
@@ -395,6 +410,7 @@ namespace Mageki
                             // 按下超过一秒不触发菜单
                             if (DateTime.Now - scanTime < TimeSpan.FromSeconds(0.3) && currentArea == area)
                                 LogoClickd.Invoke(this, EventArgs.Empty);
+                            if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
                         }
                         if (touchPoints.ContainsKey(args.Id))
                         {
@@ -422,25 +438,11 @@ namespace Mageki
 
         private TouchArea GetArea(SKPoint pixelLocation, float width, float height)
         {
-            TouchArea area = TouchArea.Others;
+            TouchArea area;
             // 大概点到中间六键的范围就会触发
-            if (pixelLocation.Y > buttons[0].BorderRect.Top - buttons[0].BorderRect.Left)
+            if (pixelLocation.Y >= buttons[0].BorderRect.Top - buttons[0].BorderRect.Left)
             {
-                if (inRhythmGame && Settings.UseSimplifiedLayout)
-                {
-                    if (pixelLocation.X < width / 4 * 1) area = buttons[5].IsHold ? TouchArea.LButton1 : TouchArea.RButton1;
-                    else if (pixelLocation.X < width / 4 * 3) area = buttons[6].IsHold ? TouchArea.LButton2 : TouchArea.RButton2;
-                    else area = buttons[7].IsHold ? TouchArea.LButton3 : TouchArea.RButton3;
-                }
-                else
-                {
-                    if (pixelLocation.X < (buttons[0].BorderRect.Right + buttons[1].BorderRect.Left) / 2) area = TouchArea.LButton1;
-                    else if (pixelLocation.X < (buttons[1].BorderRect.Right + buttons[2].BorderRect.Left) / 2) area = TouchArea.LButton2;
-                    else if (pixelLocation.X < (buttons[2].BorderRect.Right + buttons[5].BorderRect.Left) / 2) area = TouchArea.LButton3;
-                    else if (pixelLocation.X < (buttons[5].BorderRect.Right + buttons[6].BorderRect.Left) / 2) area = TouchArea.RButton1;
-                    else if (pixelLocation.X < (buttons[6].BorderRect.Right + buttons[7].BorderRect.Left) / 2) area = TouchArea.RButton2;
-                    else area = TouchArea.RButton3;
-                }
+                return GetArea(pixelLocation.X, width);
             }
             else if (!inRhythmGame && buttons[4].BorderRect.Contains(pixelLocation)) area = TouchArea.LMenu;
             else if (!inRhythmGame && buttons[9].BorderRect.Contains(pixelLocation)) area = TouchArea.RMenu;
@@ -448,6 +450,26 @@ namespace Mageki
             else if (pixelLocation.X < width / 2) area = TouchArea.LSide;
             else area = TouchArea.RSide;
             Debug.WriteLine(area);
+            return area;
+        }
+        private TouchArea GetArea(float x, float width)
+        {
+            TouchArea area;
+            if (inRhythmGame && Settings.UseSimplifiedLayout)
+            {
+                if (x < width / 4 * 1) area = buttons[5].IsHold ? TouchArea.LButton1 : TouchArea.RButton1;
+                else if (x < width / 4 * 3) area = buttons[6].IsHold ? TouchArea.LButton2 : TouchArea.RButton2;
+                else area = buttons[7].IsHold ? TouchArea.LButton3 : TouchArea.RButton3;
+            }
+            else
+            {
+                if (x < (buttons[0].BorderRect.Right + buttons[1].BorderRect.Left) / 2) area = TouchArea.LButton1;
+                else if (x < (buttons[1].BorderRect.Right + buttons[2].BorderRect.Left) / 2) area = TouchArea.LButton2;
+                else if (x < (buttons[2].BorderRect.Right + buttons[5].BorderRect.Left) / 2) area = TouchArea.LButton3;
+                else if (x < (buttons[5].BorderRect.Right + buttons[6].BorderRect.Left) / 2) area = TouchArea.RButton1;
+                else if (x < (buttons[6].BorderRect.Right + buttons[7].BorderRect.Left) / 2) area = TouchArea.RButton2;
+                else area = TouchArea.RButton3;
+            }
             return area;
         }
 

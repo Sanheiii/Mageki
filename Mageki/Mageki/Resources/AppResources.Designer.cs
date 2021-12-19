@@ -115,11 +115,20 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Game test menu 的本地化字符串。
+        ///   查找类似 Game Test Menu 的本地化字符串。
         /// </summary>
         public static string GameTestMenu {
             get {
                 return ResourceManager.GetString("GameTestMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Haptic Feedback 的本地化字符串。
+        /// </summary>
+        public static string HapticFeedback {
+            get {
+                return ResourceManager.GetString("HapticFeedback", resourceCulture);
             }
         }
         
@@ -147,6 +156,15 @@ namespace Mageki.Resources {
         public static string Port {
             get {
                 return ResourceManager.GetString("Port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Separate Buttons and Lever 的本地化字符串。
+        /// </summary>
+        public static string SeparateButtonsAndLever {
+            get {
+                return ResourceManager.GetString("SeparateButtonsAndLever", resourceCulture);
             }
         }
         

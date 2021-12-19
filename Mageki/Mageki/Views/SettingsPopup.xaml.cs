@@ -43,6 +43,16 @@ namespace Mageki
             ViewModel.UseSimplifiedLayout = !ViewModel.UseSimplifiedLayout;
         }
 
+        private void SeparateButtonsAndLever_Tapped(object sender, EventArgs e)
+        {
+            ViewModel.SeparateButtonsAndLever = !ViewModel.SeparateButtonsAndLever;
+        }
+
+        private void HapticFeedback_Tapped(object sender, EventArgs e)
+        {
+            ViewModel.HapticFeedback = !ViewModel.HapticFeedback;
+        }
+
         private async void OptButton_Tapped(object sender, EventArgs e)
         {
             if(sender is ViewCell cell)
@@ -57,5 +67,6 @@ namespace Mageki
         {
             DependencyService.Get<ICloseApplication>().Close();
         }
+
     }
 }

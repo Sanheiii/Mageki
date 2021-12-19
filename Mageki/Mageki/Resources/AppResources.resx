@@ -148,9 +148,15 @@
     <value>Exit</value>
   </data>
   <data name="GameTestMenu" xml:space="preserve">
-    <value>Game test menu</value>
+    <value>Game Test Menu</value>
   </data>
   <data name="Others" xml:space="preserve">
     <value>Others</value>
+  </data>
+  <data name="SeparateButtonsAndLever" xml:space="preserve">
+    <value>Separate Buttons and Lever</value>
+  </data>
+  <data name="HapticFeedback" xml:space="preserve">
+    <value>Haptic Feedback</value>
   </data>
 </root>

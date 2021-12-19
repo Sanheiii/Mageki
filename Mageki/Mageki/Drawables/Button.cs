@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Xamarin.Essentials;
+
 namespace Mageki.Drawables
 {
     class Button : IDrawable
@@ -60,7 +62,15 @@ namespace Mageki.Drawables
 
         public SKColor BorderColor { set => backPaint.Color = value; }
 
-        public bool IsHold { get; set; }
+        public bool IsHold
+        {
+            get => isHold;
+            set
+            {
+                isHold = value;
+                if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
+            }
+        }
         public bool Visible { get; set; } = true;
 
         const double colorSaturation = 0.6;
@@ -82,8 +92,7 @@ namespace Mageki.Drawables
             Style = SKPaintStyle.Stroke,
             Color = new SKColor(0xFF222222)
         };
-
-
+        private bool isHold;
 
         public Button()
         {
