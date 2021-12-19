@@ -22,11 +22,11 @@ namespace Mageki.iOS.Renderers
         private readonly Color _defaultPlaceholderColor =Color.Gray;
         public override UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
         {
-            element = (Mageki.EntryCell)item;
+            element = (EntryCell)item;
             var cell = base.GetCell(element, reusableCell, tv);
             text = ((UITextField)cell.Subviews[0].Subviews[0]);
             text.TextColor = element.TextColor.ToUIColor();
-            text.SetValueForKeyPath(Color.Gray.ToUIColor().Handle, new NSString("_placeholderLabel.textColor"));
+            text.SetValueForKeyPath(Color.Gray.ToUIColor(), new NSString("_placeholderLabel.textColor"));
             text.ShouldChangeCharacters = (UITextFieldChange)Delegate.Combine(text.ShouldChangeCharacters, new UITextFieldChange(ShouldChangeCharacters));
             return cell;
         }

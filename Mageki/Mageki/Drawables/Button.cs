@@ -8,19 +8,9 @@ using Xamarin.Essentials;
 
 namespace Mageki.Drawables
 {
-    class Button : IDrawable
+    public class Button : IButton
     {
-        public static Dictionary<ButtonColors, SKColor> Colors { get; } = new Dictionary<ButtonColors, SKColor>()
-        {
-            { ButtonColors.Red, new SKColor(0xFFFF455B) },
-            { ButtonColors.Green, new SKColor(0xFF45FF75) },
-            { ButtonColors.Blue, new SKColor(0xFF4589FF) },
-            { ButtonColors.Yellow, new SKColor(0xFFFFD545) },
-            { ButtonColors.Cyan, new SKColor(0xFF45F8FF) },
-            { ButtonColors.Purple, new SKColor(0xFF8B45FF) },
-            { ButtonColors.Blank, new SKColor(0xFFDDDDDD) },
-            { ButtonColors.White, new SKColor(0xFFFFFFFF) },
-        };
+
 
         private SKPoint center;
         public SKPoint Center { get => center; set { center = value; propertyChanged = true; } }
@@ -53,7 +43,7 @@ namespace Mageki.Drawables
             set
             {
                 baseColor = value;
-                var color1 = Colors[value];
+                var color1 = IButton.Colors[value];
                 SKColor color;
                 color = new SKColor((byte)(color1.Red * colorSaturation + 255 * (1 - colorSaturation)), (byte)(color1.Green * colorSaturation + 255 * (1 - colorSaturation)), (byte)(color1.Blue * colorSaturation + 255 * (1 - colorSaturation)));
                 paint.Shader = SKShader.CreateRadialGradient(new SKPoint(BorderRect.MidX, BorderRect.MidY), MathF.Max(BorderRect.Height, BorderRect.Width), new SKColor[] { color, color1 }, SKShaderTileMode.Mirror);
@@ -85,7 +75,7 @@ namespace Mageki.Drawables
         private SKPaint holdMaskPaint = new SKPaint()
         {
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(0x22000000)
+            Color = new SKColor(0x66000000)
         };
         private SKPaint backPaint = new SKPaint
         {
@@ -117,7 +107,7 @@ namespace Mageki.Drawables
             BorderRect = new SKRect(center.X - width / 2, center.Y - height / 2, center.X + width / 2, center.Y + height / 2);
         }
     }
-    enum ButtonColors
+    public enum ButtonColors
     {
         Red = 0b100,
         Green = 0b010,

@@ -31,18 +31,17 @@ namespace Mageki
 {
     public class ControllerPanel : Grid
     {
-        private Button[] buttons = Enumerable.Range(0, 10).Select((n) => new Button()).ToArray();
-        private Button[] buttonsInRhythmGame = Enumerable.Range(0, 3).Select((n) => new Button()).ToArray();
+        private ButtonCollection buttons = new ButtonCollection();
+        //private Button[] buttons = Enumerable.Range(0, 10).Select((n) => new Button()).ToArray();
         private IFelicaReader felicaReader;
         private IDisposable subscription;
         private IDrawable[] decorations = new IDrawable[]
         {
             new Circles(),
             new Circles(),
-            new MenuBackground(){ Side=Side.Left},
-            new MenuBackground(){ Side=Side.Right},
-            new Logo()
         };
+
+        Logo logo = new Logo();
 
         private Slider slider = new Slider();
 
@@ -186,11 +185,8 @@ namespace Mageki
             {
                 drawable.Draw(canvas);
             }
-            var drawingButtons = (inRhythmGame && Settings.UseSimplifiedLayout) ? buttonsInRhythmGame : buttons;
-            for (int i = 0; i < drawingButtons.Length; i++)
-            {
-                drawingButtons[i].Draw(canvas);
-            }
+            buttons.Draw(canvas, inRhythmGame && Settings.UseSimplifiedLayout);
+            logo.Draw(canvas);
             //canvas.DrawRect(slider.BackRect, slider.BackPaint);
             //canvas.DrawRect(slider.LeverRect, slider.LeverPaint);
             oldWidth = info.Width;
@@ -218,93 +214,74 @@ namespace Mageki
                 // 打歌时以特殊布局绘制
                 float specialButtonWidth = (width - panelMargin * 2 - buttonSpacing * 2) / 4;
                 // Button 1
-                buttonsInRhythmGame[0].Color = buttons[0].Color;
-                buttonsInRhythmGame[0].Height = buttonHeight;
-                buttonsInRhythmGame[0].Width = specialButtonWidth;
-                buttonsInRhythmGame[0].Center = new SKPoint(panelMargin + buttonSpacing * 0 + specialButtonWidth * 0.5f, buttonBottom - buttonHeight / 2);
+                buttons.S1.Color = buttons.L1.Color;
+                buttons.S1.Height = buttonHeight;
+                buttons.S1.Width = specialButtonWidth;
+                buttons.S1.Center = new SKPoint(panelMargin + buttonSpacing * 0 + specialButtonWidth * 0.5f, buttonBottom - buttonHeight / 2);
                 // Button 2
-                buttonsInRhythmGame[1].Color = buttons[1].Color;
-                buttonsInRhythmGame[1].Height = buttonHeight;
-                buttonsInRhythmGame[1].Width = specialButtonWidth * 2;
-                buttonsInRhythmGame[1].Center = new SKPoint(panelMargin + buttonSpacing * 1 + specialButtonWidth * 2f, buttonBottom - buttonHeight / 2);
+                buttons.S2.Color = buttons.L2.Color;
+                buttons.S2.Height = buttonHeight;
+                buttons.S2.Width = specialButtonWidth * 2;
+                buttons.S2.Center = new SKPoint(panelMargin + buttonSpacing * 1 + specialButtonWidth * 2f, buttonBottom - buttonHeight / 2);
                 // Button 3
-                buttonsInRhythmGame[2].Color = buttons[2].Color;
-                buttonsInRhythmGame[2].Height = buttonHeight;
-                buttonsInRhythmGame[2].Width = specialButtonWidth;
-                buttonsInRhythmGame[2].Center = new SKPoint(panelMargin + buttonSpacing * 2 + specialButtonWidth * 3.5f, buttonBottom - buttonHeight / 2);
+                buttons.S3.Color = buttons.L3.Color;
+                buttons.S3.Height = buttonHeight;
+                buttons.S3.Width = specialButtonWidth;
+                buttons.S3.Center = new SKPoint(panelMargin + buttonSpacing * 2 + specialButtonWidth * 3.5f, buttonBottom - buttonHeight / 2);
             }
             // Left 1
-            buttons[0].Width = buttons[0].Height = buttonWidth;
-            buttons[0].Center = new SKPoint(panelMargin + buttonSpacing * 0 + buttonWidth * 0.5f, buttonBottom - buttonHeight / 2);
+            buttons.L1.Width = buttons.L1.Height = buttonWidth;
+            buttons.L1.Center = new SKPoint(panelMargin + buttonSpacing * 0 + buttonWidth * 0.5f, buttonBottom - buttonHeight / 2);
             // Left 2
-            buttons[1].Width = buttons[1].Height = buttonWidth;
-            buttons[1].Center = new SKPoint(panelMargin + buttonSpacing * 1 + buttonWidth * 1.5f, buttonBottom - buttonHeight / 2);
+            buttons.L2.Width = buttons.L2.Height = buttonWidth;
+            buttons.L2.Center = new SKPoint(panelMargin + buttonSpacing * 1 + buttonWidth * 1.5f, buttonBottom - buttonHeight / 2);
             // Left 3
-            buttons[2].Width = buttons[2].Height = buttonWidth;
-            buttons[2].Center = new SKPoint(panelMargin + buttonSpacing * 2 + buttonWidth * 2.5f, buttonBottom - buttonHeight / 2);
+            buttons.L3.Width = buttons.L3.Height = buttonWidth;
+            buttons.L3.Center = new SKPoint(panelMargin + buttonSpacing * 2 + buttonWidth * 2.5f, buttonBottom - buttonHeight / 2);
             // Left side 不作绘制
-            buttons[3].Center = default;
+            //buttons.LSide.Center = default;
             // Left menu
-            buttons[4].Width = buttons[4].Height = menuSideLength;
-            buttons[4].BorderColor = new SKColor(0xFF880000);
-            buttons[4].Color = ButtonColors.Red;
-            buttons[4].Center = new SKPoint(panelMargin + buttonWidth - buttonSpacing, buttonBottom - buttonHeight - bmSpacing - menuSideLength / 2);
+            buttons.LMenu.Width = buttons.LMenu.Height = menuSideLength;
+            buttons.LMenu.BorderColor = new SKColor(0xFF880000);
+            buttons.LMenu.Color = ButtonColors.Red;
+            buttons.LMenu.Center = new SKPoint(panelMargin + buttonWidth - buttonSpacing, buttonBottom - buttonHeight - bmSpacing - menuSideLength / 2);
 
             //-------------------
             // Right 1
-            buttons[5].Width = buttons[5].Height = buttonWidth;
-            buttons[5].Center = new SKPoint(panelMargin + buttonSpacing * 2 + buttonWidth * 3.5f + lrSpacing, buttonBottom - buttonHeight / 2);
+            buttons.R1.Width = buttons.R1.Height = buttonWidth;
+            buttons.R1.Center = new SKPoint(panelMargin + buttonSpacing * 2 + buttonWidth * 3.5f + lrSpacing, buttonBottom - buttonHeight / 2);
             // Right 2
-            buttons[6].Width = buttons[6].Height = buttonWidth;
-            buttons[6].Center = new SKPoint(panelMargin + buttonSpacing * 3 + buttonWidth * 4.5f + lrSpacing, buttonBottom - buttonHeight / 2);
+            buttons.R2.Width = buttons.R2.Height = buttonWidth;
+            buttons.R2.Center = new SKPoint(panelMargin + buttonSpacing * 3 + buttonWidth * 4.5f + lrSpacing, buttonBottom - buttonHeight / 2);
             // Right 3
-            buttons[7].Width = buttons[7].Height = buttonWidth;
-            buttons[7].Center = new SKPoint(panelMargin + buttonSpacing * 4 + buttonWidth * 5.5f + lrSpacing, buttonBottom - buttonHeight / 2);
+            buttons.R3.Width = buttons.R3.Height = buttonWidth;
+            buttons.R3.Center = new SKPoint(panelMargin + buttonSpacing * 4 + buttonWidth * 5.5f + lrSpacing, buttonBottom - buttonHeight / 2);
             // Right side 不作绘制
-            buttons[8].Center = default;
+            //buttons.RSide.Center = default;
             // Right menu
-            buttons[9].Width = buttons[9].Height = menuSideLength;
-            buttons[9].BorderColor = new SKColor(0xFF888800);
-            buttons[9].Color = ButtonColors.Yellow;
-            buttons[9].Center = new SKPoint(width - (panelMargin + buttonWidth - buttonSpacing), buttonBottom - buttonHeight - bmSpacing - menuSideLength / 2);
-            if (!inRhythmGame)
-            {
-                // menu键的背景，打歌时无需绘制
-                if (decorations[2] is MenuBackground background0)
-                {
-                    background0.Center = buttons[4].Center;
-                    background0.Height = buttons[4].Height * 1.6f;
-                    background0.Width = buttons[4].Width * 1.6f;
-                }
-                if (decorations[3] is MenuBackground background1)
-                {
-                    background1.Center = buttons[9].Center;
-                    background1.Height = buttons[9].Height * 1.6f;
-                    background1.Width = buttons[9].Width * 1.6f;
-                }
-            }
+            buttons.RMenu.Width = buttons.RMenu.Height = menuSideLength;
+            buttons.RMenu.BorderColor = new SKColor(0xFF888800);
+            buttons.RMenu.Color = ButtonColors.Yellow;
+            buttons.RMenu.Center = new SKPoint(width - (panelMargin + buttonWidth - buttonSpacing), buttonBottom - buttonHeight - bmSpacing - menuSideLength / 2);
             // 绘制装饰用的环
             if (decorations[0] is Circles circles0)
             {
-                circles0.Center = buttons[1].Center;
+                circles0.Center = buttons.L2.Center;
                 circles0.Radius = buttonWidth + buttonSpacing;
                 circles0.DrawLeftArc = true;
                 circles0.DrawRightArc = false;
             }
             if (decorations[1] is Circles circles1)
             {
-                circles1.Center = buttons[6].Center;
+                circles1.Center = buttons.R2.Center;
                 circles1.Radius = buttonWidth + buttonSpacing;
                 circles1.DrawLeftArc = false;
                 circles1.DrawRightArc = true;
             }
             // logo
-            if (decorations[4] is Drawables.Logo logo)
-            {
-                logo.MaxHeight = menuSideLength;
-                logo.MaxWidth = width;
-                logo.Center = new SKPoint(width / 2, buttonBottom - buttonHeight - bmSpacing - logo.MaxHeight * 1.5f);
-            }
+            logo.MaxHeight = menuSideLength;
+            logo.MaxWidth = width;
+            logo.Center = new SKPoint(width / 2, buttonBottom - buttonHeight - bmSpacing - logo.MaxHeight * 1.5f);
         }
         private List<(float value, long touchID)> leverCache = new List<(float value, long touchID)>();
         DateTime scanTime;
@@ -332,7 +309,7 @@ namespace Mageki
                         {
                             SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 1 });
                             buttons[(int)area].IsHold = true;
-                            if (inRhythmGame && (int)area % 5 < 3) buttonsInRhythmGame[(int)area % 5].IsHold = true;
+                            if (inRhythmGame && (int)area % 5 < 3) buttons[10..13][(int)area % 5].IsHold = true;
                         }
                         // 按下logo根据放开时间刷卡或显示菜单
                         else if (area == TouchArea.Logo)
@@ -361,7 +338,7 @@ namespace Mageki
                         {
                             TouchArea xArea = GetArea(pixelLocation.X, canvasView.CanvasSize.Width);
                             // 如果按键区不触发摇杆则允许搓
-                            if (area != xArea && (int)xArea < 8&& (int)xArea % 5 < 3)
+                            if (area != xArea && (int)xArea < 8 && (int)xArea % 5 < 3)
                             {
                                 SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)xArea, 1 });
                                 SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 0 });
@@ -401,7 +378,7 @@ namespace Mageki
                         {
                             SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 0 });
                             buttons[(int)area].IsHold = false;
-                            if (inRhythmGame && (int)area % 5 < 3) buttonsInRhythmGame[(int)area % 5].IsHold = false;
+                            if (inRhythmGame && (int)area % 5 < 3) buttons[10..13][(int)area % 5].IsHold = false;
                         }
                         else if (area == TouchArea.Logo && touchPoints.Count(p => p.Value.touchArea == area) < 2)
                         {
@@ -440,13 +417,13 @@ namespace Mageki
         {
             TouchArea area;
             // 大概点到中间六键的范围就会触发
-            if (pixelLocation.Y >= buttons[0].BorderRect.Top - buttons[0].BorderRect.Left)
+            if (pixelLocation.Y >= buttons.L1.BorderRect.Top - buttons.L1.BorderRect.Left)
             {
                 return GetArea(pixelLocation.X, width);
             }
-            else if (!inRhythmGame && buttons[4].BorderRect.Contains(pixelLocation)) area = TouchArea.LMenu;
-            else if (!inRhythmGame && buttons[9].BorderRect.Contains(pixelLocation)) area = TouchArea.RMenu;
-            else if (!inRhythmGame && decorations[4] is Drawables.Logo logo && logo.Rect.Contains(pixelLocation)) area = TouchArea.Logo;
+            else if (!inRhythmGame && buttons.LMenu.BorderRect.Contains(pixelLocation)) area = TouchArea.LMenu;
+            else if (!inRhythmGame && buttons.RMenu.BorderRect.Contains(pixelLocation)) area = TouchArea.RMenu;
+            else if (!inRhythmGame && logo.Rect.Contains(pixelLocation)) area = TouchArea.Logo;
             else if (pixelLocation.X < width / 2) area = TouchArea.LSide;
             else area = TouchArea.RSide;
             Debug.WriteLine(area);
@@ -457,17 +434,17 @@ namespace Mageki
             TouchArea area;
             if (inRhythmGame && Settings.UseSimplifiedLayout)
             {
-                if (x < width / 4 * 1) area = buttons[5].IsHold ? TouchArea.LButton1 : TouchArea.RButton1;
-                else if (x < width / 4 * 3) area = buttons[6].IsHold ? TouchArea.LButton2 : TouchArea.RButton2;
-                else area = buttons[7].IsHold ? TouchArea.LButton3 : TouchArea.RButton3;
+                if (x < width / 4 * 1) area = buttons.R1.IsHold ? TouchArea.LButton1 : TouchArea.RButton1;
+                else if (x < width / 4 * 3) area = buttons.R2.IsHold ? TouchArea.LButton2 : TouchArea.RButton2;
+                else area = buttons.R3.IsHold ? TouchArea.LButton3 : TouchArea.RButton3;
             }
             else
             {
-                if (x < (buttons[0].BorderRect.Right + buttons[1].BorderRect.Left) / 2) area = TouchArea.LButton1;
-                else if (x < (buttons[1].BorderRect.Right + buttons[2].BorderRect.Left) / 2) area = TouchArea.LButton2;
-                else if (x < (buttons[2].BorderRect.Right + buttons[5].BorderRect.Left) / 2) area = TouchArea.LButton3;
-                else if (x < (buttons[5].BorderRect.Right + buttons[6].BorderRect.Left) / 2) area = TouchArea.RButton1;
-                else if (x < (buttons[6].BorderRect.Right + buttons[7].BorderRect.Left) / 2) area = TouchArea.RButton2;
+                if (x < (buttons.L1.BorderRect.Right + buttons.L2.BorderRect.Left) / 2) area = TouchArea.LButton1;
+                else if (x < (buttons.L2.BorderRect.Right + buttons.L3.BorderRect.Left) / 2) area = TouchArea.LButton2;
+                else if (x < (buttons.L3.BorderRect.Right + buttons.R1.BorderRect.Left) / 2) area = TouchArea.LButton3;
+                else if (x < (buttons.R1.BorderRect.Right + buttons.R2.BorderRect.Left) / 2) area = TouchArea.RButton1;
+                else if (x < (buttons.R2.BorderRect.Right + buttons.R3.BorderRect.Left) / 2) area = TouchArea.RButton2;
                 else area = TouchArea.RButton3;
             }
             return area;
@@ -538,29 +515,29 @@ namespace Mageki
         public void SetLed(uint data)
         {
 
-            buttons[0].Color = (ButtonColors)((data >> 23 & 1) << 2 | (data >> 19 & 1) << 1 | (data >> 22 & 1) << 0);
-            buttons[1].Color = (ButtonColors)((data >> 20 & 1) << 2 | (data >> 21 & 1) << 1 | (data >> 18 & 1) << 0);
-            buttons[2].Color = (ButtonColors)((data >> 17 & 1) << 2 | (data >> 16 & 1) << 1 | (data >> 15 & 1) << 0);
-            buttons[5].Color = (ButtonColors)((data >> 14 & 1) << 2 | (data >> 13 & 1) << 1 | (data >> 12 & 1) << 0);
-            buttons[6].Color = (ButtonColors)((data >> 11 & 1) << 2 | (data >> 10 & 1) << 1 | (data >> 9 & 1) << 0);
-            buttons[7].Color = (ButtonColors)((data >> 8 & 1) << 2 | (data >> 7 & 1) << 1 | (data >> 6 & 1) << 0);
+            buttons.L1.Color = (ButtonColors)((data >> 23 & 1) << 2 | (data >> 19 & 1) << 1 | (data >> 22 & 1) << 0);
+            buttons.L2.Color = (ButtonColors)((data >> 20 & 1) << 2 | (data >> 21 & 1) << 1 | (data >> 18 & 1) << 0);
+            buttons.L3.Color = (ButtonColors)((data >> 17 & 1) << 2 | (data >> 16 & 1) << 1 | (data >> 15 & 1) << 0);
+            buttons.R1.Color = (ButtonColors)((data >> 14 & 1) << 2 | (data >> 13 & 1) << 1 | (data >> 12 & 1) << 0);
+            buttons.R2.Color = (ButtonColors)((data >> 11 & 1) << 2 | (data >> 10 & 1) << 1 | (data >> 9 & 1) << 0);
+            buttons.R3.Color = (ButtonColors)((data >> 8 & 1) << 2 | (data >> 7 & 1) << 1 | (data >> 6 & 1) << 0);
 
             // 判断是否在游戏中
             var midButtons = buttons[0..3].Concat(buttons[5..8]);
             bool temp =
-                midButtons.Count(b => b.Color == ButtonColors.Red) == 2 &&
-                midButtons.Count(b => b.Color == ButtonColors.Blue) == 2 &&
-                midButtons.Count(b => b.Color == ButtonColors.Green) == 2;
+                midButtons.Count(b => (b as Button).Color == ButtonColors.Red) == 2 &&
+                midButtons.Count(b => (b as Button).Color == ButtonColors.Blue) == 2 &&
+                midButtons.Count(b => (b as Button).Color == ButtonColors.Green) == 2;
             if (temp != inRhythmGame) ForceGenRects();
             inRhythmGame = temp;
 
             if (inRhythmGame)
             {
-                buttons[4].Visible = buttons[9].Visible = decorations[2].Visible = decorations[3].Visible = false;
+                buttons.LMenu.Visible = buttons.RMenu.Visible = decorations[2].Visible = decorations[3].Visible = false;
             }
             else
             {
-                buttons[4].Visible = buttons[9].Visible = decorations[2].Visible = decorations[3].Visible = true;
+                buttons.LMenu.Visible = buttons.RMenu.Visible = decorations[2].Visible = decorations[3].Visible = true;
             }
             MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
