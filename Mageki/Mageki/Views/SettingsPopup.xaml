@@ -19,33 +19,33 @@
         </mageki:NavigationBar>
         <TableView HasUnevenRows="True" Intent="Settings" Grid.Row="1" BackgroundColor="Transparent">
             <TableRoot>
-                <TableSection Title="{x:Static resources:AppResources.Connection}">
+                <TableSection Title="{x:Static resources:AppResources.Connection}" TextColor="LightGray">
                     <mageki:EntryCell Label="{x:Static resources:AppResources.Port}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="5" Text="{Binding Port}" Placeholder="4354"/>
                 </TableSection>
-                <TableSection Title="{x:Static resources:AppResources.Gameplay}">
+                <TableSection Title="{x:Static resources:AppResources.Gameplay}" TextColor="LightGray">
                     <ViewCell Tapped="UseSimplifiedLayout_Tapped">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="0" HeightRequest="48">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.SimpleLayout}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Switch IsToggled="{Binding UseSimplifiedLayout}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
-                    <ViewCell IsEnabled="False">
+                    <ViewCell>
                         <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="0" HeightRequest="48">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverSensitivity}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Label TextColor="LightGray" Text="{Binding LeverSensitivity,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
-                            <Slider Maximum="10" Minimum="-10" Grid.Column="2" Value="{Binding LeverSensitivity}" VerticalOptions="Center"/>
+                            <Slider Maximum="10" Minimum="-10" Grid.Column="2" HeightRequest="48" Value="{Binding LeverSensitivity}" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
-                    <ViewCell IsEnabled="False">
+                    <ViewCell>
                         <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="0" HeightRequest="48">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.ButtonBottomMargin}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Label TextColor="LightGray" Text="{Binding ButtonBottomMargin,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
-                            <Slider Maximum="1" Minimum="0" Grid.Column="2" Value="{Binding ButtonBottomMargin}" VerticalOptions="Center"/>
+                            <Slider Maximum="1" Minimum="0" Grid.Column="2" HeightRequest="48" Value="{Binding ButtonBottomMargin}" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
                     <mageki:EntryCell Label="{x:Static resources:AppResources.AimeID}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="20" Text="{Binding Aimeid}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
                 </TableSection>
-                <TableSection Title="{x:Static resources:AppResources.Others}">
+                <TableSection Title="{x:Static resources:AppResources.Others}" TextColor="LightGray">
                     <ViewCell Tapped="OptButton_Tapped">
                         <ContentView  HeightRequest="48">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.GameTestMenu}" VerticalOptions="Center" Margin="16,0,0,0"/>

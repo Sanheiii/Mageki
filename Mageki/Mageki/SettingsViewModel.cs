@@ -65,7 +65,7 @@ namespace Mageki
         }
         public static float ButtonBottomMargin
         {
-            get => Preferences.Get("buttonBottomMargin", 0.8f);
+            get => Preferences.Get("buttonBottomMargin", 0.2f);
             set
             {
                 Preferences.Set("buttonBottomMargin", value);

@@ -12,12 +12,10 @@
 
   <ItemGroup>
     <None Remove="Assets\Fonts\MaterialIconsRound-Regular.otf" />
-    <None Remove="Resources\オンゲキ.svg" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\Fonts\MaterialIconsRound-Regular.otf" />
-    <EmbeddedResource Include="Resources\オンゲキ.svg" />
   </ItemGroup>
 
   <ItemGroup>
