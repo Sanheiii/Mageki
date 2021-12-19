@@ -494,10 +494,7 @@ namespace Mageki
                 {
                     remoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
                     RequestValues();
-                    if (decorations[4] is Logo logo)
-                    {
-                        logo.Color = SKColors.Black;
-                    }
+                    logo.Color = SKColors.Black;
                 }
                 disconnectTimer.Stop();
                 disconnectTimer.Start();
@@ -533,11 +530,11 @@ namespace Mageki
 
             if (inRhythmGame)
             {
-                buttons.LMenu.Visible = buttons.RMenu.Visible = decorations[2].Visible = decorations[3].Visible = false;
+                buttons.LMenu.Visible = buttons.RMenu.Visible = false;
             }
             else
             {
-                buttons.LMenu.Visible = buttons.RMenu.Visible = decorations[2].Visible = decorations[3].Visible = true;
+                buttons.LMenu.Visible = buttons.RMenu.Visible =  true;
             }
             MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
