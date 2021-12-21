@@ -23,7 +23,7 @@ namespace Mageki.Utils
                 string responseString = await response.Content.ReadAsStringAsync();
                 JObject data = JObject.Parse(responseString);
                 Version current = Version.Parse(VersionTracking.CurrentVersion);
-                Version latest = Version.Parse(data["target_commitish"].Value<string>());
+                Version latest = Version.Parse(data["tag_name"].Value<string>());
                 if (current < latest && (forcce || Settings.IgnoredVersion < latest))
                 {
                     string action = await Application.Current.MainPage.DisplayActionSheet(AppResources.NewVersionAvailable, AppResources.Cancel, AppResources.DoNotRemindMeAgain, AppResources.GoToReleasePage);
