@@ -55,11 +55,11 @@ namespace Mageki
 
         private async void OptButton_Tapped(object sender, EventArgs e)
         {
-            if(sender is ViewCell cell)
+            if (sender is ViewCell cell)
             {
-                cell.IsEnabled= false;
+                cell.IsEnabled = false;
                 await controller.PressAndReleaseOptionButtonAsync();
-                cell.IsEnabled= true;
+                cell.IsEnabled = true;
             }
         }
 
@@ -68,5 +68,14 @@ namespace Mageki
             DependencyService.Get<ICloseApplication>().Close();
         }
 
+        private async void Version_Tapped(object sender, EventArgs e)
+        {
+            if (sender is ViewCell cell)
+            {
+                cell.IsEnabled = false;
+                await Utils.Update.CheckUpdateAsync(true);
+                cell.IsEnabled = true;
+            }
+        }
     }
 }

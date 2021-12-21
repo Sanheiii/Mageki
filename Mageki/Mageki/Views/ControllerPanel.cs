@@ -106,6 +106,7 @@ namespace Mageki
                 catch (Exception ex) { }
             }
             Settings.ValueChanged += Settings_ValueChanged;
+
         }
 
         private void Settings_ValueChanged(string name)

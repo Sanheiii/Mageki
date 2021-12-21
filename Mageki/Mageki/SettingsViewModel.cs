@@ -32,6 +32,8 @@ namespace Mageki
 
         public bool HapticFeedback { get => Settings.HapticFeedback; set => Settings.HapticFeedback = value; }
 
+        public Version Version => Version.Parse(VersionTracking.CurrentVersion);
+
         public SettingsViewModel()
         {
 
@@ -100,6 +102,16 @@ namespace Mageki
             set
             {
                 Preferences.Set("aimeId", value);
+                OnValueChanged();
+            }
+        }
+
+        public static Version IgnoredVersion
+        {
+            get => Version.Parse(Preferences.Get("ignoredVersion", "0.0.0"));
+            set
+            {
+                Preferences.Set("ignoredVersion", value.ToString());
                 OnValueChanged();
             }
         }

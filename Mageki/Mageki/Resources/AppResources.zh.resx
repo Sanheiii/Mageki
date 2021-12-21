@@ -159,4 +159,19 @@
   <data name="HapticFeedback" xml:space="preserve">
     <value>触摸反馈</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="DoNotRemindMeAgain" xml:space="preserve">
+    <value>不再提醒</value>
+  </data>
+  <data name="GoToReleasePage" xml:space="preserve">
+    <value>前往发布页</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>新版本可用</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>版本</value>
+  </data>
 </root>

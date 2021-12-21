@@ -88,11 +88,29 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Cancel 的本地化字符串。
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Connection (Restart App Required) 的本地化字符串。
         /// </summary>
         public static string Connection {
             get {
                 return ResourceManager.GetString("Connection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Don&apos;t remind me again 的本地化字符串。
+        /// </summary>
+        public static string DoNotRemindMeAgain {
+            get {
+                return ResourceManager.GetString("DoNotRemindMeAgain", resourceCulture);
             }
         }
         
@@ -124,6 +142,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Go to release page 的本地化字符串。
+        /// </summary>
+        public static string GoToReleasePage {
+            get {
+                return ResourceManager.GetString("GoToReleasePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Haptic Feedback 的本地化字符串。
         /// </summary>
         public static string HapticFeedback {
@@ -138,6 +165,15 @@ namespace Mageki.Resources {
         public static string LeverSensitivity {
             get {
                 return ResourceManager.GetString("LeverSensitivity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 New version available 的本地化字符串。
+        /// </summary>
+        public static string NewVersionAvailable {
+            get {
+                return ResourceManager.GetString("NewVersionAvailable", resourceCulture);
             }
         }
         
@@ -183,6 +219,15 @@ namespace Mageki.Resources {
         public static string SimpleLayout {
             get {
                 return ResourceManager.GetString("SimpleLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Version 的本地化字符串。
+        /// </summary>
+        public static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
     }

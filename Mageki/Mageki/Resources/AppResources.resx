@@ -159,4 +159,19 @@
   <data name="HapticFeedback" xml:space="preserve">
     <value>Haptic Feedback</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="DoNotRemindMeAgain" xml:space="preserve">
+    <value>Don't remind me again</value>
+  </data>
+  <data name="GoToReleasePage" xml:space="preserve">
+    <value>Go to release page</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>New version available</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
 </root>

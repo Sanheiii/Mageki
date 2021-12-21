@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
 
+using System;
+using System.Net.Http;
+
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -15,6 +19,7 @@ namespace Mageki
 
         protected override void OnStart()
         {
+
         }
 
         protected override void OnSleep()
