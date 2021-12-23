@@ -57,3 +57,4 @@ path=MU3Input.dll
 ## 待完善
 - 限定侧键范围，并在屏幕中间一块区域映射摇杆的绝对位置。
 - 设置页面的placeholder颜色显示异常
+- 添加service键以退出测试
