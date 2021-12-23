@@ -4,6 +4,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/Sanheiii/Mageki?style=plastic)](https://github.com/Sanheiii/Mageki/network)
 [![GitHub stars](https://img.shields.io/github/stars/Sanheiii/Mageki?style=plastic)](https://github.com/Sanheiii/Mageki/stargazers)
 [![GitHub license](https://img.shields.io/github/license/Sanheiii/Mageki?style=plastic)](https://github.com/Sanheiii/Mageki/blob/master/LICENSE)
+如果你喜欢，可以点击star支持我
 ## 关于
 Mageki能够连接到局域网中的ongeki-io，使你的移动设备成为音击控制器。
 ## 请注意
