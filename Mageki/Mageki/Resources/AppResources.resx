@@ -174,4 +174,10 @@
   <data name="Version" xml:space="preserve">
     <value>Version</value>
   </data>
+  <data name="ServiceButton" xml:space="preserve">
+    <value>Service Button</value>
+  </data>
+  <data name="TestButton" xml:space="preserve">
+    <value>Test Button</value>
+  </data>
 </root>

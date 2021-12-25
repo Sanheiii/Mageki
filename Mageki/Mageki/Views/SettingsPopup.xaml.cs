@@ -53,12 +53,22 @@ namespace Mageki
             ViewModel.HapticFeedback = !ViewModel.HapticFeedback;
         }
 
-        private async void OptButton_Tapped(object sender, EventArgs e)
+        private async void TestButton_Tapped(object sender, EventArgs e)
         {
             if (sender is ViewCell cell)
             {
                 cell.IsEnabled = false;
-                await controller.PressAndReleaseOptionButtonAsync();
+                await controller.PressAndReleaseTestButtonAsync();
+                cell.IsEnabled = true;
+            }
+        }
+
+        private async void ServiceButton_Tapped(object sender, EventArgs e)
+        {
+            if (sender is ViewCell cell)
+            {
+                cell.IsEnabled = false;
+                await controller.PressAndReleaseServiceButtonAsync();
                 cell.IsEnabled = true;
             }
         }

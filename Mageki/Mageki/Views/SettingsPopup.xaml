@@ -61,9 +61,14 @@
                     <mageki:EntryCell Label="{x:Static resources:AppResources.AimeID}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="20" Text="{Binding Aimeid}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
                 </TableSection>
                 <TableSection Title="{x:Static resources:AppResources.Others}" TextColor="{StaticResource PrimaryColor}">
-                    <ViewCell Tapped="OptButton_Tapped">
+                    <ViewCell Tapped="TestButton_Tapped">
                         <ContentView  HeightRequest="48">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.GameTestMenu}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.TestButton}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                        </ContentView>
+                    </ViewCell>
+                    <ViewCell Tapped="ServiceButton_Tapped">
+                        <ContentView  HeightRequest="48">
+                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.ServiceButton}" VerticalOptions="Center" Margin="16,0,0,0"/>
                         </ContentView>
                     </ViewCell>
                     <ViewCell Tapped="Version_Tapped">

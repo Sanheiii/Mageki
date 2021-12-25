@@ -205,6 +205,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Service Button 的本地化字符串。
+        /// </summary>
+        public static string ServiceButton {
+            get {
+                return ResourceManager.GetString("ServiceButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Settings 的本地化字符串。
         /// </summary>
         public static string Settings {
@@ -219,6 +228,15 @@ namespace Mageki.Resources {
         public static string SimpleLayout {
             get {
                 return ResourceManager.GetString("SimpleLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Test Button 的本地化字符串。
+        /// </summary>
+        public static string TestButton {
+            get {
+                return ResourceManager.GetString("TestButton", resourceCulture);
             }
         }
         

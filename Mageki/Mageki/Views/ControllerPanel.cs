@@ -154,11 +154,17 @@ namespace Mageki
             nfcScanning = false;
         }
 
-        public async Task PressAndReleaseOptionButtonAsync()
+        public async Task PressAndReleaseTestButtonAsync()
         {
             SendMessage(new byte[] { (byte)MessageType.Test, 1 }.ToArray());
             await Task.Delay(1000);
             SendMessage(new byte[] { (byte)MessageType.Test, 0 }.ToArray());
+        }
+        public async Task PressAndReleaseServiceButtonAsync()
+        {
+            SendMessage(new byte[] { (byte)MessageType.Service, 1 }.ToArray());
+            await Task.Delay(1000);
+            SendMessage(new byte[] { (byte)MessageType.Service, 0 }.ToArray());
         }
 
         int oldWidth = -1;
@@ -398,7 +404,7 @@ namespace Mageki
                         }
                         if (args.Type == TouchActionType.Cancelled)
                         {
-                            while(touchPoints.Count>0)
+                            while (touchPoints.Count > 0)
                             {
                                 ReleaseTouchPoint(touchPoints.First().Key);
                             }
@@ -581,6 +587,7 @@ namespace Mageki
             // IO向控制器发送的
             SetLed = 6,
             SetLever = 7,
+            Service = 8,
             // 寻找在线设备
             DokiDoki = 255
         }
