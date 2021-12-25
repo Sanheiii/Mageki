@@ -94,7 +94,7 @@ namespace Mageki
             client = new UdpClient();
             heartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
             heartbeatTimer.Start();
-            disconnectTimer.Elapsed += DisconnectTimer_Elapsed; ;
+            disconnectTimer.Elapsed += DisconnectTimer_Elapsed;
             new Thread(PollThread).Start();
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
@@ -123,7 +123,7 @@ namespace Mageki
             MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
 
-        // 在没有连接的时候请求连接,有连接是发送心跳保存连接
+        // 在没有连接的时候请求连接,有连接时发送心跳保存连接
         private void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             try
@@ -136,11 +136,8 @@ namespace Mageki
         private void DisconnectTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             remoteEP = new IPEndPoint(IPAddress.Broadcast, Settings.Port);
-            if (decorations[4] is Logo logo)
-            {
-                logo.Color = SKColors.Gray;
-                MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
-            }
+            logo.Color = SKColors.Gray;
+            MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
 
         public async void ScanFelica(byte[] felicaId)
@@ -535,7 +532,7 @@ namespace Mageki
             }
             else
             {
-                buttons.LMenu.Visible = buttons.RMenu.Visible =  true;
+                buttons.LMenu.Visible = buttons.RMenu.Visible = true;
             }
             MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
