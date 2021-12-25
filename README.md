@@ -6,6 +6,7 @@
 [![GitHub license](https://img.shields.io/github/license/Sanheiii/Mageki?style=plastic)](https://github.com/Sanheiii/Mageki/blob/master/LICENSE)
 - 如果你喜欢，可以点击star支持我
 - 想众筹一个图标和启动屏(🍑)
+- [提交反馈](https://github.com/Sanheiii/Mageki/issues/new/choose)
 ## 关于
 Mageki能够连接到局域网中的ongeki-io，使你的移动设备成为音击控制器。
 ## 请注意
