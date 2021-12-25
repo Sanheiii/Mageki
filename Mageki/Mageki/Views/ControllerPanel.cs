@@ -21,8 +21,10 @@ using System.Timers;
 
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 
 using Button = Mageki.Drawables.Button;
+using DeviceInfo = Xamarin.Essentials.DeviceInfo;
 using SKSvg = SkiaSharp.Extended.Svg.SKSvg;
 using Slider = Mageki.Drawables.Slider;
 using Timer = System.Timers.Timer;
@@ -300,6 +302,7 @@ namespace Mageki
             {
                 case TouchActionType.Pressed:
                     {
+                        if (touchPoints.ContainsKey(args.Id)) break;
                         TouchArea area = currentArea;
                         touchPoints.Add(args.Id, (area, pixelLocation));
                         // 按下按键
@@ -370,27 +373,42 @@ namespace Mageki
                 case TouchActionType.Released:
                 case TouchActionType.Cancelled:
                     {
+                        void ReleaseTouchPoint(long id)
+                        {
+                            TouchArea area = touchPoints[id].touchArea;
+                            if ((int)area < 10 && touchPoints.Count(p => p.Value.touchArea == area) < 2)
+                            {
+                                SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 0 });
+                                buttons[(int)area].IsHold = false;
+                                if (inRhythmGame && (int)area % 5 < 3) buttons[10..13][(int)area % 5].IsHold = false;
+                            }
+                            else if (area == TouchArea.Logo && touchPoints.Count(p => p.Value.touchArea == area) < 2)
+                            {
+                                simulateScanning = false;
+                                SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
+                                // 按下超过一秒不触发菜单
+                                if (DateTime.Now - scanTime < TimeSpan.FromSeconds(0.3) && currentArea == area)
+                                    LogoClickd.Invoke(this, EventArgs.Empty);
+                                if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
+                            }
+                            if (touchPoints.ContainsKey(id))
+                            {
+                                touchPoints.Remove(id);
+                            }
+                        }
+                        if (args.Type == TouchActionType.Cancelled)
+                        {
+                            while(touchPoints.Count>0)
+                            {
+                                ReleaseTouchPoint(touchPoints.First().Key);
+                            }
+                        }
+                        else
+                        {
+                            ReleaseTouchPoint(args.Id);
+                        }
                         // 释放按键
-                        TouchArea area = touchPoints[args.Id].touchArea;
-                        if ((int)area < 10 && touchPoints.Count(p => p.Value.touchArea == area) < 2)
-                        {
-                            SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 0 });
-                            buttons[(int)area].IsHold = false;
-                            if (inRhythmGame && (int)area % 5 < 3) buttons[10..13][(int)area % 5].IsHold = false;
-                        }
-                        else if (area == TouchArea.Logo && touchPoints.Count(p => p.Value.touchArea == area) < 2)
-                        {
-                            simulateScanning = false;
-                            SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
-                            // 按下超过一秒不触发菜单
-                            if (DateTime.Now - scanTime < TimeSpan.FromSeconds(0.3) && currentArea == area)
-                                LogoClickd.Invoke(this, EventArgs.Empty);
-                            if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
-                        }
-                        if (touchPoints.ContainsKey(args.Id))
-                        {
-                            touchPoints.Remove(args.Id);
-                        }
+
                         break;
                     }
             }
