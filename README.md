@@ -58,3 +58,6 @@ path=MU3Input.dll
 - 限定侧键范围，并在屏幕中间一块区域映射摇杆的绝对位置。
 - 设置页面的placeholder颜色显示异常
 - 添加service键以退出测试
+- Android设备有概率闪退
+- 添加日志框架
+- 允许多设备连接到IO
