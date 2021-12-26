@@ -5,6 +5,7 @@ using NLog.Config;
 using NLog.Targets;
 
 using System;
+using System.Net.Http;
 using System.IO;
 
 using Xamarin.Essentials;
@@ -24,7 +25,6 @@ namespace Mageki
         public App()
         {
             InitializeComponent();
-
             MainPage = new MainPage();
         }
 

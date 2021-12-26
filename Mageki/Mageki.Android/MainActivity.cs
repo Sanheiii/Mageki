@@ -34,8 +34,12 @@ namespace Mageki.Droid
             Rg.Plugins.Popup.Popup.Init(this);
             Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            CrossFelicaReader.Init(this, GetType());
-            this.felicaReader = CrossFelicaReader.Current;
+            try
+            {
+                CrossFelicaReader.Init(this, GetType());
+                this.felicaReader = CrossFelicaReader.Current;
+            }
+            catch (Exception ex) { }
             LoadApplication(new App());
             this.ProcessActionTechDiscoveredIntent(this.Intent);
             Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.Immersive | SystemUiFlags.Fullscreen | SystemUiFlags.HideNavigation);
@@ -76,13 +80,21 @@ namespace Mageki.Droid
         protected override void OnPause()
         {
             base.OnPause();
-            this.felicaReader.DisableForeground();
+            try
+            {
+                this.felicaReader.DisableForeground();
+            }
+            catch (Exception ex) { }
         }
 
         protected override void OnResume()
         {
             base.OnResume();
-            this.felicaReader.EnableForeground();
+            try
+            {
+                this.felicaReader.EnableForeground();
+            }
+            catch (Exception ex) { }
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {

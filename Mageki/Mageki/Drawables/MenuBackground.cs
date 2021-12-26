@@ -84,5 +84,5 @@ namespace Mageki.Drawables
             //path.AddRoundRect)
         }
     }
-    enum Side { Left, Right }
+    public enum Side { Left, Right }
 }

@@ -1,9 +1,8 @@
-﻿
+﻿using Mageki.Utils;
+
 using Rg.Plugins.Popup.Extensions;
 
 using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
@@ -14,12 +13,13 @@ namespace Mageki
         public MainPage()
         {
             InitializeComponent();
+            _= Update.CheckUpdateAsync();
         }
 
         private SettingsPopup settingPopup;
         private async void ControllerPanel_LogoClickd(object sender, EventArgs args)
         {
-            var popup = settingPopup ?? (settingPopup = new SettingsPopup());
+            var popup = settingPopup ?? (settingPopup = new SettingsPopup(Controller));
             try
             {
                 await Navigation.PushPopupAsync(popup);

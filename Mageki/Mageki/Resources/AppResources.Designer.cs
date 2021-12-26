@@ -61,11 +61,65 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Aime ID 的本地化字符串。
+        /// </summary>
+        public static string AimeID {
+            get {
+                return ResourceManager.GetString("AimeID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Use DEVICE\aime.txt 的本地化字符串。
+        /// </summary>
+        public static string AimeIDPlaceHolder {
+            get {
+                return ResourceManager.GetString("AimeIDPlaceHolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Button bottom margin 的本地化字符串。
+        /// </summary>
+        public static string ButtonBottomMargin {
+            get {
+                return ResourceManager.GetString("ButtonBottomMargin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cancel 的本地化字符串。
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Connection (Restart App Required) 的本地化字符串。
         /// </summary>
         public static string Connection {
             get {
                 return ResourceManager.GetString("Connection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Don&apos;t remind me again 的本地化字符串。
+        /// </summary>
+        public static string DoNotRemindMeAgain {
+            get {
+                return ResourceManager.GetString("DoNotRemindMeAgain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Exit 的本地化字符串。
+        /// </summary>
+        public static string Exit {
+            get {
+                return ResourceManager.GetString("Exit", resourceCulture);
             }
         }
         
@@ -79,6 +133,33 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Game Test Menu 的本地化字符串。
+        /// </summary>
+        public static string GameTestMenu {
+            get {
+                return ResourceManager.GetString("GameTestMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Go to release page 的本地化字符串。
+        /// </summary>
+        public static string GoToReleasePage {
+            get {
+                return ResourceManager.GetString("GoToReleasePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Haptic Feedback 的本地化字符串。
+        /// </summary>
+        public static string HapticFeedback {
+            get {
+                return ResourceManager.GetString("HapticFeedback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Lever Sensitivity 的本地化字符串。
         /// </summary>
         public static string LeverSensitivity {
@@ -88,11 +169,47 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 New version available 的本地化字符串。
+        /// </summary>
+        public static string NewVersionAvailable {
+            get {
+                return ResourceManager.GetString("NewVersionAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Others 的本地化字符串。
+        /// </summary>
+        public static string Others {
+            get {
+                return ResourceManager.GetString("Others", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Port 的本地化字符串。
         /// </summary>
         public static string Port {
             get {
                 return ResourceManager.GetString("Port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Separate Buttons and Lever 的本地化字符串。
+        /// </summary>
+        public static string SeparateButtonsAndLever {
+            get {
+                return ResourceManager.GetString("SeparateButtonsAndLever", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Service Button 的本地化字符串。
+        /// </summary>
+        public static string ServiceButton {
+            get {
+                return ResourceManager.GetString("ServiceButton", resourceCulture);
             }
         }
         
@@ -111,6 +228,24 @@ namespace Mageki.Resources {
         public static string SimpleLayout {
             get {
                 return ResourceManager.GetString("SimpleLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Test Button 的本地化字符串。
+        /// </summary>
+        public static string TestButton {
+            get {
+                return ResourceManager.GetString("TestButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Version 的本地化字符串。
+        /// </summary>
+        public static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
     }

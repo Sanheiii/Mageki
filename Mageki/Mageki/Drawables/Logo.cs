@@ -26,7 +26,7 @@ namespace Mageki.Drawables
 
         private SKPaint paint = new SKPaint
         {
-            Color = SKColors.White,
+            Color = SKColors.LightGray,
             Style = SKPaintStyle.Fill
         };
 
@@ -49,7 +49,6 @@ namespace Mageki.Drawables
         private SKPoint center;
         private float maxWidth;
         private float maxHeight;
-        private SKColor color;
 
         public SKMatrix GetTransform()
         {

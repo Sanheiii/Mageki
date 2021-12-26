@@ -7,6 +7,7 @@ using Xamarin.Forms.Platform.Android;
 
 using Android.Views;
 using Mageki.TouchTracking;
+using Android.OS;
 
 [assembly: ResolutionGroupName("Mageki")]
 [assembly: ExportEffect(typeof(Mageki.Droid.TouchEffect), "TouchEffect")]
@@ -65,6 +66,7 @@ namespace Mageki.Droid
 
         void OnTouch(object sender, Android.Views.View.TouchEventArgs args)
         {
+            System.Diagnostics.Debug.WriteLine(args.Event.ActionMasked);
             // Two object common to all the events
             Android.Views.View senderView = sender as Android.Views.View;
             MotionEvent motionEvent = args.Event;
@@ -87,7 +89,6 @@ namespace Mageki.Droid
                 case MotionEventActions.Down:
                 case MotionEventActions.PointerDown:
                     FireEvent(this, id, TouchActionType.Pressed, screenPointerCoords, true);
-
                     idToEffectDictionary.Add(id, this);
 
                     capture = libTouchEffect.Capture;
@@ -150,7 +151,7 @@ namespace Mageki.Droid
                             FireEvent(idToEffectDictionary[id], id, TouchActionType.Cancelled, screenPointerCoords, false);
                         }
                     }
-                    idToEffectDictionary.Remove(id);
+                    idToEffectDictionary.Clear();
                     break;
             }
         }

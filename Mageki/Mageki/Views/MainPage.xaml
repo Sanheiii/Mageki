@@ -7,6 +7,6 @@
     <ContentPage.BindingContext>
         <mageki:MainViewModel/>
     </ContentPage.BindingContext>
-    <mageki:ControllerPanel LogoClickd="ControllerPanel_LogoClickd"/>
+    <mageki:ControllerPanel x:Name="Controller" LogoClickd="ControllerPanel_LogoClickd"/>
 
 </ContentPage>
