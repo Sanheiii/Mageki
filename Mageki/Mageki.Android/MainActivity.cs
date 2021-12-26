@@ -11,6 +11,12 @@ using Plugin.FelicaReader;
 using Android.Content;
 using Android.Nfc.Tech;
 using System.Reactive.Subjects;
+using NLog.Config;
+using NLog.Targets;
+using NLog;
+using System.IO;
+using Newtonsoft.Json.Linq;
+using Xamarin.Essentials;
 
 namespace Mageki.Droid
 {
@@ -23,16 +29,26 @@ namespace Mageki.Droid
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
+            App.InitNLog();
+            AndroidEnvironment.UnhandledExceptionRaiser += HandledException;
             Rg.Plugins.Popup.Popup.Init(this);
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             CrossFelicaReader.Init(this, GetType());
             this.felicaReader = CrossFelicaReader.Current;
-            LoadApplication(new App()); 
+            LoadApplication(new App());
             this.ProcessActionTechDiscoveredIntent(this.Intent);
-            Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.Immersive | SystemUiFlags.Fullscreen | SystemUiFlags.HideNavigation); 
+            Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.Immersive | SystemUiFlags.Fullscreen | SystemUiFlags.HideNavigation);
             Window.SetFlags(WindowManagerFlags.Fullscreen, WindowManagerFlags.Fullscreen);
+        }
+        /// <summary>
+        /// 捕获全局异常
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void HandledException(object sender, RaiseThrowableEventArgs e)
+        {
+            App.UnhandledException(e.Exception);
         }
         private void ProcessActionTechDiscoveredIntent(Intent intent)
         {
@@ -42,7 +58,7 @@ namespace Mageki.Droid
                 return;
             }
 
-            var tag = intent.GetParcelableExtra(NfcAdapter.ExtraTag) as Android.Nfc.Tag;
+            var tag = intent.GetParcelableExtra(NfcAdapter.ExtraTag) as Tag;
             if (tag != null)
             {
                 var subject = this.felicaReader.WhenCardFound() as Subject<IFelicaCardMedia>;
