@@ -64,3 +64,4 @@ path=MU3Input.dll
 - 设置页面的placeholder颜色显示异常
 - 添加日志框架
 - 允许多设备连接到IO
+- 有线连接
