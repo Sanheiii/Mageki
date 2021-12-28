@@ -77,11 +77,11 @@
                             <Label TextColor="LightGray" Text="{Binding Version}" VerticalOptions="Center" Margin="16,0,0,0"/>
                         </StackLayout>
                     </ViewCell>
-                    <ViewCell Tapped="Exit_Tapped">
+                    <!--<ViewCell Tapped="Exit_Tapped">
                         <ContentView  HeightRequest="48">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.Exit}" VerticalOptions="Center" Margin="16,0,0,0"/>
                         </ContentView>
-                    </ViewCell>
+                    </ViewCell>-->
                 </TableSection>
             </TableRoot>
         </TableView>

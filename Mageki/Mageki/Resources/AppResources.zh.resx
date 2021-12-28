@@ -180,4 +180,10 @@
   <data name="TestButton" xml:space="preserve">
     <value>Test键</value>
   </data>
+  <data name="Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="ProgramCrashedUnexpectedly" xml:space="preserve">
+    <value>程序异常退出！</value>
+  </data>
 </root>

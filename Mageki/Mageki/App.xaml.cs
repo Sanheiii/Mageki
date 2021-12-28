@@ -11,6 +11,7 @@ using System.IO;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Mageki.Resources;
 
 namespace Mageki
 {
@@ -84,8 +85,8 @@ namespace Mageki
             };
             JObject json = new JObject()
             {
-                new JProperty("AppInfo", deviceInfo) ,
-                new JProperty("ErrorInfo", logString) ,
+                new JProperty("DeviceInfo", deviceInfo) ,
+                new JProperty("Exception", logString) ,
             };
             File.WriteAllText(Path.Combine(FileSystem.CacheDirectory, "crash.json"), json.ToString());
             return;
@@ -98,11 +99,13 @@ namespace Mageki
             {
                 try
                 {
+                    string text = File.ReadAllText(crashFilePath);
+                    string message = JObject.Parse(text)["Exception"].Value<string>();
                     //在这里处理上次造成崩溃的异常
-                    bool copy=await MainPage.DisplayAlert("信息", "程序异常退出", "复制错误信息","确定");
+                    bool copy = await MainPage.DisplayAlert(AppResources.ProgramCrashedUnexpectedly, message, AppResources.Copy, AppResources.Cancel);
                     if (copy)
                     {
-                        await Clipboard.SetTextAsync(File.ReadAllText(crashFilePath));
+                        await Clipboard.SetTextAsync(text);
                     }
                     File.Delete(crashFilePath);
                 }

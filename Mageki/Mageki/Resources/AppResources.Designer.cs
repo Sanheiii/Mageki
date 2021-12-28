@@ -106,6 +106,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Copy 的本地化字符串。
+        /// </summary>
+        public static string Copy {
+            get {
+                return ResourceManager.GetString("Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Don&apos;t remind me again 的本地化字符串。
         /// </summary>
         public static string DoNotRemindMeAgain {
@@ -192,6 +201,15 @@ namespace Mageki.Resources {
         public static string Port {
             get {
                 return ResourceManager.GetString("Port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Program crashed unexpectedly! 的本地化字符串。
+        /// </summary>
+        public static string ProgramCrashedUnexpectedly {
+            get {
+                return ResourceManager.GetString("ProgramCrashedUnexpectedly", resourceCulture);
             }
         }
         

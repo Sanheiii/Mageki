@@ -180,4 +180,10 @@
   <data name="TestButton" xml:space="preserve">
     <value>Test Button</value>
   </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="ProgramCrashedUnexpectedly" xml:space="preserve">
+    <value>Program crashed unexpectedly!</value>
+  </data>
 </root>
