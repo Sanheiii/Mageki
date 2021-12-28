@@ -19,7 +19,6 @@ namespace Mageki
         private SettingsPopup settingPopup;
         private async void ControllerPanel_LogoClickd(object sender, EventArgs args)
         {
-            throw new NotImplementedException();
             var popup = settingPopup ?? (settingPopup = new SettingsPopup(Controller));
             try
             {
