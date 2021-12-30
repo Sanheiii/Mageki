@@ -381,6 +381,7 @@ namespace Mageki
                     {
                         void ReleaseTouchPoint(long id)
                         {
+                            if (!touchPoints.ContainsKey(id)) return;
                             TouchArea area = touchPoints[id].touchArea;
                             if ((int)area < 10 && touchPoints.Count(p => p.Value.touchArea == area) < 2)
                             {
@@ -397,10 +398,7 @@ namespace Mageki
                                     LogoClickd.Invoke(this, EventArgs.Empty);
                                 if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
                             }
-                            if (touchPoints.ContainsKey(id))
-                            {
-                                touchPoints.Remove(id);
-                            }
+                            touchPoints.Remove(id);
                         }
                         if (args.Type == TouchActionType.Cancelled)
                         {
