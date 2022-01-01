@@ -13,6 +13,13 @@
     </rg:PopupPage.BindingContext>
     <rg:PopupPage.Resources>
         <Color x:Key="PrimaryColor">#3498DB</Color>
+        <ResourceDictionary>
+            <Style TargetType="Grid" x:Key="ViewCellGridStyle">
+                <Setter Property="Padding" Value="0,0,20,0"/>
+                <Setter Property="HeightRequest" Value="48"/>
+                <Setter Property="ColumnSpacing" Value="0"/>
+            </Style>
+        </ResourceDictionary>
     </rg:PopupPage.Resources>
     <Grid RowDefinitions="Auto,*" BackgroundColor="Transparent">
         <mageki:NavigationBar Title="{x:Static resources:AppResources.Settings}" BackgroundColor="Transparent">
@@ -27,33 +34,40 @@
                 </TableSection>
                 <TableSection Title="{x:Static resources:AppResources.Gameplay}" TextColor="{StaticResource PrimaryColor}">
                     <ViewCell Tapped="UseSimplifiedLayout_Tapped">
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="0" HeightRequest="48">
+                        <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.SimpleLayout}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Switch IsToggled="{Binding UseSimplifiedLayout}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
                     <ViewCell Tapped="SeparateButtonsAndLever_Tapped">
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="0" HeightRequest="48">
+                        <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.SeparateButtonsAndLever}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Switch IsToggled="{Binding SeparateButtonsAndLever}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
                     <ViewCell>
-                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="0" HeightRequest="48">
+                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverSensitivity}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Label TextColor="LightGray" Text="{Binding LeverSensitivity,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
                             <Slider Maximum="10" Minimum="-10" Grid.Column="2" HeightRequest="48" Value="{Binding LeverSensitivity}" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
                     <ViewCell>
-                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="0" HeightRequest="48">
+                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource ViewCellGridStyle}">
+                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverLinearity}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                            <Label TextColor="LightGray" Text="{Binding LeverLinearity,StringFormat='1/{0}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
+                            <Slider Maximum="{Binding MaxLeverLinearity,Mode=OneTime}" Minimum="{Binding MinLeverLinearity,Mode=OneTime}" Grid.Column="2" HeightRequest="48" Value="{Binding LeverLinearity}" VerticalOptions="Center"/>
+                        </Grid>
+                    </ViewCell>
+                    <ViewCell>
+                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.ButtonBottomMargin}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Label TextColor="LightGray" Text="{Binding ButtonBottomMargin,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
                             <Slider Maximum="1" Minimum="0" Grid.Column="2" HeightRequest="48" Value="{Binding ButtonBottomMargin}" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
                     <ViewCell Tapped="HapticFeedback_Tapped">
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="0" HeightRequest="48">
+                        <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.HapticFeedback}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Switch IsToggled="{Binding HapticFeedback}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
@@ -62,20 +76,20 @@
                 </TableSection>
                 <TableSection Title="{x:Static resources:AppResources.Others}" TextColor="{StaticResource PrimaryColor}">
                     <ViewCell Tapped="TestButton_Tapped">
-                        <ContentView  HeightRequest="48">
+                        <Grid Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.TestButton}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                        </ContentView>
+                        </Grid>
                     </ViewCell>
                     <ViewCell Tapped="ServiceButton_Tapped">
-                        <ContentView  HeightRequest="48">
+                        <Grid Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.ServiceButton}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                        </ContentView>
+                        </Grid>
                     </ViewCell>
                     <ViewCell Tapped="Version_Tapped">
-                        <StackLayout  HeightRequest="48" Orientation="Horizontal">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.Version}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Label TextColor="LightGray" Text="{Binding Version}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                        </StackLayout>
+                        <Grid ColumnDefinitions="Auto,Auto" Style="{StaticResource ViewCellGridStyle}">
+                            <Label Grid.Column="0" TextColor="LightGray" Text="{x:Static resources:AppResources.Version}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                            <Label  Grid.Column="1" TextColor="LightGray" Text="{Binding Version,Mode=OneTime}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                        </Grid>
                     </ViewCell>
                     <!--<ViewCell Tapped="Exit_Tapped">
                         <ContentView  HeightRequest="48">

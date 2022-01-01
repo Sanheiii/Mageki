@@ -169,6 +169,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Lever Linearity 的本地化字符串。
+        /// </summary>
+        public static string LeverLinearity {
+            get {
+                return ResourceManager.GetString("LeverLinearity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Lever Sensitivity 的本地化字符串。
         /// </summary>
         public static string LeverSensitivity {

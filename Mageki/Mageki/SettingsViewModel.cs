@@ -22,6 +22,10 @@ namespace Mageki
         // 0 => 1 , -10 => 0.1 , 10 => 10
         public float LeverSensitivity { get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase); set => Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value); }
 
+        public double MaxLeverLinearity => Settings.MaxLeverLinearity; 
+        public double MinLeverLinearity => Settings.MinLeverLinearity;
+        public int LeverLinearity { get => Settings.LeverLinearity; set => Settings.LeverLinearity = value; }
+
         public float ButtonBottomMargin { get => Settings.ButtonBottomMargin; set => Settings.ButtonBottomMargin = value; }
 
         public string Aimeid { get => Settings.AimeId; set => Settings.AimeId = value; }
@@ -42,6 +46,8 @@ namespace Mageki
 
     public class Settings
     {
+        public const double MaxLeverLinearity = 540;
+        public const double MinLeverLinearity = 54;
         public static int Port
         {
             get => Preferences.Get("port", 4354);
@@ -84,6 +90,17 @@ namespace Mageki
             set
             {
                 Preferences.Set("leverSensitivity", value);
+                OnValueChanged();
+            }
+        }
+        public static int LeverLinearity
+        {
+            get => Preferences.Get("leverLinearity", (int)MaxLeverLinearity);
+            set
+            {
+                if (value < MinLeverLinearity) value = (int)MinLeverLinearity;
+                else if (value > MaxLeverLinearity) value = (int)MaxLeverLinearity;
+                Preferences.Set("leverLinearity", value);
                 OnValueChanged();
             }
         }

@@ -186,4 +186,7 @@
   <data name="ProgramCrashedUnexpectedly" xml:space="preserve">
     <value>程序异常退出！</value>
   </data>
+  <data name="LeverLinearity" xml:space="preserve">
+    <value>摇杆线性度</value>
+  </data>
 </root>

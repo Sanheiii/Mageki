@@ -186,4 +186,7 @@
   <data name="ProgramCrashedUnexpectedly" xml:space="preserve">
     <value>Program crashed unexpectedly!</value>
   </data>
+  <data name="LeverLinearity" xml:space="preserve">
+    <value>Lever Linearity</value>
+  </data>
 </root>
