@@ -340,6 +340,7 @@ namespace Mageki
                     }
                 case TouchActionType.Moved:
                     {
+                        if (!touchPoints.ContainsKey(args.Id)) break;
                         TouchArea area = touchPoints[args.Id].touchArea;
                         if (Settings.SeparateButtonsAndLever && (int)area < 8 && (int)area % 5 < 3)
                         {
@@ -400,7 +401,7 @@ namespace Mageki
                             }
                             touchPoints.Remove(id);
                         }
-                        if (args.Type == TouchActionType.Cancelled)
+                        if (args.Type == TouchActionType.Cancelled && DeviceInfo.Platform == DevicePlatform.Android)
                         {
                             while (touchPoints.Count > 0)
                             {
@@ -422,15 +423,23 @@ namespace Mageki
 
         private void MoveLever(float x)
         {
+            var threshold = short.MaxValue / (Settings.LeverLinearity / 2f);
+            int part = (int)(slider.Value / threshold);
             var pixelWidth = Width * Xamarin.Essentials.DeviceDisplay.MainDisplayInfo.Density;
             var oldValue = slider.Value;
             slider.Value += (short)(x * (pixelWidth / 30) * Settings.LeverSensitivity);
             // check会导致iOS端崩溃，使用土方法检查溢出
             if (x < 0 && oldValue < slider.Value) slider.Value = short.MinValue;
             else if (x > 0 && oldValue > slider.Value) slider.Value = short.MaxValue;
-            SendMessage(
-                new byte[] { (byte)MessageType.MoveLever }.
-                Concat(BitConverter.GetBytes(slider.Value)).ToArray());
+            // 仅在经过分界的时候发包
+            if((int)(slider.Value / threshold) != part)
+            {
+                SendMessage(
+                    new byte[] { (byte)MessageType.MoveLever }.
+                    Concat(BitConverter.GetBytes(slider.Value)).ToArray());
+                Debug.WriteLine(part);
+                return;
+            }
         }
 
         private TouchArea GetArea(SKPoint pixelLocation, float width, float height)
@@ -446,7 +455,7 @@ namespace Mageki
             else if (!inRhythmGame && logo.Rect.Contains(pixelLocation)) area = TouchArea.Logo;
             else if (pixelLocation.X < width / 2) area = TouchArea.LSide;
             else area = TouchArea.RSide;
-            Debug.WriteLine(area);
+            //Debug.WriteLine(area);
             return area;
         }
         private TouchArea GetArea(float x, float width)

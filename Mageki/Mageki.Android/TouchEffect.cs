@@ -66,7 +66,6 @@ namespace Mageki.Droid
 
         void OnTouch(object sender, Android.Views.View.TouchEventArgs args)
         {
-            System.Diagnostics.Debug.WriteLine(args.Event.ActionMasked);
             // Two object common to all the events
             Android.Views.View senderView = sender as Android.Views.View;
             MotionEvent motionEvent = args.Event;
