@@ -29,7 +29,7 @@ namespace Mageki.Utils
                     string action = await Application.Current.MainPage.DisplayActionSheet(AppResources.NewVersionAvailable, AppResources.Cancel, AppResources.DoNotRemindMeAgain, AppResources.GoToReleasePage);
                     if (action == AppResources.GoToReleasePage)
                     {
-                        await Browser.OpenAsync(data["html_url"].Value<string>(), BrowserLaunchMode.External);
+                        await Browser.OpenAsync(data["html_url"].Value<string>(), BrowserLaunchMode.SystemPreferred);
                     }
                     else if (action == AppResources.DoNotRemindMeAgain)
                     {
