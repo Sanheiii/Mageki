@@ -10,11 +10,11 @@ namespace Mageki
 {
     class FelicaCardMediaObserver : IObserver<IFelicaCardMedia>
     {
-        private ControllerPanel controllerPanel;
+        private Action<byte[]> action;
 
-        public FelicaCardMediaObserver(ControllerPanel controllerPanel)
+        public FelicaCardMediaObserver(Action<byte[]> action)
         {
-            this.controllerPanel = controllerPanel;
+            this.action = action;
         }
 
         public void OnCompleted()
@@ -32,7 +32,7 @@ namespace Mageki
             try
             {
                 var byteIdm = await falicaCardMedia.GetIdm();
-                controllerPanel.ScanFelica(byteIdm);
+                action.Invoke(byteIdm);
             }
             catch (Exception e)
             {

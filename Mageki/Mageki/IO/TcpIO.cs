@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Mageki.IO
+namespace Mageki
 {
     public class TcpIO : IO
     {
+
     }
 }

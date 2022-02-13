@@ -1,38 +1,33 @@
 ﻿using Mageki.Drawables;
 using Mageki.TouchTracking;
+using Mageki.Utils;
 
 using Plugin.FelicaReader;
 using Plugin.FelicaReader.Abstractions;
 
 using SkiaSharp;
-using SkiaSharp.Extended.Svg;
 using SkiaSharp.Views.Forms;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Numerics;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using Xamarin.Forms.Internals;
 
 using Button = Mageki.Drawables.Button;
 using DeviceInfo = Xamarin.Essentials.DeviceInfo;
-using SKSvg = SkiaSharp.Extended.Svg.SKSvg;
 using Slider = Mageki.Drawables.Slider;
-using Timer = System.Timers.Timer;
 
 namespace Mageki
 {
     public class ControllerPanel : Grid
     {
+        private IO io;
+        private bool requireGenRects = false;
         private ButtonCollection buttons = new ButtonCollection();
         //private Button[] buttons = Enumerable.Range(0, 10).Select((n) => new Button()).ToArray();
         private IFelicaReader felicaReader;
@@ -85,16 +80,18 @@ namespace Mageki
             //捕获点击
             touchEffect.TouchAction += TouchEffect_TouchAction;
             Effects.Add(touchEffect);
-
+            // 安卓平台可以使用NFC刷卡
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
                 try
                 {
                     this.felicaReader = CrossFelicaReader.Current;
-                    this.subscription = this.felicaReader.WhenCardFound().Subscribe(new FelicaCardMediaObserver(this));
+                    this.subscription = this.felicaReader.WhenCardFound().Subscribe(new FelicaCardMediaObserver(ScanFelica));
                 }
                 catch (Exception ex) { }
             }
+            io = new UdpIO();
+            io.Init();
             Settings.ValueChanged += Settings_ValueChanged;
 
         }
@@ -117,25 +114,23 @@ namespace Mageki
         {
             if (nfcScanning || simulateScanning) return;
             nfcScanning = true;
-            var id = new BigInteger(felicaId);
-            var bcd = ToBcd(id);
-            SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(new byte[10 - bcd.Length]).Concat(bcd).ToArray());
+            io.SetAime(true, new BigInteger(felicaId).ToBcd());
             await Task.Delay(3000);
-            SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
+            io.SetAime(false, new byte[10]);
             nfcScanning = false;
         }
 
         public async Task PressAndReleaseTestButtonAsync()
         {
-            SendMessage(new byte[] { (byte)MessageType.Test, 1 }.ToArray());
+            io.SetOptionButton(OptionButtons.Test, true);
             await Task.Delay(1000);
-            SendMessage(new byte[] { (byte)MessageType.Test, 0 }.ToArray());
+            io.SetOptionButton(OptionButtons.Test, false);
         }
         public async Task PressAndReleaseServiceButtonAsync()
         {
-            SendMessage(new byte[] { (byte)MessageType.Service, 1 }.ToArray());
+            io.SetOptionButton(OptionButtons.Service, true);
             await Task.Delay(1000);
-            SendMessage(new byte[] { (byte)MessageType.Service, 0 }.ToArray());
+            io.SetOptionButton(OptionButtons.Service, false);
         }
 
         int oldWidth = -1;
@@ -285,7 +280,7 @@ namespace Mageki
                         // 按下按键
                         if ((byte)area < 10)
                         {
-                            SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 1 });
+                            io.SetGameButton((int)area, true);
                             buttons[(int)area].IsHold = true;
                             if (inRhythmGame && (int)area % 5 < 3) buttons[10..13][(int)area % 5].IsHold = true;
                         }
@@ -299,11 +294,11 @@ namespace Mageki
                                 scanTime = DateTime.Now;
                                 if (BigInteger.TryParse(Settings.AimeId, out BigInteger integer))
                                 {
-                                    var bcd = ToBcd(integer);
+                                    var bcd = integer.ToBcd();
                                     var bytes = new byte[10 - bcd.Length].Concat(bcd);
                                     aimeId = bytes.ToArray();
                                 }
-                                SendMessage(new byte[] { (byte)MessageType.Scan, 1 }.Concat(aimeId).ToArray());
+                                io.SetAime(true, aimeId);
                                 if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
                             }
                         }
@@ -319,8 +314,9 @@ namespace Mageki
                             // 如果按键区不触发摇杆则允许搓
                             if (area != xArea && (int)xArea < 8 && (int)xArea % 5 < 3)
                             {
-                                SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)xArea, 1 });
-                                SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 0 });
+
+                                io.SetGameButton((int)xArea, true);
+                                io.SetGameButton((int)area, false);
                                 buttons[(int)xArea].IsHold = true;
                                 buttons[(int)area].IsHold = false;
                                 touchPoints.Remove(args.Id);
@@ -357,14 +353,14 @@ namespace Mageki
                             TouchArea area = touchPoints[id].touchArea;
                             if ((int)area < 10 && touchPoints.Count(p => p.Value.touchArea == area) < 2)
                             {
-                                SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)area, 0 });
+                                io.SetGameButton((int)area, false);
                                 buttons[(int)area].IsHold = false;
                                 if (inRhythmGame && (int)area % 5 < 3) buttons[10..13][(int)area % 5].IsHold = false;
                             }
                             else if (area == TouchArea.Logo && touchPoints.Count(p => p.Value.touchArea == area) < 2)
                             {
                                 simulateScanning = false;
-                                SendMessage(new byte[] { (byte)MessageType.Scan, 0 }.Concat(new byte[10]).ToArray());
+                                io.SetAime(false, new byte[10]);
                                 // 按下超过一秒不触发菜单
                                 if (DateTime.Now - scanTime < TimeSpan.FromSeconds(0.3) && currentArea == area)
                                     LogoClickd.Invoke(this, EventArgs.Empty);
@@ -403,11 +399,9 @@ namespace Mageki
             if (x < 0 && oldValue < slider.Value) slider.Value = short.MinValue;
             else if (x > 0 && oldValue > slider.Value) slider.Value = short.MaxValue;
             // 仅在经过分界的时候发包
-            if((int)(slider.Value / threshold) != part)
+            if ((int)(slider.Value / threshold) != part)
             {
-                SendMessage(
-                    new byte[] { (byte)MessageType.MoveLever }.
-                    Concat(BitConverter.GetBytes(slider.Value)).ToArray());
+                io.SetLever(slider.Value);
                 Debug.WriteLine(part);
                 return;
             }
@@ -449,14 +443,6 @@ namespace Mageki
             }
             return area;
         }
-
-        
-
-        private void RequestValues()
-        {
-            SendMessage(new byte[] { (byte)MessageType.RequestValues });
-        }
-
 
         public void SetLed(uint data)
         {

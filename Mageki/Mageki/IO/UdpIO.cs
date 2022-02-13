@@ -1,43 +1,28 @@
-﻿using Mageki.Drawables;
-using Mageki.TouchTracking;
-
-using Plugin.FelicaReader;
-using Plugin.FelicaReader.Abstractions;
-
-using SkiaSharp;
-using SkiaSharp.Extended.Svg;
-using SkiaSharp.Views.Forms;
+﻿
+using Mageki.Utils;
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Numerics;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 
-using Xamarin.Essentials;
-using Xamarin.Forms;
-using Xamarin.Forms.Internals;
-
-using Button = Mageki.Drawables.Button;
-using DeviceInfo = Xamarin.Essentials.DeviceInfo;
-using SKSvg = SkiaSharp.Extended.Svg.SKSvg;
-using Slider = Mageki.Drawables.Slider;
 using Timer = System.Timers.Timer;
 
-namespace Mageki.IO
+namespace Mageki
 {
     public class UdpIO : IO
     {
-        UdpClient client;
-        byte dkRandomValue;
-        Timer heartbeatTimer = new Timer(400) { AutoReset = true };
-        Timer disconnectTimer = new Timer(1500) { AutoReset = false };
-        IPEndPoint remoteEP = new IPEndPoint(IPAddress.Broadcast, Settings.Port);
+        private UdpClient client;
+        private Thread pollThread;
+        private byte dkRandomValue;
+        private Timer heartbeatTimer = new Timer(400) { AutoReset = true };
+        private Timer disconnectTimer = new Timer(1500) { AutoReset = false };
+        private IPEndPoint remoteEP = new IPEndPoint(IPAddress.Broadcast, Settings.Port);
+        private bool disposedValue;
 
         public override bool IsConnected => remoteEP.Address.Address != IPAddress.Broadcast.Address;
 
@@ -48,20 +33,47 @@ namespace Mageki.IO
             heartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
             heartbeatTimer.Start();
             disconnectTimer.Elapsed += DisconnectTimer_Elapsed;
-            new Thread(PollThread).Start();
+            pollThread = new Thread(PollThread);
+            pollThread.Start();
         }
-
+        public override void SetGameButton(int index, bool pressed)
+        {
+            base.SetGameButton(index, pressed);
+            SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)index, Convert.ToByte(pressed) });
+        }
+        public override void SetLever(short value)
+        {
+            base.SetLever(value);
+            SendMessage(new byte[] { (byte)MessageType.MoveLever }.Concat(BitConverter.GetBytes(value)).ToArray());
+        }
+        public override void SetAime(bool scanning, byte[] bcd)
+        {
+            base.SetAime(scanning, bcd);
+            SendMessage(new byte[] { (byte)MessageType.Scan, Convert.ToByte(scanning) }.Concat(Data.AimeId).ToArray());
+        }
+        public override void SetOptionButton(OptionButtons button, bool pressed)
+        {
+            base.SetOptionButton(button, pressed);
+            MessageType type = button switch
+            {
+                OptionButtons.Test => MessageType.Test,
+                OptionButtons.Service => MessageType.Service,
+                _ => throw new NotImplementedException(),
+            };
+            SendMessage(new byte[] { (byte)type, Convert.ToByte(pressed) }.ToArray());
+        }
         /// <summary>
         /// 用于接收数据并设置LED
         /// </summary>
         private void PollThread()
         {
-            while (true)
+            while (!disposedValue)
             {
                 byte[] buffer = client.Receive(ref ep);
                 ParseBuffer(buffer);
             }
-        } // 在没有连接的时候请求连接,有连接时发送心跳保存连接
+        }
+        // 在没有连接的时候请求连接,有连接时发送心跳保存连接
         private void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             try
@@ -74,8 +86,9 @@ namespace Mageki.IO
         private void DisconnectTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             remoteEP = new IPEndPoint(IPAddress.Broadcast, Settings.Port);
-            logo.Color = SKColors.Gray;
-            MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
+            RaiseOnDisconnected(EventArgs.Empty);
+            //logo.Color = SKColors.Gray;
+            //MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
         private void SendMessage(byte[] data)
         {
@@ -88,11 +101,10 @@ namespace Mageki.IO
         }
 
         IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
-        private bool requireGenRects = false;
 
         private void ParseBuffer(byte[] buffer)
         {
-            if ((buffer?.Length ?? 0) == 0) return;
+            if (disposedValue || (buffer?.Length ?? 0) == 0) return;
             if (buffer[0] == (byte)MessageType.SetLed && buffer.Length == 5)
             {
                 uint ledData = BitConverter.ToUInt32(buffer, 1);
@@ -100,8 +112,7 @@ namespace Mageki.IO
             }
             else if (buffer[0] == (byte)MessageType.SetLever && buffer.Length == 3)
             {
-                short lever = BitConverter.ToInt16(buffer, 1);
-                slider.Value = lever;
+                Data.Lever = BitConverter.ToInt16(buffer, 1);
             }
             else if (buffer[0] == (byte)MessageType.DokiDoki && buffer.Length == 2 && buffer[1] == dkRandomValue)
             {
@@ -109,14 +120,55 @@ namespace Mageki.IO
                 {
                     remoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
                     RequestValues();
-                    logo.Color = SKColors.Black;
+                    RiseOnConnected(EventArgs.Empty);
+                    //logo.Color = SKColors.Black;
                 }
+                client.Dispose();
                 disconnectTimer.Stop();
                 disconnectTimer.Start();
             }
             //// 用于直接打开测试显示按键
             //Mu3IO._test.UpdateData();
         }
+        private void RequestValues()
+        {
+            SendMessage(new byte[] { (byte)MessageType.RequestValues });
+        }
+        #region IDisposable
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: 释放托管状态(托管对象)
+                    if (IsConnected)
+                        RaiseOnDisconnected(EventArgs.Empty);
+                    client.Dispose();
+                    disconnectTimer.Dispose();
+                    heartbeatTimer.Dispose();
+                }
+
+                // TODO: 释放未托管的资源(未托管的对象)并重写终结器
+                // TODO: 将大型字段设置为 null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: 仅当“Dispose(bool disposing)”拥有用于释放未托管资源的代码时才替代终结器
+        // ~IO()
+        // {
+        //     // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
+        //     Dispose(disposing: false);
+        // }
+
+        public override void Dispose()
+        {
+            // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
         enum MessageType : byte
         {
             // 控制器向IO发送的
