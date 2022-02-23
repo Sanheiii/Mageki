@@ -15,7 +15,6 @@ namespace Mageki
     {
         private TcpClient client;
         private NetworkStream networkStream;
-        private IPEndPoint remoteEP = new IPEndPoint(IPAddress.Loopback, Settings.Port);
         private TimeSpan millisecond = TimeSpan.FromMilliseconds(1);
         private Thread writingThread;
         private Thread readingThread;
@@ -33,7 +32,7 @@ namespace Mageki
         }
         public void Connect()
         {
-            client = new TcpClient(remoteEP);
+            client = new TcpClient("127.0.0.1", Settings.Port);
             networkStream = client.GetStream();
         }
         private void Disconnect()
