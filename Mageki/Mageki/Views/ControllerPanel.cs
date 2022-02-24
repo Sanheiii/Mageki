@@ -402,7 +402,6 @@ namespace Mageki
             if ((int)(slider.Value / threshold) != part)
             {
                 io.SetLever(slider.Value);
-                Debug.WriteLine(part);
                 return;
             }
         }

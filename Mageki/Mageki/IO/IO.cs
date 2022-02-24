@@ -25,9 +25,9 @@ namespace Mageki
         public OptionButtons OptButtons { get; set; }
         public byte[] ToByteArray() => GameButtons
             .Concat(BitConverter.GetBytes(Lever))
-            .Concat(BitConverter.GetBytes(Scanning))
+            .Concat(new byte[] { Scanning })
             .Concat(AimeId)
-            .Concat(BitConverter.GetBytes((byte)OptButtons))
+            .Concat(new byte[] { (byte)OptButtons })
             .ToArray();
     }
     public enum OptionButtons : byte
