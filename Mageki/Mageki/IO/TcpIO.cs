@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 
 using Timer = System.Timers.Timer;
@@ -15,7 +16,6 @@ namespace Mageki
     {
         private TcpClient client;
         private NetworkStream networkStream;
-        private IPEndPoint remoteEP = new IPEndPoint(IPAddress.Loopback, Settings.Port);
         private TimeSpan millisecond = TimeSpan.FromMilliseconds(1);
         private Thread writingThread;
         private Thread readingThread;
@@ -33,7 +33,7 @@ namespace Mageki
         }
         public void Connect()
         {
-            client = new TcpClient(remoteEP);
+            client = new TcpClient("127.0.0.1", Settings.Port);
             networkStream = client.GetStream();
         }
         private void Disconnect()
@@ -49,24 +49,30 @@ namespace Mageki
         private void SendMessage()
         {
             byte[] buffer = Data.ToByteArray();
-            networkStream.Write(buffer, 0, buffer.Length);
+            if (!disposedValue)
+            {
+                networkStream.Write(buffer, 0, buffer.Length);
+            }
         }
         private void WritingThread()
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
+            TimeSpan compensate = TimeSpan.Zero;
             while (!disposedValue)
             {
-                if (sw.Elapsed < millisecond)
-                {
-                    Thread.Sleep(millisecond - sw.Elapsed);
-                    sw.Restart();
-                }
                 if (!IsConnected)
                 {
                     continue;
                 }
+                TimeSpan time = (sw.Elapsed + compensate) - millisecond;
+                if (time < TimeSpan.Zero)
+                {
+                    continue;
+                }
+                sw.Restart();
                 SendMessage();
+                compensate=time;
             }
             sw.Stop();
         }

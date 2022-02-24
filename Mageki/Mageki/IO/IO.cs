@@ -21,13 +21,13 @@ namespace Mageki
         /// <summary>
         /// 以BCD编码存储的AimeId，全255指示读取磁盘中Aime.txt
         /// </summary>
-        public byte[] AimeId { get; }
+        public byte[] AimeId { get; } = new byte[10];
         public OptionButtons OptButtons { get; set; }
         public byte[] ToByteArray() => GameButtons
             .Concat(BitConverter.GetBytes(Lever))
-            .Concat(BitConverter.GetBytes(Scanning))
+            .Concat(new byte[] { Scanning })
             .Concat(AimeId)
-            .Concat(BitConverter.GetBytes((byte)OptButtons))
+            .Concat(new byte[] { (byte)OptButtons })
             .ToArray();
     }
     public enum OptionButtons : byte
