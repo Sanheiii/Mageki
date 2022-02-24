@@ -102,6 +102,21 @@ namespace Mageki
             {
                 ForceGenRects();
             }
+            if (name == nameof(Settings.Protocol))
+            {
+                if (!(io is UdpIO) && Settings.Protocol == Protocols.Udp)
+                {
+                    io.Dispose();
+                    io = new UdpIO();
+                    io.Init();
+                }
+                else if (!(io is TcpIO) && Settings.Protocol == Protocols.Tcp)
+                {
+                    io.Dispose();
+                    io = new TcpIO();
+                    io.Init();
+                }
+            }
         }
 
         public void ForceGenRects()

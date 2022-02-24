@@ -18,11 +18,12 @@ namespace Mageki
         // Math.Pow(10, 0.1)
         private const double leverSensitivityBase = 1.2589254117941673;
 
+        public Protocols Protocol { get => Settings.Protocol; set => Settings.Protocol = value; }
         public int Port { get => Settings.Port; set => Settings.Port = value; }
         // 0 => 1 , -10 => 0.1 , 10 => 10
         public float LeverSensitivity { get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase); set => Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value); }
 
-        public double MaxLeverLinearity => Settings.MaxLeverLinearity; 
+        public double MaxLeverLinearity => Settings.MaxLeverLinearity;
         public double MinLeverLinearity => Settings.MinLeverLinearity;
         public int LeverLinearity { get => Settings.LeverLinearity; set => Settings.LeverLinearity = value; }
 
@@ -43,11 +44,24 @@ namespace Mageki
 
         }
     }
-
-    public class Settings
+    public enum Protocols
+    {
+        Udp,
+        Tcp
+    }
+    public static class Settings
     {
         public const double MaxLeverLinearity = 540;
         public const double MinLeverLinearity = 54;
+        public static Protocols Protocol
+        {
+            get => (Protocols)Preferences.Get("protocol", (int)Protocols.Udp);
+            set
+            {
+                Preferences.Set("protocol", (int)value);
+                OnValueChanged();
+            }
+        }
         public static int Port
         {
             get => Preferences.Get("port", 4354);
