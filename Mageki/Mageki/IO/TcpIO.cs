@@ -41,21 +41,24 @@ namespace Mageki
         {
             if (connecting) return;
             connecting = true;
-            var newClient = await listener.AcceptTcpClientAsync();
+            RaiseOnDisconnected(EventArgs.Empty);
             Disconnect();
+            var newClient = await listener.AcceptTcpClientAsync();
             networkStream = newClient.GetStream();
             client = newClient;
-            RiseOnConnected(EventArgs.Empty);
+            RaiseOnConnected(EventArgs.Empty);
             connecting = false;
         }
         private void Disconnect()
         {
             if (IsConnected)
             {
-                client?.Dispose();
-                networkStream?.Dispose();
+                var tmpClient = client;
+                var tmpStream = networkStream;
                 client = null;
                 networkStream = null;
+                tmpClient?.Dispose();
+                tmpStream?.Dispose();
             }
         }
         private void SendMessage()
@@ -92,7 +95,7 @@ namespace Mageki
                 }
                 sw.Restart();
                 SendMessage();
-                compensate=time;
+                compensate = time;
             }
             sw.Stop();
         }
@@ -107,8 +110,7 @@ namespace Mageki
                 {
                     continue;
                 }
-                IAsyncResult result = networkStream.BeginRead(_inBuffer, 0, 4, new AsyncCallback((res) => { }), null);
-                int len = networkStream.EndRead(result);
+                int len = networkStream.Read(_inBuffer, 0, _inBuffer.Length);
                 if (len <= 0)
                 {
                     continue;
@@ -130,7 +132,6 @@ namespace Mageki
                     networkStream?.Dispose();
                     client?.Dispose();
                 }
-
                 // TODO: 释放未托管的资源(未托管的对象)并重写终结器
                 // TODO: 将大型字段设置为 null
                 disposedValue = true;

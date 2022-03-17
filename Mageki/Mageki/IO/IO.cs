@@ -45,7 +45,7 @@ namespace Mageki
         public abstract bool IsConnected { get; }
 
         public event EventHandler<EventArgs> OnConnected;
-        protected void RiseOnConnected(EventArgs args)
+        protected void RaiseOnConnected(EventArgs args)
         {
             OnConnected?.Invoke(this, args);
         }

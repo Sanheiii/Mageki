@@ -120,7 +120,7 @@ namespace Mageki
                 {
                     remoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
                     RequestValues();
-                    RiseOnConnected(EventArgs.Empty);
+                    RaiseOnConnected(EventArgs.Empty);
                     //logo.Color = SKColors.Black;
                 }
                 client.Dispose();

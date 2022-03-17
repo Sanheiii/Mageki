@@ -110,16 +110,41 @@ namespace Mageki
         {
             if (!(io is UdpIO) && Settings.Protocol == Protocols.Udp)
             {
-                io?.Dispose();
+                if (io != null)
+                {
+                    io.Dispose();
+                    io.OnConnected -= OnConnected;
+                    io.OnDisconnected -= OnDisconnected;
+                }
                 io = new UdpIO();
+                io.OnConnected += OnConnected;
+                io.OnDisconnected += OnDisconnected;
                 io.Init();
             }
             else if (!(io is TcpIO) && Settings.Protocol == Protocols.Tcp)
             {
-                io?.Dispose();
+                if (io != null)
+                {
+                    io.Dispose();
+                    io.OnConnected -= OnConnected;
+                    io.OnDisconnected -= OnDisconnected;
+                }
                 io = new TcpIO();
+                io.OnConnected += OnConnected;
+                io.OnDisconnected += OnDisconnected;
                 io.Init();
             }
+        }
+
+        private void OnConnected(object sender, EventArgs e)
+        {
+            logo.Color = SKColors.Black;
+            canvasView.InvalidateSurface();
+        }
+        private void OnDisconnected(object sender, EventArgs e)
+        {
+            logo.Color = SKColors.LightGray;
+            canvasView.InvalidateSurface();
         }
         public void ForceGenRects()
         {
