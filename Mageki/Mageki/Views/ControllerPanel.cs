@@ -90,8 +90,7 @@ namespace Mageki
                 }
                 catch (Exception ex) { }
             }
-            io = new TcpIO();
-            io.Init();
+            InitIO();
             Settings.ValueChanged += Settings_ValueChanged;
 
         }
@@ -104,21 +103,24 @@ namespace Mageki
             }
             if (name == nameof(Settings.Protocol))
             {
-                if (!(io is UdpIO) && Settings.Protocol == Protocols.Udp)
-                {
-                    io.Dispose();
-                    io = new UdpIO();
-                    io.Init();
-                }
-                else if (!(io is TcpIO) && Settings.Protocol == Protocols.Tcp)
-                {
-                    io.Dispose();
-                    io = new TcpIO();
-                    io.Init();
-                }
+                InitIO();
             }
         }
-
+        private void InitIO()
+        {
+            if (!(io is UdpIO) && Settings.Protocol == Protocols.Udp)
+            {
+                io?.Dispose();
+                io = new UdpIO();
+                io.Init();
+            }
+            else if (!(io is TcpIO) && Settings.Protocol == Protocols.Tcp)
+            {
+                io?.Dispose();
+                io = new TcpIO();
+                io.Init();
+            }
+        }
         public void ForceGenRects()
         {
             requireGenRects = true;
