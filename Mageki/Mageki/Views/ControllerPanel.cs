@@ -90,7 +90,7 @@ namespace Mageki
                 }
                 catch (Exception ex) { }
             }
-            io = new UdpIO();
+            io = new TcpIO();
             io.Init();
             Settings.ValueChanged += Settings_ValueChanged;
 

@@ -14,8 +14,10 @@ namespace Mageki
 {
     public class TcpIO : IO
     {
+        private TcpListener listener;
         private TcpClient client;
         private NetworkStream networkStream;
+        private bool connecting = false;
         private TimeSpan millisecond = TimeSpan.FromMilliseconds(1);
         private Thread writingThread;
         private Thread readingThread;
@@ -25,23 +27,33 @@ namespace Mageki
 
         public override void Init()
         {
+            IPAddress ip = new IPAddress(new byte[] { 0, 0, 0, 0 });
+            listener = new TcpListener(ip, Settings.Port);
+            listener.Start();
+
             writingThread = new Thread(ReadingThread);
             writingThread.Start();
             readingThread = new Thread(WritingThread);
             readingThread.Start();
 
         }
-        public void Connect()
+        public async void Reconnect()
         {
-            client = new TcpClient("127.0.0.1", Settings.Port);
-            networkStream = client.GetStream();
+            if (connecting) return;
+            connecting = true;
+            var newClient = await listener.AcceptTcpClientAsync();
+            Disconnect();
+            networkStream = newClient.GetStream();
+            client = newClient;
+            RiseOnConnected(EventArgs.Empty);
+            connecting = false;
         }
         private void Disconnect()
         {
             if (IsConnected)
             {
-                networkStream?.Dispose();
                 client?.Dispose();
+                networkStream?.Dispose();
                 client = null;
                 networkStream = null;
             }
@@ -51,7 +63,14 @@ namespace Mageki
             byte[] buffer = Data.ToByteArray();
             if (!disposedValue)
             {
-                networkStream.Write(buffer, 0, buffer.Length);
+                try
+                {
+                    networkStream.Write(buffer, 0, buffer.Length);
+                }
+                catch
+                {
+                    Disconnect();
+                }
             }
         }
         private void WritingThread()
@@ -63,6 +82,7 @@ namespace Mageki
             {
                 if (!IsConnected)
                 {
+                    Reconnect();
                     continue;
                 }
                 TimeSpan time = (sw.Elapsed + compensate) - millisecond;
@@ -85,14 +105,12 @@ namespace Mageki
             {
                 if (!IsConnected)
                 {
-                    Connect();
                     continue;
                 }
                 IAsyncResult result = networkStream.BeginRead(_inBuffer, 0, 4, new AsyncCallback((res) => { }), null);
                 int len = networkStream.EndRead(result);
                 if (len <= 0)
                 {
-                    Disconnect();
                     continue;
                 }
                 uint ledData = BitConverter.ToUInt32(_inBuffer, 0);
