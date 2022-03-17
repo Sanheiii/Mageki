@@ -11,6 +11,7 @@ using Android.Widget;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -26,7 +27,7 @@ namespace Mageki.Droid.Renderers
     internal class EntryCellRenderer : Xamarin.Forms.Platform.Android.EntryCellRenderer
     {
         private EntryCellView _view;
-        private Mageki.EntryCell Element=>_view.Element as Mageki.EntryCell;
+        private Mageki.EntryCell Element => _view.Element as Mageki.EntryCell;
         private EditText EditText => _view.EditText;
         private TextColorSwitcher _textColorSwitcher;
         private TextColorSwitcher _hintColorSwitcher;
@@ -39,8 +40,26 @@ namespace Mageki.Droid.Renderers
             return _view;
         }
 
-        protected void UpdateTextColor(Color color)
+        protected override void OnCellPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            switch (e.PropertyName)
+            {
+                case nameof(Element.MaxLength):
+                    UpdateMaxLength();
+                    break;
+                case nameof(Element.TextColor):
+                    UpdateTextColor();
+                    break;
+                case nameof(Element.PlaceholderColor):
+                    UpdatePlaceholderColor();
+                    break;
+            }
+            base.OnCellPropertyChanged(sender, e);
+        }
+
+        protected void UpdateTextColor()
+        {
+            var color = Element.TextColor;
             _textColorSwitcher = (_textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors));
             _textColorSwitcher.UpdateTextColor(EditText, color);
             EditText.Background.Mutate().SetColorFilter(color.ToAndroid(), PorterDuff.Mode.SrcAtop);
