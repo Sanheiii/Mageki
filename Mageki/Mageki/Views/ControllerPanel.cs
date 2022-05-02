@@ -108,32 +108,32 @@ namespace Mageki
         }
         private void InitIO()
         {
-            if (!(io is UdpIO) && Settings.Protocol == Protocols.Udp)
+            bool createNew;
+            if (io is null || io.GetType().ToString() != $"{Settings.Protocol}IO")
             {
                 if (io != null)
                 {
-                    io.Dispose();
                     io.OnConnected -= OnConnected;
                     io.OnDisconnected -= OnDisconnected;
+                    io.OnLedChanged -= OnLedChanged;
+                    io.Dispose();
                 }
-                io = new UdpIO();
-                io.OnConnected += OnConnected;
-                io.OnDisconnected += OnDisconnected;
-                io.Init();
-            }
-            else if (!(io is TcpIO) && Settings.Protocol == Protocols.Tcp)
-            {
-                if (io != null)
+                io = Settings.Protocol switch
                 {
-                    io.Dispose();
-                    io.OnConnected -= OnConnected;
-                    io.OnDisconnected -= OnDisconnected;
-                }
-                io = new TcpIO();
+                    Protocols.Udp => new UdpIO(),
+                    Protocols.Tcp => new TcpIO(),
+                    _ => throw new NotImplementedException(),
+                };
                 io.OnConnected += OnConnected;
                 io.OnDisconnected += OnDisconnected;
+                io.OnLedChanged += OnLedChanged;
                 io.Init();
             }
+        }
+
+        private void OnLedChanged(object sender, EventArgs e)
+        {
+            SetLed(io.Colors);
         }
 
         private void OnConnected(object sender, EventArgs e)
@@ -485,15 +485,15 @@ namespace Mageki
             return area;
         }
 
-        public void SetLed(uint data)
+        public void SetLed(ButtonColors[] colors)
         {
 
-            buttons.L1.Color = (ButtonColors)((data >> 23 & 1) << 2 | (data >> 19 & 1) << 1 | (data >> 22 & 1) << 0);
-            buttons.L2.Color = (ButtonColors)((data >> 20 & 1) << 2 | (data >> 21 & 1) << 1 | (data >> 18 & 1) << 0);
-            buttons.L3.Color = (ButtonColors)((data >> 17 & 1) << 2 | (data >> 16 & 1) << 1 | (data >> 15 & 1) << 0);
-            buttons.R1.Color = (ButtonColors)((data >> 14 & 1) << 2 | (data >> 13 & 1) << 1 | (data >> 12 & 1) << 0);
-            buttons.R2.Color = (ButtonColors)((data >> 11 & 1) << 2 | (data >> 10 & 1) << 1 | (data >> 9 & 1) << 0);
-            buttons.R3.Color = (ButtonColors)((data >> 8 & 1) << 2 | (data >> 7 & 1) << 1 | (data >> 6 & 1) << 0);
+            buttons.L1.Color = colors[0];
+            buttons.L2.Color = colors[1];
+            buttons.L3.Color = colors[2];
+            buttons.R1.Color = colors[3];
+            buttons.R2.Color = colors[4];
+            buttons.R3.Color = colors[5];
 
             // 判断是否在游戏中
             var midButtons = buttons[0..3].Concat(buttons[5..8]);

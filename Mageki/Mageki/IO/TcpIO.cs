@@ -41,7 +41,6 @@ namespace Mageki
         {
             if (connecting) return;
             connecting = true;
-            RaiseOnDisconnected(EventArgs.Empty);
             Disconnect();
             var newClient = await listener.AcceptTcpClientAsync();
             networkStream = newClient.GetStream();
@@ -59,6 +58,7 @@ namespace Mageki
                 networkStream = null;
                 tmpClient?.Dispose();
                 tmpStream?.Dispose();
+                RaiseOnDisconnected(EventArgs.Empty);
             }
         }
         private void SendMessage()
@@ -110,11 +110,15 @@ namespace Mageki
                 {
                     continue;
                 }
-                int len = networkStream.Read(_inBuffer, 0, _inBuffer.Length);
-                if (len <= 0)
+                try
                 {
-                    continue;
+                    int len = networkStream.Read(_inBuffer, 0, _inBuffer.Length);
+                    if (len <= 0)
+                    {
+                        continue;
+                    }
                 }
+                catch { };
                 uint ledData = BitConverter.ToUInt32(_inBuffer, 0);
                 SetLed(ledData);
             }
