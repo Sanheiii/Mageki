@@ -189,4 +189,7 @@
   <data name="LeverLinearity" xml:space="preserve">
     <value>Lever Linearity</value>
   </data>
+  <data name="Protocol" xml:space="preserve">
+    <value>Protocol</value>
+  </data>
 </root>

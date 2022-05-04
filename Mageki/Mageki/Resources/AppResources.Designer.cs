@@ -223,6 +223,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Protocol 的本地化字符串。
+        /// </summary>
+        public static string Protocol {
+            get {
+                return ResourceManager.GetString("Protocol", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Separate Buttons and Lever 的本地化字符串。
         /// </summary>
         public static string SeparateButtonsAndLever {

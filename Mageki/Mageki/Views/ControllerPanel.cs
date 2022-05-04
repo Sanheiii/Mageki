@@ -29,7 +29,6 @@ namespace Mageki
         private IO io;
         private bool requireGenRects = false;
         private ButtonCollection buttons = new ButtonCollection();
-        //private Button[] buttons = Enumerable.Range(0, 10).Select((n) => new Button()).ToArray();
         private IFelicaReader felicaReader;
         private IDisposable subscription;
         private IDrawable[] decorations = new IDrawable[]

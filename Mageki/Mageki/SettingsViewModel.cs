@@ -9,6 +9,7 @@ using System.Windows.Input;
 
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using System.Linq;
 
 namespace Mageki
 {
@@ -19,6 +20,8 @@ namespace Mageki
         private const double leverSensitivityBase = 1.2589254117941673;
 
         public Protocols Protocol { get => Settings.Protocol; set => Settings.Protocol = value; }
+        public int ProtocolIndex { get => (int)Protocol; set => Protocol = (Protocols)value; }
+        public List<string> Protocols => Enum.GetNames(typeof(Protocols)).ToList();
         public int Port { get => Settings.Port; set => Settings.Port = value; }
         // 0 => 1 , -10 => 0.1 , 10 => 10
         public float LeverSensitivity { get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase); set => Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value); }
@@ -46,8 +49,8 @@ namespace Mageki
     }
     public enum Protocols
     {
-        Udp,
-        Tcp
+        Udp = 0,
+        Tcp = 1
     }
     public static class Settings
     {

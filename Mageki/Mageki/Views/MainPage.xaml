@@ -4,9 +4,6 @@
              xmlns:mageki="clr-namespace:Mageki" 
              x:Class="Mageki.MainPage">
 
-    <ContentPage.BindingContext>
-        <mageki:MainViewModel/>
-    </ContentPage.BindingContext>
     <mageki:ControllerPanel x:Name="Controller" LogoClickd="ControllerPanel_LogoClickd"/>
 
 </ContentPage>
