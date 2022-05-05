@@ -58,7 +58,7 @@ namespace Mageki
         public const double MinLeverLinearity = 54;
         public static Protocols Protocol
         {
-            get => (Protocols)Preferences.Get("protocol", (int)Protocols.Udp);
+            get => (Protocols)Preferences.Get("protocol", (int)Protocols.Tcp);
             set
             {
                 Preferences.Set("protocol", (int)value);

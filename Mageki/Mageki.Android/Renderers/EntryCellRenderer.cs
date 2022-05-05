@@ -36,7 +36,7 @@ namespace Mageki.Droid.Renderers
             _view = (EntryCellView)base.GetCellCore(item, convertView, parent, context);
             UpdateMaxLength();
             UpdatePlaceholderColor();
-            UpdateTextColor(Element.TextColor);
+            UpdateTextColor();
             return _view;
         }
 

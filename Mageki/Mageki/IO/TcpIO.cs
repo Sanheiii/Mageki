@@ -14,8 +14,10 @@ namespace Mageki
 {
     public class TcpIO : IO
     {
+        private TcpListener listener;
         private TcpClient client;
         private NetworkStream networkStream;
+        private bool connecting = false;
         private TimeSpan millisecond = TimeSpan.FromMilliseconds(1);
         private Thread writingThread;
         private Thread readingThread;
@@ -25,25 +27,38 @@ namespace Mageki
 
         public override void Init()
         {
+            IPAddress ip = new IPAddress(new byte[] { 0, 0, 0, 0 });
+            listener = new TcpListener(ip, Settings.Port);
+            listener.Start();
+
             writingThread = new Thread(ReadingThread);
             writingThread.Start();
             readingThread = new Thread(WritingThread);
             readingThread.Start();
 
         }
-        public void Connect()
+        public async void Reconnect()
         {
-            client = new TcpClient("127.0.0.1", Settings.Port);
-            networkStream = client.GetStream();
+            if (connecting) return;
+            connecting = true;
+            Disconnect();
+            var newClient = await listener.AcceptTcpClientAsync();
+            networkStream = newClient.GetStream();
+            client = newClient;
+            RaiseOnConnected(EventArgs.Empty);
+            connecting = false;
         }
         private void Disconnect()
         {
             if (IsConnected)
             {
-                networkStream?.Dispose();
-                client?.Dispose();
+                var tmpClient = client;
+                var tmpStream = networkStream;
                 client = null;
                 networkStream = null;
+                tmpClient?.Dispose();
+                tmpStream?.Dispose();
+                RaiseOnDisconnected(EventArgs.Empty);
             }
         }
         private void SendMessage()
@@ -51,7 +66,14 @@ namespace Mageki
             byte[] buffer = Data.ToByteArray();
             if (!disposedValue)
             {
-                networkStream.Write(buffer, 0, buffer.Length);
+                try
+                {
+                    networkStream.Write(buffer, 0, buffer.Length);
+                }
+                catch
+                {
+                    Disconnect();
+                }
             }
         }
         private void WritingThread()
@@ -63,6 +85,7 @@ namespace Mageki
             {
                 if (!IsConnected)
                 {
+                    Reconnect();
                     continue;
                 }
                 TimeSpan time = (sw.Elapsed + compensate) - millisecond;
@@ -72,7 +95,7 @@ namespace Mageki
                 }
                 sw.Restart();
                 SendMessage();
-                compensate=time;
+                compensate = time;
             }
             sw.Stop();
         }
@@ -85,16 +108,17 @@ namespace Mageki
             {
                 if (!IsConnected)
                 {
-                    Connect();
                     continue;
                 }
-                IAsyncResult result = networkStream.BeginRead(_inBuffer, 0, 4, new AsyncCallback((res) => { }), null);
-                int len = networkStream.EndRead(result);
-                if (len <= 0)
+                try
                 {
-                    Disconnect();
-                    continue;
+                    int len = networkStream.Read(_inBuffer, 0, _inBuffer.Length);
+                    if (len <= 0)
+                    {
+                        continue;
+                    }
                 }
+                catch { };
                 uint ledData = BitConverter.ToUInt32(_inBuffer, 0);
                 SetLed(ledData);
             }
@@ -112,7 +136,6 @@ namespace Mageki
                     networkStream?.Dispose();
                     client?.Dispose();
                 }
-
                 // TODO: 释放未托管的资源(未托管的对象)并重写终结器
                 // TODO: 将大型字段设置为 null
                 disposedValue = true;
