@@ -49,8 +49,8 @@ namespace Mageki
     }
     public enum Protocols
     {
-        Udp = 0,
-        Tcp = 1
+        UDP = 0,
+        TCP = 1
     }
     public static class Settings
     {
@@ -58,7 +58,7 @@ namespace Mageki
         public const double MinLeverLinearity = 54;
         public static Protocols Protocol
         {
-            get => (Protocols)Preferences.Get("protocol", (int)Protocols.Tcp);
+            get => (Protocols)Preferences.Get("protocol", (int)Protocols.TCP);
             set
             {
                 Preferences.Set("protocol", (int)value);

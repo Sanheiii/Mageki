@@ -115,8 +115,8 @@ namespace Mageki
                 }
                 io = Settings.Protocol switch
                 {
-                    Protocols.Udp => new UdpIO(),
-                    Protocols.Tcp => new TcpIO(),
+                    Protocols.UDP => new UdpIO(),
+                    Protocols.TCP => new TcpIO(),
                     _ => throw new NotImplementedException(),
                 };
                 io.OnConnected += OnConnected;
