@@ -46,10 +46,10 @@ namespace Mageki
             pollThread = new Thread(PollThread);
             pollThread.Start();
         }
-        public override void SetGameButton(int index, bool pressed)
+        public override void SetGameButton(int index, byte value)
         {
-            base.SetGameButton(index, pressed);
-            SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)index, Convert.ToByte(pressed) });
+            base.SetGameButton(index, value);
+            SendMessage(new byte[] { (byte)MessageType.ButtonStatus, (byte)index, value });
         }
         public override void SetLever(short value)
         {

@@ -62,9 +62,14 @@ namespace Mageki
 
         public abstract void Init();
         public abstract void Dispose();
-        public virtual void SetGameButton(int index, bool pressed)
+        /// <summary>
+        /// 设置按键状态
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="value">触点数量，0为释放状态</param>
+        public virtual void SetGameButton(int index, byte value)
         {
-            data.GameButtons[index] = (byte)(pressed ? 1 : 0);
+            data.GameButtons[index] = value;
         }
         public virtual void SetLever(short value)
         {

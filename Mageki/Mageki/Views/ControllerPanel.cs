@@ -340,8 +340,10 @@ namespace Mageki
                         // 按下按键
                         if ((byte)area < 10)
                         {
+                            //按在这个按键上的触点数量
+                            byte count = (byte)touchPoints.Count(p => p.Value.button == area);
                             // 设置io中按键的状态
-                            io.SetGameButton((int)area, true);
+                            io.SetGameButton((int)area, count);
                             buttons[(int)area].IsHold = true;
                             // 使简易模式下的按键显示为被按下的状态
                             if (inRhythmGame && (int)area < 10 && (int)area % 5 < 3) buttons[10..13][(int)area % 5].IsHold = true;
@@ -369,28 +371,29 @@ namespace Mageki
                 case TouchActionType.Moved:
                     {
                         if (!touchPoints.ContainsKey(args.Id)) break;
-                        TouchArea button = touchPoints[args.Id].button;
-                        if (Settings.SeparateButtonsAndLever && (int)button < 8 && (int)button % 5 < 3)
+                        // 原本的按键
+                        TouchArea area0 = touchPoints[args.Id].button;
+                        // 新触发的按键
+                        TouchArea area1 = GetArea(pixelLocation.X, canvasView.CanvasSize.Width);
+                        if (Settings.SeparateButtonsAndLever && (int)area0 < 8 && (int)area0 % 5 < 3)
                         {
-                            TouchArea xArea = GetArea(pixelLocation.X, canvasView.CanvasSize.Width);
+                            // 修改触点的触发区域
+                            touchPoints[args.Id] = (area1, touchPoints[args.Id].startPosition, pixelLocation);
                             // 如果按键区不触发摇杆则允许搓
-                            if (button != xArea && (int)xArea < 8 && (int)xArea % 5 < 3)
+                            if (area0 != area1 && (int)area1 < 8 && (int)area1 % 5 < 3)
                             {
-
-                                io.SetGameButton((int)xArea, true);
-                                io.SetGameButton((int)button, false);
-                                buttons[(int)xArea].IsHold = true;
-                                buttons[(int)button].IsHold = false;
-                                touchPoints[args.Id] = (touchPoints[args.Id].button, touchPoints[args.Id].startPosition, pixelLocation);
+                                // 搓到的新键上目前有几个触点
+                                byte count0 = (byte)touchPoints.Count(p => p.Value.button == area1);
+                                // 旧键上有几个触点
+                                byte count1 = (byte)touchPoints.Count(p => p.Value.button == area0);
+                                io.SetGameButton((int)area1, count0);
+                                io.SetGameButton((int)area0, count1);
+                                buttons[(int)area1].IsHold = true;
+                                if (count1 == 0)
+                                {
+                                    buttons[(int)area0].IsHold = false;
+                                }
                             }
-                        }
-                        // 滑动距离超过一定值取消对侧键的捕获
-                        float l = MathF.Abs((touchPoints[args.Id].startPosition - pixelLocation).X);
-                        if ((int)touchPoints[args.Id].button < 10 && (int)touchPoints[args.Id].button % 5 == 3 && l > 100)
-                        {
-                            io.SetGameButton((int)button, false);
-                            buttons[(int)button].IsHold = false;
-                            touchPoints[args.Id] = (TouchArea.Others, touchPoints[args.Id].startPosition, pixelLocation);
                         }
                         // 拖动触发摇杆，多个手指在同一帧移动时只会取最大值
                         else if (touchPoints.ContainsKey(args.Id))
@@ -408,7 +411,8 @@ namespace Mageki
                                     leverCache.Clear();
                                 }
                             }
-                            touchPoints[args.Id] = (touchPoints[args.Id].button, touchPoints[args.Id].startPosition, pixelLocation);
+                            // 修改触点上次检测的位置
+                            touchPoints[args.Id] = (area0, touchPoints[args.Id].startPosition, pixelLocation);
                         }
                         break;
                     }
@@ -444,13 +448,18 @@ namespace Mageki
         {
             if (!touchPoints.ContainsKey(id)) return;
             TouchArea button = touchPoints[id].button;
-            if ((int)button < 10 && touchPoints.Count(p => p.Value.button == button) < 2)
+            touchPoints.Remove(id);
+            byte count = (byte)touchPoints.Count(p => p.Value.button == button);
+            if ((int)button < 10)
             {
-                io.SetGameButton((int)button, false);
-                buttons[(int)button].IsHold = false;
-                if (inRhythmGame && (int)button < 10 && (int)button % 5 < 3) buttons[10..13][(int)button % 5].IsHold = false;
+                if (count == 0)
+                {
+                    buttons[(int)button].IsHold = false;
+                    if (inRhythmGame && (int)button < 10 && (int)button % 5 < 3) buttons[10..13][(int)button % 5].IsHold = false;
+                }
+                io.SetGameButton((int)button, count);
             }
-            else if (button == TouchArea.Logo && touchPoints.Count(p => p.Value.button == button) < 2)
+            else if (button == TouchArea.Logo && count == 0)
             {
                 simulateScanning = false;
                 io.SetAime(false, new byte[10]);
@@ -459,7 +468,6 @@ namespace Mageki
                     LogoClickd.Invoke(this, EventArgs.Empty);
                 if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
             }
-            touchPoints.Remove(id);
         }
         private void MoveLever(float x)
         {
