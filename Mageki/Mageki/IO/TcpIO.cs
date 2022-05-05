@@ -23,12 +23,21 @@ namespace Mageki
         private Thread readingThread;
         private byte[] _inBuffer = new byte[4];
         private bool disposedValue;
+        public int Port { get; private set; }
         public override bool IsConnected => client?.Connected ?? false;
+        public TcpIO() : this(Settings.Port)
+        {
 
+        }
+        public TcpIO(int port)
+        {
+            Port = port;
+        }
         public override void Init()
         {
+            if (disposedValue) throw new ObjectDisposedException(GetType().Name);
             IPAddress ip = new IPAddress(new byte[] { 0, 0, 0, 0 });
-            listener = new TcpListener(ip, Settings.Port);
+            listener = new TcpListener(ip, Port);
             listener.Start();
 
             writingThread = new Thread(ReadingThread);
@@ -39,13 +48,20 @@ namespace Mageki
         }
         public async void Reconnect()
         {
-            if (connecting) return;
+            if (connecting || disposedValue) return;
             connecting = true;
             Disconnect();
-            var newClient = await listener.AcceptTcpClientAsync();
-            networkStream = newClient.GetStream();
-            client = newClient;
-            RaiseOnConnected(EventArgs.Empty);
+            try
+            {
+                var newClient = await listener.AcceptTcpClientAsync();
+                networkStream = newClient.GetStream();
+                client = newClient;
+                RaiseOnConnected(EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.Error(ex);
+            }
             connecting = false;
         }
         private void Disconnect()
@@ -72,7 +88,10 @@ namespace Mageki
                 }
                 catch
                 {
-                    Disconnect();
+                    if (!disposedValue)
+                    {
+                        Disconnect();
+                    }
                 }
             }
         }
@@ -106,10 +125,7 @@ namespace Mageki
         {
             while (!disposedValue)
             {
-                if (!IsConnected)
-                {
-                    continue;
-                }
+                if (!IsConnected) continue;
                 try
                 {
                     int len = networkStream.Read(_inBuffer, 0, _inBuffer.Length);
@@ -128,6 +144,7 @@ namespace Mageki
         {
             if (!disposedValue)
             {
+                disposedValue = true;
                 if (disposing)
                 {
                     // TODO: 释放托管状态(托管对象)
@@ -135,10 +152,10 @@ namespace Mageki
                         RaiseOnDisconnected(EventArgs.Empty);
                     networkStream?.Dispose();
                     client?.Dispose();
+                    listener?.Stop();
                 }
                 // TODO: 释放未托管的资源(未托管的对象)并重写终结器
                 // TODO: 将大型字段设置为 null
-                disposedValue = true;
             }
         }
 

@@ -21,11 +21,21 @@ namespace Mageki
         private byte dkRandomValue;
         private Timer heartbeatTimer = new Timer(400) { AutoReset = true };
         private Timer disconnectTimer = new Timer(1500) { AutoReset = false };
-        private IPEndPoint remoteEP = new IPEndPoint(IPAddress.Broadcast, Settings.Port);
+        private IPEndPoint remoteEP;
         private bool disposedValue;
 
+        public int Port { get; private set; }
         public override bool IsConnected => remoteEP.Address.Address != IPAddress.Broadcast.Address;
 
+        public UdpIO() : this(Settings.Port)
+        {
+
+        }
+        public UdpIO(int port)
+        {
+            Port = port;
+            remoteEP = new IPEndPoint(IPAddress.Broadcast, Port);
+        }
         public override void Init()
         {
             dkRandomValue = (byte)(new Random().Next() % 255);
@@ -69,8 +79,15 @@ namespace Mageki
         {
             while (!disposedValue)
             {
-                byte[] buffer = client.Receive(ref ep);
-                ParseBuffer(buffer);
+                try
+                {
+                    byte[] buffer = client.Receive(ref ep);
+                    ParseBuffer(buffer);
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.Error(ex);
+                }
             }
         }
         // 在没有连接的时候请求连接,有连接时发送心跳保存连接
@@ -85,7 +102,7 @@ namespace Mageki
 
         private void DisconnectTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            remoteEP = new IPEndPoint(IPAddress.Broadcast, Settings.Port);
+            remoteEP = new IPEndPoint(IPAddress.Broadcast, Port);
             RaiseOnDisconnected(EventArgs.Empty);
             //logo.Color = SKColors.Gray;
             //MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
@@ -121,9 +138,7 @@ namespace Mageki
                     remoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
                     RequestValues();
                     RaiseOnConnected(EventArgs.Empty);
-                    //logo.Color = SKColors.Black;
                 }
-                client.Dispose();
                 disconnectTimer.Stop();
                 disconnectTimer.Start();
             }

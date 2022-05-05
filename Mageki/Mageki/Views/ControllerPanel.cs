@@ -1,4 +1,5 @@
 ﻿using Mageki.Drawables;
+using Mageki.Resources;
 using Mageki.TouchTracking;
 using Mageki.Utils;
 
@@ -100,11 +101,18 @@ namespace Mageki
             {
                 ForceGenRects();
             }
+            if (name == nameof(Settings.Protocol) || name == nameof(Settings.Port))
+            {
+                InitIO();
+            }
         }
-        private void InitIO()
+        public void InitIO()
         {
-            bool createNew;
-            if (io is null || io.GetType().ToString() != $"{Settings.Protocol}IO")
+            bool protocolChanged = io is null || io.GetType().ToString().ToLower() != $"{Settings.Protocol}IO".ToLower();
+            bool portChanged =
+                (io is UdpIO udpIO && udpIO.Port != Settings.Port) ||
+                (io is TcpIO tcpIO && tcpIO.Port != Settings.Port);
+            if (protocolChanged || portChanged)
             {
                 if (io != null)
                 {
@@ -113,16 +121,30 @@ namespace Mageki
                     io.OnLedChanged -= OnLedChanged;
                     io.Dispose();
                 }
-                io = Settings.Protocol switch
+                try
                 {
-                    Protocols.UDP => new UdpIO(),
-                    Protocols.TCP => new TcpIO(),
-                    _ => throw new NotImplementedException(),
-                };
-                io.OnConnected += OnConnected;
-                io.OnDisconnected += OnDisconnected;
-                io.OnLedChanged += OnLedChanged;
-                io.Init();
+                    io = Settings.Protocol switch
+                    {
+                        Protocols.UDP => new UdpIO(),
+                        Protocols.TCP => new TcpIO(),
+                        _ => throw new NotImplementedException($"Unsupported protocols:{Settings.Protocol}"),
+                    };
+                    io.OnConnected += OnConnected;
+                    io.OnDisconnected += OnDisconnected;
+                    io.OnLedChanged += OnLedChanged;
+                    OnDisconnected(this, EventArgs.Empty);
+                    OnLedChanged(this, EventArgs.Empty);
+                    io.Init();
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.Error(ex);
+                    //bool copy = App.Current.MainPage.DisplayAlert(AppResources.Error, ex.ToString(), AppResources.Copy, AppResources.Cancel).Result;
+                    //if (copy)
+                    //{
+                    //    Clipboard.SetTextAsync(ex.ToString());
+                    //}
+                }
             }
         }
 
