@@ -34,7 +34,7 @@
                     <ViewCell>
                         <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.Protocol}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Picker SelectedIndex="{Binding ProtocolIndex}" ItemsSource="{Binding Protocols}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
+                            <Picker SelectedIndex="{Binding ProtocolIndex}" ItemsSource="{Binding Protocols}" Grid.Column="1" HorizontalOptions="Fill" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
                 </TableSection>

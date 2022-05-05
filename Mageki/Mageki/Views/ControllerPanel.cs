@@ -100,10 +100,6 @@ namespace Mageki
             {
                 ForceGenRects();
             }
-            if (name == nameof(Settings.Protocol))
-            {
-                InitIO();
-            }
         }
         private void InitIO()
         {
