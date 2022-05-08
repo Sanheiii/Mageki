@@ -25,6 +25,7 @@ namespace Mageki
         {
             this.controller = controller;
             InitializeComponent();
+            ProtocolPicker.SelectedIndex = ViewModel.ProtocolIndex;
         }
 
         public void Dismiss()

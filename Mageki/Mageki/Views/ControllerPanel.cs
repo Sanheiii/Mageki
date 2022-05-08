@@ -400,6 +400,7 @@ namespace Mageki
                         {
                             lock (leverCache)
                             {
+                                // 无法判断触点是哪一帧传来，所以在传来重复id时认为到了下一帧
                                 bool idDuplicated = leverCache.Any(c => c.touchID == args.Id);
                                 leverCache.Add((pixelLocation.X - touchPoints[args.Id].lastPosition.X, args.Id));
                                 if (idDuplicated)
