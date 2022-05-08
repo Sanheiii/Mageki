@@ -405,10 +405,19 @@ namespace Mageki
                                 leverCache.Add((pixelLocation.X - touchPoints[args.Id].lastPosition.X, args.Id));
                                 if (idDuplicated)
                                 {
-                                    var max = leverCache.Max((a) => MathF.Abs(a.value));
-                                    var value = leverCache.Find(a => MathF.Abs(a.value) == max).value;
-                                    var currentValue = pixelLocation.X - touchPoints[args.Id].lastPosition.X;
-                                    MoveLever(value);
+                                    // 计算全部移动的和，并将其限制在最大与最小值之间
+                                    var min = leverCache.Select(v => v.value).Min();
+                                    var max = leverCache.Select(v => v.value).Max();
+                                    var sum = leverCache.Sum(v => v.value);
+                                    if (min < 0 && sum < min)
+                                    {
+                                        sum = min;
+                                    }
+                                    if (max > 0 && sum > max)
+                                    {
+                                        sum = max;
+                                    }
+                                    MoveLever(sum);
                                     leverCache.Clear();
                                 }
                             }
