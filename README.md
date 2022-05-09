@@ -18,31 +18,7 @@ Mageki能够通过USB或局域网连接到中的ongeki-io，使你的移动设�
 - 使用设备的NFC功能读取Felica标签登录游戏（暂时仅支持Android设备）。
 - 自由地调节按钮高度。
 ## 开始使用
-请前往[发布页](https://github.com/Sanheiii/Mageki/releases)下载所需的文件。
-### 安装程序
-- Android
-  - 下载 __mageki.apk__。
-  - 在Android设备上打开以安装程序。
-- iOS
-  - 下载 __mageki.ipa__。
-  - 使用自签工具（如[AltStore](https://altstore.io/)）安装ipa。
-- UWP
-  - 缺少触屏设备无法调试，如有需求请自行编译，Debug并提交Pull request。
-### 配置IO
-- 将 __mu3hook.dll__，__mu3Input.dll__ 解压至 __SDDT\package__ 目录下。
-- 在原有的 __segatools.ini__ 内添加以下文本
-```ini
-[mu3io]
-path=MU3Input.dll
-port=4354
-protocol=udp
-
-[aimeio]
-path=MU3Input.dll
-```
-- 保存文件
-
-完成上面操作后，确保运行Mageki与游戏的设备处于同一局域网并没有连接到代理软件即可使用，但仍需一些额外操作来获得更好游戏体验。
+请前往 __[wiki页面](https://github.com/Sanheiii/Mageki/wiki/Mageki%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C)__ 查看 __配置与连接说明__
 ### 校准摇杆
 - 打开游戏与Mageki，点击Mageki中间的logo进入设置，点击 __游戏测试菜单__ 按钮进入游戏测试菜单来校准摇杆。
 
@@ -53,12 +29,7 @@ path=MU3Input.dll
 - 在屏幕任意位置水平滑动模拟摇杆。
 - 点击空白部分模拟侧键。
 - 简易布局下使用两指点击同一按钮可同时触发两侧按键。
-## 待发布
-- 有线连接
-- 运行时更改协议与端口
-- 摇杆操作优化
-- 修复Android检查更新无法正常跳转到发布页
-- 再次按下同一按键将会自动松开一帧
+<!-- ## 待发布 -->
 <!-- ## 开发中 -->
 
 ## 待完善
