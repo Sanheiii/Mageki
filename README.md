@@ -1,9 +1,10 @@
 # Mageki
-[![latest](https://img.shields.io/github/v/release/sanheiii/mageki.svg?style=plastic)](https://github.com/Sanheiii/Mageki/releases/latest)
-[![GitHub issues](https://img.shields.io/github/issues/Sanheiii/Mageki?style=plastic)](https://github.com/Sanheiii/Mageki/issues)
-[![GitHub forks](https://img.shields.io/github/forks/Sanheiii/Mageki?style=plastic)](https://github.com/Sanheiii/Mageki/network)
-[![GitHub stars](https://img.shields.io/github/stars/Sanheiii/Mageki?style=plastic)](https://github.com/Sanheiii/Mageki/stargazers)
-[![GitHub license](https://img.shields.io/github/license/Sanheiii/Mageki?style=plastic)](https://github.com/Sanheiii/Mageki/blob/master/LICENSE)
+[![latest](https://img.shields.io/github/v/release/sanheiii/mageki.svg)](https://github.com/Sanheiii/Mageki/releases/latest)
+[![GitHub downloads total](https://img.shields.io/github/downloads/Sanheiii/Mageki/total)](https://github.com/Sanheiii/Mageki/releases)
+[![GitHub issues](https://img.shields.io/github/issues/Sanheiii/Mageki)](https://github.com/Sanheiii/Mageki/issues)
+[![GitHub forks](https://img.shields.io/github/forks/Sanheiii/Mageki)](https://github.com/Sanheiii/Mageki/network)
+[![GitHub stars](https://img.shields.io/github/stars/Sanheiii/Mageki)](https://github.com/Sanheiii/Mageki/stargazers)
+[![GitHub license](https://img.shields.io/github/license/Sanheiii/Mageki)](https://github.com/Sanheiii/Mageki/blob/master/LICENSE)
 - 如果你喜欢，可以点击star支持我
 - [提交反馈](https://github.com/Sanheiii/Mageki/issues/new/choose)
 ## 关于
