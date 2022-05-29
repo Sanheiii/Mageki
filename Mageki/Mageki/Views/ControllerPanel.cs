@@ -1,4 +1,5 @@
-﻿using Mageki.Drawables;
+﻿using Mageki.DependencyServices;
+using Mageki.Drawables;
 using Mageki.Resources;
 using Mageki.TouchTracking;
 using Mageki.Utils;
@@ -15,6 +16,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using System.Timers;
 
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -65,7 +67,7 @@ namespace Mageki
 
         bool inRhythmGame;
         private bool nfcScanning = false;
-        private bool simulateScanning = false;
+        private bool logoHoldUnhandled = false;
 
         public delegate void ClickEventHandler(object sender, EventArgs args);
         public event ClickEventHandler LogoClickd;
@@ -80,7 +82,7 @@ namespace Mageki
             //捕获点击
             touchEffect.TouchAction += TouchEffect_TouchAction;
             Effects.Add(touchEffect);
-            // 安卓平台可以使用NFC刷卡
+            // 安卓平台可以免提示使用NFC刷卡
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
                 try
@@ -171,12 +173,16 @@ namespace Mageki
 
         public async void ScanFelica(byte[] felicaId)
         {
-            if (nfcScanning || simulateScanning) return;
+            if (nfcScanning || logoHoldUnhandled) return;
             nfcScanning = true;
             io.SetAime(true, new BigInteger(felicaId).ToBcd());
             await Task.Delay(3000);
             io.SetAime(false, new byte[10]);
             nfcScanning = false;
+        }
+        private void ScanFelicaInvalidated()
+        {
+            ScanFelica(GetSimulatedAimeId());
         }
 
         public async Task PressAndReleaseTestButtonAsync()
@@ -351,18 +357,33 @@ namespace Mageki
                         // 按下logo根据放开时间刷卡或显示菜单
                         else if (area == TouchArea.Logo)
                         {
-                            if (!(nfcScanning || simulateScanning))
+                            if (!(nfcScanning || logoHoldUnhandled))
                             {
-                                byte[] aimeId = Enumerable.Range(0, 10).Select((i) => (byte)255).ToArray();
-                                simulateScanning = true;
+                                logoHoldUnhandled = true;
                                 scanTime = DateTime.Now;
-                                if (BigInteger.TryParse(Settings.AimeId, out BigInteger integer))
+                                if (DeviceInfo.Platform != DevicePlatform.iOS || !DependencyService.Get<INfcService>().ReadingAvailable)
                                 {
-                                    var bcd = integer.ToBcd();
-                                    var bytes = new byte[10 - bcd.Length].Concat(bcd);
-                                    aimeId = bytes.ToArray();
+                                    io.SetAime(true, GetSimulatedAimeId());
                                 }
-                                io.SetAime(true, aimeId);
+                                //符合条件的iOS机型长按一秒打开读卡菜单，取消后可以继续模拟刷卡
+                                else
+                                {
+                                    Timer timer = new Timer(1000) { AutoReset = false };
+                                    timer.Elapsed += (sender, e) =>
+                                    {
+                                        MainThread.InvokeOnMainThreadAsync(() =>
+                                        {
+                                            if (logoHoldUnhandled)
+                                            {
+                                                if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
+                                                logoHoldUnhandled = false;
+                                                var nfcService = DependencyService.Get<INfcService>();
+                                                nfcService.StartReadFelicaId(ScanFelica, ScanFelicaInvalidated);
+                                                timer.Dispose();
+                                            }
+                                        });
+                                    };
+                                }
                                 if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
                             }
                         }
@@ -449,6 +470,18 @@ namespace Mageki
             //通知重绘画布
             canvasView.InvalidateSurface();
         }
+
+        byte[] GetSimulatedAimeId()
+        {
+            byte[] aimeId = Enumerable.Range(0, 10).Select((i) => (byte)255).ToArray();
+            if (BigInteger.TryParse(Settings.AimeId, out BigInteger integer))
+            {
+                var bcd = integer.ToBcd();
+                var bytes = new byte[10 - bcd.Length].Concat(bcd);
+                aimeId = bytes.ToArray();
+            }
+            return aimeId;
+        }
         /// <summary>
         /// 释放按键
         /// </summary>
@@ -469,9 +502,9 @@ namespace Mageki
                 }
                 io.SetGameButton((int)button, count);
             }
-            else if (button == TouchArea.Logo && count == 0)
+            else if (button == TouchArea.Logo && count == 0 && logoHoldUnhandled)
             {
-                simulateScanning = false;
+                logoHoldUnhandled = false;
                 io.SetAime(false, new byte[10]);
                 // 按下超过一秒不触发菜单
                 if (DateTime.Now - scanTime < TimeSpan.FromSeconds(0.3) && currentArea == button)

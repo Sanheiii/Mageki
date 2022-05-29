@@ -7,7 +7,7 @@ using System.Threading;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(CloseApplication))]
-namespace Mageki.iOS
+namespace Mageki.iOS.DependencyServices
 {
     public class CloseApplication : ICloseApplication
     {
