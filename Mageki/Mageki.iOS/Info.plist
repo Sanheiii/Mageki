@@ -39,6 +39,12 @@
 	<array>
 		<string>_leboremote._tcp</string>
 	</array>
+	<key>com.apple.developer.nfc.readersession.felica.systemcodes</key>
+	<array>
+		<string>88B4</string>
+	</array>
+	<key>NFCReaderUsageDescription</key>
+	<string>Read Aime cards with NFC.</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.1.0</string>
 </dict>
