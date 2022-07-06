@@ -383,6 +383,7 @@ namespace Mageki
                                             }
                                         });
                                     };
+                                    timer.Start();
                                 }
                                 if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
                             }

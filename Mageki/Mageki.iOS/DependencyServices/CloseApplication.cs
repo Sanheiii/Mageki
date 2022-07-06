@@ -1,6 +1,7 @@
 ﻿
 using Mageki.DependencyServices;
 using Mageki.iOS;
+using Mageki.iOS.DependencyServices;
 
 using System.Threading;
 
