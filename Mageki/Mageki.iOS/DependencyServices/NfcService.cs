@@ -31,7 +31,7 @@ namespace Mageki.iOS.DependencyServices
             _onScanAction = onScanAction;
             _onInvalidate = onInvalidate;
 
-            _session = new NFCTagReaderSession(NFCPollingOption.Iso18092, this, DispatchQueue.CurrentQueue);
+            _session = new NFCTagReaderSession(NFCPollingOption.Iso18092, this, null);
             _session.AlertMessage = "扫描aime卡片，或取消以模拟刷卡";
             _session.BeginSession();
         }
