@@ -175,6 +175,7 @@ namespace Mageki
         {
             if (nfcScanning || logoHoldUnhandled) return;
             nfcScanning = true;
+            felicaId = felicaId.Concat(new byte[] { 0 }).ToArray();
             io.SetAime(true, new BigInteger(felicaId).ToBcd());
             await Task.Delay(3000);
             io.SetAime(false, new byte[10]);
