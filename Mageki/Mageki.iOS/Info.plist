@@ -26,7 +26,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>icu.sanhei.mageki</string>
 	<key>CFBundleVersion</key>
-	<string>5</string>
+	<string>6</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>CFBundleName</key>
@@ -41,7 +41,6 @@
 	</array>
 	<key>com.apple.developer.nfc.readersession.felica.systemcodes</key>
 	<array>
-		<!--部分代码来自 https://github.com/treastrain/TRETJapanNFCReader -->
 		<string>0003</string>
 		<string>80DE</string>
 		<string>8592</string>
@@ -55,6 +54,6 @@
 	<key>NFCReaderUsageDescription</key>
 	<string>Read Aime cards with NFC.</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.0</string>
+	<string>1.1.1</string>
 </dict>
 </plist>
