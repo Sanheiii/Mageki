@@ -10,7 +10,7 @@
 ## 关于
 Mageki能够通过USB或局域网连接到中的ongeki-io，使你的移动设备成为音击控制器。
 
-交流Q群：[738692981](https://qm.qq.com/cgi-bin/qm/qr?k=eHu_fWA0FyVDM6jbQHimucmUUd9kUpzz&authKey=tmVkN1jt+u5ig0OdcThcogODlB8hGbln22h1KdrWOKjgr/3gZfALo7r1veqw6HPB&noverify=0)
+交流Q群：[738692981](https://jq.qq.com/?_wv=1027&k=ddmBJUbL)
 ## 请注意
 - __项目名中的Ma取自Xamarin，geki取自ONGEKI，请不要使用其它任何汉字或Emoji来代替它们。__
 - __不提供游戏下载，如有需求请另寻他处获取。__
