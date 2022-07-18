@@ -9,6 +9,7 @@
 - [提交反馈](https://github.com/Sanheiii/Mageki/issues/new/choose)
 ## 关于
 Mageki能够通过USB或局域网连接到中的ongeki-io，使你的移动设备成为音击控制器。
+交流Q群：738692981
 ## 请注意
 - __项目名中的Ma取自Xamarin，geki取自ONGEKI，请不要使用其它任何汉字或Emoji来代替它们。__
 - __不提供游戏下载，如有需求请另寻他处获取。__
