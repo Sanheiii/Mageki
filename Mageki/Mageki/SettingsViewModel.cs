@@ -22,7 +22,7 @@ namespace Mageki
         public Protocols Protocol { get => Settings.Protocol; set => Settings.Protocol = value; }
         public int ProtocolIndex { get => (int)Protocol; set => Protocol = (Protocols)value; }
         public List<string> Protocols => Enum.GetNames(typeof(Protocols)).ToList();
-        public int Port { get => Settings.Port; set => Settings.Port = value; }
+        public ushort Port { get => Settings.Port; set => Settings.Port = value; }
         // 0 => 1 , -10 => 0.1 , 10 => 10
         public float LeverSensitivity { get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase); set => Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value); }
 
@@ -63,9 +63,9 @@ namespace Mageki
                 OnValueChanged();
             }
         }
-        public static int Port
+        public static ushort Port
         {
-            get => Preferences.Get("port", 4354);
+            get => (ushort)Preferences.Get("port", 4354);
             set
             {
                 Preferences.Set("port", value);
