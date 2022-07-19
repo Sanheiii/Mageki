@@ -132,9 +132,6 @@
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="SimpleLayout" xml:space="preserve">
-    <value>Simple Layout</value>
-  </data>
   <data name="AimeID" xml:space="preserve">
     <value>Aime ID</value>
   </data>

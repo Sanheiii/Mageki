@@ -223,7 +223,7 @@ namespace Mageki
             {
                 drawable.Draw(canvas);
             }
-            buttons.Draw(canvas, inRhythmGame && Settings.UseSimplifiedLayout);
+            buttons.Draw(canvas);
             logo.Draw(canvas);
             //canvas.DrawRect(slider.BackRect, slider.BackPaint);
             //canvas.DrawRect(slider.LeverRect, slider.LeverPaint);
@@ -247,26 +247,7 @@ namespace Mageki
             float buttonSpacing = buttonHeight * ButtonSpacingCoef;
 
             float buttonBottom = height - bottomMargin;
-            if (inRhythmGame && Settings.UseSimplifiedLayout)
-            {
-                // 打歌时以特殊布局绘制
-                float specialButtonWidth = (width - panelMargin * 2 - buttonSpacing * 2) / 4;
-                // Button 1
-                buttons.S1.Color = buttons.L1.Color;
-                buttons.S1.Height = buttonHeight;
-                buttons.S1.Width = specialButtonWidth;
-                buttons.S1.Center = new SKPoint(panelMargin + buttonSpacing * 0 + specialButtonWidth * 0.5f, buttonBottom - buttonHeight / 2);
-                // Button 2
-                buttons.S2.Color = buttons.L2.Color;
-                buttons.S2.Height = buttonHeight;
-                buttons.S2.Width = specialButtonWidth * 2;
-                buttons.S2.Center = new SKPoint(panelMargin + buttonSpacing * 1 + specialButtonWidth * 2f, buttonBottom - buttonHeight / 2);
-                // Button 3
-                buttons.S3.Color = buttons.L3.Color;
-                buttons.S3.Height = buttonHeight;
-                buttons.S3.Width = specialButtonWidth;
-                buttons.S3.Center = new SKPoint(panelMargin + buttonSpacing * 2 + specialButtonWidth * 3.5f, buttonBottom - buttonHeight / 2);
-            }
+
             // Left 1
             buttons.L1.Width = buttons.L1.Height = buttonWidth;
             buttons.L1.Center = new SKPoint(panelMargin + buttonSpacing * 0 + buttonWidth * 0.5f, buttonBottom - buttonHeight / 2);
@@ -557,21 +538,12 @@ namespace Mageki
         private TouchArea GetArea(float x, float width)
         {
             TouchArea area;
-            if (inRhythmGame && Settings.UseSimplifiedLayout)
-            {
-                if (x < width / 4 * 1) area = buttons.R1.IsHold ? TouchArea.LButton1 : TouchArea.RButton1;
-                else if (x < width / 4 * 3) area = buttons.R2.IsHold ? TouchArea.LButton2 : TouchArea.RButton2;
-                else area = buttons.R3.IsHold ? TouchArea.LButton3 : TouchArea.RButton3;
-            }
-            else
-            {
-                if (x < (buttons.L1.BorderRect.Right + buttons.L2.BorderRect.Left) / 2) area = TouchArea.LButton1;
-                else if (x < (buttons.L2.BorderRect.Right + buttons.L3.BorderRect.Left) / 2) area = TouchArea.LButton2;
-                else if (x < (buttons.L3.BorderRect.Right + buttons.R1.BorderRect.Left) / 2) area = TouchArea.LButton3;
-                else if (x < (buttons.R1.BorderRect.Right + buttons.R2.BorderRect.Left) / 2) area = TouchArea.RButton1;
-                else if (x < (buttons.R2.BorderRect.Right + buttons.R3.BorderRect.Left) / 2) area = TouchArea.RButton2;
-                else area = TouchArea.RButton3;
-            }
+            if (x < (buttons.L1.BorderRect.Right + buttons.L2.BorderRect.Left) / 2) area = TouchArea.LButton1;
+            else if (x < (buttons.L2.BorderRect.Right + buttons.L3.BorderRect.Left) / 2) area = TouchArea.LButton2;
+            else if (x < (buttons.L3.BorderRect.Right + buttons.R1.BorderRect.Left) / 2) area = TouchArea.LButton3;
+            else if (x < (buttons.R1.BorderRect.Right + buttons.R2.BorderRect.Left) / 2) area = TouchArea.RButton1;
+            else if (x < (buttons.R2.BorderRect.Right + buttons.R3.BorderRect.Left) / 2) area = TouchArea.RButton2;
+            else area = TouchArea.RButton3;
             return area;
         }
 

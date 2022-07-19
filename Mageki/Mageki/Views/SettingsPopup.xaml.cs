@@ -39,11 +39,6 @@ namespace Mageki
             Dismiss();
         }
 
-        private void UseSimplifiedLayout_Tapped(object sender, EventArgs e)
-        {
-            ViewModel.UseSimplifiedLayout = !ViewModel.UseSimplifiedLayout;
-        }
-
         private void SeparateButtonsAndLever_Tapped(object sender, EventArgs e)
         {
             ViewModel.SeparateButtonsAndLever = !ViewModel.SeparateButtonsAndLever;

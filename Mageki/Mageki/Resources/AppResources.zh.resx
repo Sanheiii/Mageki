@@ -132,9 +132,6 @@
   <data name="Settings" xml:space="preserve">
     <value>设置</value>
   </data>
-  <data name="SimpleLayout" xml:space="preserve">
-    <value>使用简易布局</value>
-  </data>
   <data name="AimeID" xml:space="preserve">
     <value>Aime 卡号</value>
   </data>

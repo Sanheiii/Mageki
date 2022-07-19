@@ -34,8 +34,6 @@ namespace Mageki
 
         public string Aimeid { get => Settings.AimeId; set => Settings.AimeId = value; }
 
-        public bool UseSimplifiedLayout { get => Settings.UseSimplifiedLayout; set => Settings.UseSimplifiedLayout = value; }
-
         public bool SeparateButtonsAndLever { get => Settings.SeparateButtonsAndLever; set => Settings.SeparateButtonsAndLever = value; }
 
         public bool HapticFeedback { get => Settings.HapticFeedback; set => Settings.HapticFeedback = value; }
@@ -71,15 +69,6 @@ namespace Mageki
             set
             {
                 Preferences.Set("port", value);
-                OnValueChanged();
-            }
-        }
-        public static bool UseSimplifiedLayout
-        {
-            get => Preferences.Get("useSimplifiedLayout", DeviceInfo.Idiom == DeviceIdiom.Phone || DeviceInfo.Idiom == DeviceIdiom.Watch);
-            set
-            {
-                Preferences.Set("useSimplifiedLayout", value);
                 OnValueChanged();
             }
         }

@@ -36,9 +36,6 @@ namespace Mageki.Drawables
         public Button R3 => Buttons[7] as Button;
         public SideButton RSide => Buttons[8] as SideButton;
         public MenuButton RMenu => Buttons[9] as MenuButton;
-        public Button S1 => Buttons[10] as Button;
-        public Button S2 => Buttons[11] as Button;
-        public Button S3 => Buttons[12] as Button;
 
         public IButton this[int i]
         {
@@ -49,27 +46,19 @@ namespace Mageki.Drawables
             get { return Buttons[r]; }
         }
 
-        public void Draw(SKCanvas canvas,bool useSimplifiedLayout)
+        public void Draw(SKCanvas canvas)
         {
             LSide.Draw(canvas);
             RSide.Draw(canvas);
             LMenu.Draw(canvas);
             RMenu.Draw(canvas);
-            if (useSimplifiedLayout)
-            {
-                S1.Draw(canvas);
-                S2.Draw(canvas);
-                S3.Draw(canvas);
-            }
-            else
-            {
-                L1.Draw(canvas);
-                L2.Draw(canvas);
-                L3.Draw(canvas);
-                R1.Draw(canvas);
-                R2.Draw(canvas);
-                R3.Draw(canvas);
-            }
+
+            L1.Draw(canvas);
+            L2.Draw(canvas);
+            L3.Draw(canvas);
+            R1.Draw(canvas);
+            R2.Draw(canvas);
+            R3.Draw(canvas);
         }
     }
 }
