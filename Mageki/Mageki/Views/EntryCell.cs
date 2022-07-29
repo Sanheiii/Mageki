@@ -9,7 +9,6 @@ namespace Mageki
     public class EntryCell : Xamarin.Forms.EntryCell
     {
         public static readonly BindableProperty TextColorProperty = BindableProperty.Create("TextColor", typeof(Color), typeof(EntryCell), Color.Default, BindingMode.OneWay, null, OnTextColorPropertyChanged);
-        public static readonly BindableProperty MaxLengthProperty = BindableProperty.Create("MaxLength", typeof(int), typeof(int), int.MaxValue);
         public static readonly BindableProperty PlaceholderColorProperty = BindableProperty.Create("PlaceholderColor", typeof(Color), typeof(EntryCell), default(Color));
 
         private static void OnTextColorPropertyChanged(BindableObject bindable, object oldValue, object newValue)
@@ -26,17 +25,6 @@ namespace Mageki
             set
             {
                 SetValue(TextColorProperty, value);
-            }
-        }
-        public int MaxLength
-        {
-            get
-            {
-                return (int)GetValue(MaxLengthProperty);
-            }
-            set
-            {
-                SetValue(MaxLengthProperty, value);
             }
         }
         public Color PlaceholderColor

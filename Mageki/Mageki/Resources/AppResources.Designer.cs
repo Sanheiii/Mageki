@@ -268,15 +268,6 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Simple Layout 的本地化字符串。
-        /// </summary>
-        public static string SimpleLayout {
-            get {
-                return ResourceManager.GetString("SimpleLayout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 Test Button 的本地化字符串。
         /// </summary>
         public static string TestButton {

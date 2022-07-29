@@ -6,7 +6,7 @@
     xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup" 
     xmlns:mageki="clr-namespace:Mageki"
     BackgroundColor="#AA000000"
-    xmlns:resources="clr-namespace:Mageki.Resources"
+    xmlns:resources="clr-namespace:Mageki.Resources" xmlns:views="clr-namespace:Mageki.Views"
     x:Class="Mageki.SettingsPopup">
     <rg:PopupPage.BindingContext>
         <mageki:SettingsViewModel/>
@@ -20,6 +20,8 @@
                 <Setter Property="ColumnSpacing" Value="0"/>
             </Style>
         </ResourceDictionary>
+        <views:PortConverter x:Key="PortConverter"/>
+        <views:AimeIdConverter x:Key="AimeIdConverter"/>
     </rg:PopupPage.Resources>
     <Grid RowDefinitions="Auto,*" BackgroundColor="Transparent">
         <mageki:NavigationBar Title="{x:Static resources:AppResources.Settings}" BackgroundColor="Transparent">
@@ -30,7 +32,7 @@
         <TableView HasUnevenRows="True" Intent="Settings" Grid.Row="1" BackgroundColor="Transparent">
             <TableRoot>
                 <TableSection Title="{x:Static resources:AppResources.Connection}" TextColor="{StaticResource PrimaryColor}">
-                    <mageki:EntryCell Label="{x:Static resources:AppResources.Port}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="5" Text="{Binding Port}" Placeholder="4354"/>
+                    <mageki:EntryCell x:Name="PortCell" Label="{x:Static resources:AppResources.Port}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" Text="{Binding Port,Converter={StaticResource PortConverter},ConverterParameter={x:Reference PortCell}}" Placeholder="4354"/>
                     <ViewCell>
                         <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.Protocol}" VerticalOptions="Center" Margin="16,0,0,0"/>
@@ -39,12 +41,6 @@
                     </ViewCell>
                 </TableSection>
                 <TableSection Title="{x:Static resources:AppResources.Gameplay}" TextColor="{StaticResource PrimaryColor}">
-                    <ViewCell Tapped="UseSimplifiedLayout_Tapped">
-                        <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.SimpleLayout}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Switch IsToggled="{Binding UseSimplifiedLayout}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
-                        </Grid>
-                    </ViewCell>
                     <ViewCell Tapped="SeparateButtonsAndLever_Tapped">
                         <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.SeparateButtonsAndLever}" VerticalOptions="Center" Margin="16,0,0,0"/>
@@ -63,7 +59,7 @@
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverLinearity}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Label TextColor="LightGray" Text="{Binding LeverLinearity,StringFormat='1/{0}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
                             <Slider Maximum="{Binding MaxLeverLinearity,Mode=OneTime}" Minimum="{Binding MinLeverLinearity,Mode=OneTime}" Grid.Column="2" HeightRequest="48" Value="{Binding LeverLinearity}" VerticalOptions="Center"/>
-                        </Grid>
+                        </Grid> 
                     </ViewCell>
                     <ViewCell>
                         <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource ViewCellGridStyle}">
@@ -78,7 +74,7 @@
                             <Switch IsToggled="{Binding HapticFeedback}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
-                    <mageki:EntryCell Label="{x:Static resources:AppResources.AimeID}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" MaxLength="20" Text="{Binding Aimeid}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
+                    <mageki:EntryCell x:Name="AimeIdCell" Label="{x:Static resources:AppResources.AimeID}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" Text="{Binding Aimeid,Converter={StaticResource AimeIdConverter},ConverterParameter={Reference AimeIdCell}}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
                 </TableSection>
                 <TableSection Title="{x:Static resources:AppResources.Others}" TextColor="{StaticResource PrimaryColor}">
                     <ViewCell Tapped="TestButton_Tapped">

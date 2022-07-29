@@ -31,10 +31,10 @@ namespace Mageki.Droid.Renderers
         private EditText EditText => _view.EditText;
         private TextColorSwitcher _textColorSwitcher;
         private TextColorSwitcher _hintColorSwitcher;
+
         protected override View GetCellCore(Xamarin.Forms.Cell item, View convertView, ViewGroup parent, Context context)
         {
             _view = (EntryCellView)base.GetCellCore(item, convertView, parent, context);
-            UpdateMaxLength();
             UpdatePlaceholderColor();
             UpdateTextColor();
             return _view;
@@ -44,9 +44,6 @@ namespace Mageki.Droid.Renderers
         {
             switch (e.PropertyName)
             {
-                case nameof(Element.MaxLength):
-                    UpdateMaxLength();
-                    break;
                 case nameof(Element.TextColor):
                     UpdateTextColor();
                     break;
@@ -68,26 +65,6 @@ namespace Mageki.Droid.Renderers
         {
             _hintColorSwitcher = (_hintColorSwitcher ?? new TextColorSwitcher(EditText.HintTextColors));
             _hintColorSwitcher.UpdateTextColor(EditText, Element.PlaceholderColor, EditText.SetHintTextColor);
-        }
-        private void UpdateMaxLength()
-        {
-            List<IInputFilter> list = new List<IInputFilter>(EditText?.GetFilters() ?? new IInputFilter[0]);
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i] is InputFilterLengthFilter)
-                {
-                    list.RemoveAt(i);
-                    break;
-                }
-            }
-
-            list.Add(new InputFilterLengthFilter(Element.MaxLength));
-            EditText?.SetFilters(list.ToArray());
-            string text = EditText?.Text;
-            if (text.Length > Element.MaxLength)
-            {
-                EditText.Text = text.Substring(0, Element.MaxLength);
-            }
         }
     }
     internal class TextColorSwitcher

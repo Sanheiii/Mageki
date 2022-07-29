@@ -26,12 +26,7 @@ namespace Mageki.iOS.Renderers
             var cell = base.GetCell(element, reusableCell, tv);
             text = ((UITextField)cell.Subviews[0].Subviews[0]);
             text.TextColor = element.TextColor.ToUIColor();
-            text.ShouldChangeCharacters = (UITextFieldChange)Delegate.Combine(text.ShouldChangeCharacters, new UITextFieldChange(ShouldChangeCharacters));
             return cell;
-        }
-        private bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
-        {
-            return textField?.Text?.Length + replacementString?.Length - range.Length <= element?.MaxLength;
         }
         protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString)
         {
