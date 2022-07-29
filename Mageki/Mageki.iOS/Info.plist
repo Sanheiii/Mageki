@@ -41,14 +41,6 @@
 	</array>
 	<key>com.apple.developer.nfc.readersession.felica.systemcodes</key>
 	<array>
-		<string>0003</string>
-		<string>80DE</string>
-		<string>8592</string>
-		<string>865E</string>
-		<string>8FC1</string>
-		<string>8B5D</string>
-		<string>FE00</string>
-		<string>8008</string>
 		<string>88B4</string>
 	</array>
 	<key>NFCReaderUsageDescription</key>
