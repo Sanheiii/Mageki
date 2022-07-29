@@ -67,7 +67,6 @@ namespace Mageki.Droid
             {
                 var subject = this.felicaReader.WhenCardFound() as Subject<IFelicaCardMedia>;
                 NfcF nfc = NfcF.Get(tag);
-                nfc.Connect();
                 subject.OnNext(new FelicaCardMediaImplementation(nfc));
             }
         }

@@ -49,6 +49,7 @@ namespace Mageki.iOS.DependencyServices
             {
                 _onScanAction(tags[0].GetNFCFeliCaTag().CurrentIdm.ToArray());
             }
+            session.InvalidateSession();
         }
     }
 }
