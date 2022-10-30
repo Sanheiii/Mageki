@@ -20,7 +20,7 @@ using Xamarin.Essentials;
 
 namespace Mageki.Droid
 {
-    [Activity(Label = "Mageki", Icon = "@mipmap/icon", Theme = "@style/MainTheme", ScreenOrientation = ScreenOrientation.SensorLandscape, MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
+    [Activity(Label = "Mageki", Icon = "@mipmap/ic_launcher", Theme = "@style/MainTheme", ScreenOrientation = ScreenOrientation.SensorLandscape, MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
     [IntentFilter(new[] { NfcAdapter.ActionTechDiscovered })]
     [MetaData(NfcAdapter.ActionTechDiscovered, Resource = "@xml/nfc_filter")]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
