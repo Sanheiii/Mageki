@@ -1,31 +1,29 @@
-﻿using System;
-
-using Android.App;
-using Android.Content.PM;
-using Android.Runtime;
-using Android.OS;
-using Android.Views;
-using Android.Nfc;
-using Plugin.FelicaReader.Abstractions;
-using Plugin.FelicaReader;
+﻿using Android.App;
 using Android.Content;
+using Android.Content.PM;
+using Android.Nfc;
 using Android.Nfc.Tech;
+using Android.OS;
+using Android.Runtime;
+using Android.Views;
+
+using Plugin.FelicaReader;
+using Plugin.FelicaReader.Abstractions;
+
+using System;
 using System.Reactive.Subjects;
-using NLog.Config;
-using NLog.Targets;
-using NLog;
-using System.IO;
-using Newtonsoft.Json.Linq;
+
 using Xamarin.Essentials;
 
 namespace Mageki.Droid
 {
     [Activity(Label = "Mageki", Icon = "@mipmap/ic_launcher", Theme = "@style/MainTheme", ScreenOrientation = ScreenOrientation.SensorLandscape, MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
-    [IntentFilter(new[] { NfcAdapter.ActionTechDiscovered })]
-    [MetaData(NfcAdapter.ActionTechDiscovered, Resource = "@xml/nfc_filter")]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         private IFelicaReader felicaReader;
+        PendingIntent pendingIntent;
+        IntentFilter[] intentFiltersArray;
+        string[][] techListsArray;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -36,6 +34,12 @@ namespace Mageki.Droid
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             try
             {
+                pendingIntent = PendingIntent.GetActivity(this, 0, new Intent(this, this.GetType()).AddFlags(ActivityFlags.SingleTop), PendingIntentFlags.Mutable);
+                IntentFilter tech = new IntentFilter(NfcAdapter.ActionTechDiscovered);
+               
+                intentFiltersArray = new IntentFilter[] { tech};
+                techListsArray = new string[][] { new string[] { "android.nfc.tech.NfcF" } };
+
                 CrossFelicaReader.Init(this, GetType());
                 this.felicaReader = CrossFelicaReader.Current;
             }
@@ -81,6 +85,7 @@ namespace Mageki.Droid
             base.OnPause();
             try
             {
+                NfcAdapter.GetDefaultAdapter(this).DisableForegroundDispatch(this);
                 this.felicaReader.DisableForeground();
             }
             catch (Exception ex) { }
@@ -91,6 +96,7 @@ namespace Mageki.Droid
             base.OnResume();
             try
             {
+                NfcAdapter.GetDefaultAdapter(this).EnableForegroundDispatch(this, pendingIntent, intentFiltersArray, techListsArray);
                 this.felicaReader.EnableForeground();
             }
             catch (Exception ex) { }

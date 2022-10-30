@@ -333,8 +333,6 @@ namespace Mageki
                             // 设置io中按键的状态
                             io.SetGameButton((int)area, count);
                             buttons[(int)area].IsHold = true;
-                            // 使简易模式下的按键显示为被按下的状态
-                            if (inRhythmGame && (int)area < 10 && (int)area % 5 < 3) buttons[10..13][(int)area % 5].IsHold = true;
                         }
                         // 按下logo根据放开时间刷卡或显示菜单
                         else if (area == TouchArea.Logo)
