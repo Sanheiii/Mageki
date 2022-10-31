@@ -1,4 +1,4 @@
-# Mageki
+# Mageki 
 [![latest](https://img.shields.io/github/v/release/sanheiii/mageki.svg)](https://github.com/Sanheiii/Mageki/releases/latest)
 [![GitHub downloads total](https://img.shields.io/github/downloads/Sanheiii/Mageki/total)](https://github.com/Sanheiii/Mageki/releases)
 [![GitHub issues](https://img.shields.io/github/issues/Sanheiii/Mageki)](https://github.com/Sanheiii/Mageki/issues)
@@ -41,6 +41,6 @@ Mageki能够通过USB或局域网连接到中的ongeki-io，使你的移动设�
 - 允许多设备连接到IO
 
 ## 待发布
-- App图标
+- App图标，由[@松雨霖](https://space.bilibili.com/15355890/) 制作![icon](https://github.com/Sanheiii/Mageki/blob/master/Mageki/Mageki.iOS/Assets.xcassets/AppIcon.appiconset/Icon58.png?raw=true)
 - iOS刷卡(仅TestFlight)
 - Android前台独占NFC
