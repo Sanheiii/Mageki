@@ -15,7 +15,7 @@ namespace Mageki
         public byte[] GameButtons { get; } = new byte[10];
         public short Lever { get; set; }
         /// <summary>
-        /// 是否正在刷卡
+        /// 是否正在刷卡 0：不在刷，1：直接设置Aime卡号，2：设置felica卡号
         /// </summary>
         public byte Scanning { get; set; }
         /// <summary>
@@ -75,11 +75,11 @@ namespace Mageki
         {
             data.Lever = value;
         }
-        public virtual void SetAime(bool scanning, byte[] bcd)
+        public virtual void SetAime(byte scanning, byte[] id)
         {
-            bcd = new byte[10 - bcd.Length].Concat(bcd).ToArray();
-            data.Scanning = (byte)(scanning ? 1 : 0);
-            bcd.CopyTo(data.AimeId, 0);
+            id = new byte[10 - id.Length].Concat(id).ToArray();
+            data.Scanning = scanning;
+            id.CopyTo(data.AimeId, 0);
         }
         public virtual void SetOptionButton(OptionButtons button, bool pressed)
         {

@@ -175,10 +175,9 @@ namespace Mageki
         {
             if (nfcScanning || logoHoldUnhandled) return;
             nfcScanning = true;
-            felicaId = felicaId.Concat(new byte[] { 0 }).ToArray();
-            io.SetAime(true, new BigInteger(felicaId).ToBcd());
+            io.SetAime(2, felicaId);
             await Task.Delay(3000);
-            io.SetAime(false, new byte[10]);
+            io.SetAime(0, new byte[10]);
             nfcScanning = false;
         }
         private void ScanFelicaInvalidated()
@@ -343,7 +342,7 @@ namespace Mageki
                                 scanTime = DateTime.Now;
                                 if (DeviceInfo.Platform != DevicePlatform.iOS || !DependencyService.Get<INfcService>().ReadingAvailable)
                                 {
-                                    io.SetAime(true, GetSimulatedAimeId());
+                                    io.SetAime(1, GetSimulatedAimeId());
                                 }
                                 //符合条件的iOS机型长按一秒打开读卡菜单，取消后可以继续模拟刷卡
                                 else
@@ -486,7 +485,7 @@ namespace Mageki
             else if (button == TouchArea.Logo && count == 0 && logoHoldUnhandled)
             {
                 logoHoldUnhandled = false;
-                io.SetAime(false, new byte[10]);
+                io.SetAime(0, new byte[10]);
                 // 按下超过一秒不触发菜单
                 if (DateTime.Now - scanTime < TimeSpan.FromSeconds(0.3) && currentArea == button)
                     LogoClickd.Invoke(this, EventArgs.Empty);

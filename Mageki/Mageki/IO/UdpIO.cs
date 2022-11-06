@@ -56,9 +56,9 @@ namespace Mageki
             base.SetLever(value);
             SendMessage(new byte[] { (byte)MessageType.MoveLever }.Concat(BitConverter.GetBytes(value)).ToArray());
         }
-        public override void SetAime(bool scanning, byte[] bcd)
+        public override void SetAime(byte scanning, byte[] id)
         {
-            base.SetAime(scanning, bcd);
+            base.SetAime(scanning, id);
             SendMessage(new byte[] { (byte)MessageType.Scan, Convert.ToByte(scanning) }.Concat(Data.AimeId).ToArray());
         }
         public override void SetOptionButton(OptionButtons button, bool pressed)
