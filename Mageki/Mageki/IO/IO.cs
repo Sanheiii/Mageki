@@ -19,15 +19,17 @@ namespace Mageki
         /// </summary>
         public byte Scanning { get; set; }
         /// <summary>
-        /// 以BCD编码存储的AimeId，全255指示读取磁盘中Aime.txt
+        /// Scanning==0时：无意义
+        /// Scanning==1时：Mifare以BCD编码存储的AimeId，全255指示读取磁盘中Aime.txt
+        /// Scanning==2时：Felica的IDm，PMm，SystemCode顺序连接
         /// </summary>
-        public byte[] AimeId { get; } = new byte[10];
+        public byte[] AimePacket { get; set; } = new byte[10];
         public OptionButtons OptButtons { get; set; }
         public byte[] ToByteArray() => GameButtons
             .Concat(BitConverter.GetBytes(Lever))
-            .Concat(new byte[] { Scanning })
-            .Concat(AimeId)
             .Concat(new byte[] { (byte)OptButtons })
+            .Concat(new byte[] { Scanning })
+            .Concat(AimePacket)
             .ToArray();
     }
     public enum OptionButtons : byte
@@ -75,11 +77,10 @@ namespace Mageki
         {
             data.Lever = value;
         }
-        public virtual void SetAime(byte scanning, byte[] id)
+        public virtual void SetAime(byte scanning, byte[] packet)
         {
-            id = new byte[10 - id.Length].Concat(id).ToArray();
             data.Scanning = scanning;
-            id.CopyTo(data.AimeId, 0);
+            data.AimePacket = packet;
         }
         public virtual void SetOptionButton(OptionButtons button, bool pressed)
         {

@@ -4,9 +4,6 @@ using Mageki.Resources;
 using Mageki.TouchTracking;
 using Mageki.Utils;
 
-using Plugin.FelicaReader;
-using Plugin.FelicaReader.Abstractions;
-
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 
@@ -32,8 +29,6 @@ namespace Mageki
         private IO io;
         private bool requireGenRects = false;
         private ButtonCollection buttons = new ButtonCollection();
-        private IFelicaReader felicaReader;
-        private IDisposable subscription;
         private IDrawable[] decorations = new IDrawable[]
         {
             new Circles(),
@@ -87,8 +82,7 @@ namespace Mageki
             {
                 try
                 {
-                    this.felicaReader = CrossFelicaReader.Current;
-                    this.subscription = this.felicaReader.WhenCardFound().Subscribe(new FelicaCardMediaObserver(ScanFelica));
+                    DependencyService.Get<INfcService>().StartReadFelicaId(ScanFelica, () => { });
                 }
                 catch (Exception ex) { }
             }
@@ -171,11 +165,11 @@ namespace Mageki
             MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
 
-        public async void ScanFelica(byte[] felicaId)
+        public async void ScanFelica(byte[] packet)
         {
             if (nfcScanning || logoHoldUnhandled) return;
             nfcScanning = true;
-            io.SetAime(2, felicaId);
+            io.SetAime(2, packet);
             await Task.Delay(3000);
             io.SetAime(0, new byte[10]);
             nfcScanning = false;

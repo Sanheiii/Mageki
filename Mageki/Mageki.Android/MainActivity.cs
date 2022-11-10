@@ -7,20 +7,19 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 
-using Plugin.FelicaReader;
-using Plugin.FelicaReader.Abstractions;
+using Mageki.DependencyServices;
 
 using System;
-using System.Reactive.Subjects;
+using System.Linq;
 
 using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace Mageki.Droid
 {
     [Activity(Label = "Mageki", Icon = "@mipmap/ic_launcher", Theme = "@style/MainTheme", ScreenOrientation = ScreenOrientation.SensorLandscape, MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
-        private IFelicaReader felicaReader;
         PendingIntent pendingIntent;
         IntentFilter[] intentFiltersArray;
         string[][] techListsArray;
@@ -36,12 +35,9 @@ namespace Mageki.Droid
             {
                 pendingIntent = PendingIntent.GetActivity(this, 0, new Intent(this, this.GetType()).AddFlags(ActivityFlags.SingleTop), PendingIntentFlags.Mutable);
                 IntentFilter tech = new IntentFilter(NfcAdapter.ActionTechDiscovered);
-               
-                intentFiltersArray = new IntentFilter[] { tech};
-                techListsArray = new string[][] { new string[] { "android.nfc.tech.NfcF" } };
 
-                CrossFelicaReader.Init(this, GetType());
-                this.felicaReader = CrossFelicaReader.Current;
+                intentFiltersArray = new IntentFilter[] { tech };
+                techListsArray = new string[][] { new string[] { "android.nfc.tech.NfcF" } };
             }
             catch (Exception ex) { }
             LoadApplication(new App());
@@ -69,9 +65,12 @@ namespace Mageki.Droid
             var tag = intent.GetParcelableExtra(NfcAdapter.ExtraTag) as Tag;
             if (tag != null)
             {
-                var subject = this.felicaReader.WhenCardFound() as Subject<IFelicaCardMedia>;
                 NfcF nfc = NfcF.Get(tag);
-                subject.OnNext(new FelicaCardMediaImplementation(nfc));
+                var idm = tag.GetId();
+                var pmm = nfc.GetManufacturer();
+                var systemCode = nfc.GetSystemCode();
+                (DependencyService.Get<INfcService>() as DependencyServices.NfcService).OnScanAction(idm.Concat(pmm).Concat(systemCode).ToArray());
+
             }
         }
         protected override void OnNewIntent(Intent intent)
@@ -86,7 +85,6 @@ namespace Mageki.Droid
             try
             {
                 NfcAdapter.GetDefaultAdapter(this).DisableForegroundDispatch(this);
-                this.felicaReader.DisableForeground();
             }
             catch (Exception ex) { }
         }
@@ -97,7 +95,6 @@ namespace Mageki.Droid
             try
             {
                 NfcAdapter.GetDefaultAdapter(this).EnableForegroundDispatch(this, pendingIntent, intentFiltersArray, techListsArray);
-                this.felicaReader.EnableForeground();
             }
             catch (Exception ex) { }
         }
