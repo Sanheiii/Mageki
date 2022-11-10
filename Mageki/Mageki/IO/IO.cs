@@ -99,4 +99,19 @@ namespace Mageki
         }
 
     }
+    enum MessageType : byte
+    {
+        // 控制器向IO发送的
+        ButtonStatus = 1,
+        MoveLever = 2,
+        Scan = 3,
+        Test = 4,
+        Service = 5,
+        RequestValues = 6,
+        // IO向控制器发送的
+        SetLed = 20,
+        SetLever = 21,
+        // 寻找在线设备
+        Hello = 255
+    }
 }

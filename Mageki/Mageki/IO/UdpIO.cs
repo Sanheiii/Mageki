@@ -18,14 +18,14 @@ namespace Mageki
     {
         private UdpClient client;
         private Thread pollThread;
-        private byte dkRandomValue;
+        private byte helloRandomValue;
         private Timer heartbeatTimer = new Timer(400) { AutoReset = true };
         private Timer disconnectTimer = new Timer(1500) { AutoReset = false };
         private IPEndPoint remoteEP;
         private bool disposedValue;
 
         public int Port { get; private set; }
-        public override bool IsConnected => remoteEP.Address.Address != IPAddress.Broadcast.Address;
+        public override bool IsConnected => !remoteEP.Address.Equals(IPAddress.Broadcast);
 
         public UdpIO() : this(Settings.Port)
         {
@@ -38,7 +38,7 @@ namespace Mageki
         }
         public override void Init()
         {
-            dkRandomValue = (byte)(new Random().Next() % 255);
+            helloRandomValue = (byte)(new Random().Next() % 255);
             client = new UdpClient();
             heartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
             heartbeatTimer.Start();
@@ -98,7 +98,7 @@ namespace Mageki
         {
             try
             {
-                SendMessage(new byte[] { (byte)MessageType.DokiDoki, dkRandomValue });
+                SendMessage(new byte[] { (byte)MessageType.Hello, helloRandomValue });
             }
             catch (Exception ex) { Debug.WriteLine(ex); }
         }
@@ -107,13 +107,11 @@ namespace Mageki
         {
             remoteEP = new IPEndPoint(IPAddress.Broadcast, Port);
             RaiseOnDisconnected(EventArgs.Empty);
-            //logo.Color = SKColors.Gray;
-            //MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
         private void SendMessage(byte[] data)
         {
             // 没有连接到就不发送数据
-            if (!IsConnected && data[0] != (byte)MessageType.DokiDoki)
+            if (!IsConnected && data[0] != (byte)MessageType.Hello)
             {
                 return;
             }
@@ -134,7 +132,7 @@ namespace Mageki
             {
                 Data.Lever = BitConverter.ToInt16(buffer, 1);
             }
-            else if (buffer[0] == (byte)MessageType.DokiDoki && buffer.Length == 2 && buffer[1] == dkRandomValue)
+            else if (buffer[0] == (byte)MessageType.Hello && buffer.Length == 2 && buffer[1] == helloRandomValue)
             {
                 if (!IsConnected)
                 {
@@ -187,20 +185,5 @@ namespace Mageki
             GC.SuppressFinalize(this);
         }
         #endregion
-        enum MessageType : byte
-        {
-            // 控制器向IO发送的
-            ButtonStatus = 1,
-            MoveLever = 2,
-            Scan = 3,
-            Test = 4,
-            RequestValues = 5,
-            // IO向控制器发送的
-            SetLed = 6,
-            SetLever = 7,
-            Service = 8,
-            // 寻找在线设备
-            DokiDoki = 255
-        }
     }
 }
