@@ -171,7 +171,7 @@ namespace Mageki
             nfcScanning = true;
             io.SetAime(2, packet);
             await Task.Delay(3000);
-            io.SetAime(0, new byte[10]);
+            io.SetAime(0, new byte[0]);
             nfcScanning = false;
         }
         private void ScanFelicaInvalidated()
@@ -479,8 +479,8 @@ namespace Mageki
             else if (button == TouchArea.Logo && count == 0 && logoHoldUnhandled)
             {
                 logoHoldUnhandled = false;
-                io.SetAime(0, new byte[10]);
-                // 按下超过一秒不触发菜单
+                io.SetAime(0, new byte[0]);
+                // 按下超过一定时长不触发菜单
                 if (DateTime.Now - scanTime < TimeSpan.FromSeconds(0.3) && currentArea == button)
                     LogoClickd.Invoke(this, EventArgs.Empty);
                 if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
