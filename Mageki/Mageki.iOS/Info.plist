@@ -46,6 +46,6 @@
 	<key>NFCReaderUsageDescription</key>
 	<string>Read Aime cards with NFC.</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.1</string>
+	<string>2.0.0</string>
 </dict>
 </plist>
