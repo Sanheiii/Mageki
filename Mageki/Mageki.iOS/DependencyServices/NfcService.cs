@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 using UIKit;
 
@@ -47,7 +48,15 @@ namespace Mageki.iOS.DependencyServices
         {
             if (tags.Length > 0)
             {
-                _onScanAction(tags[0].GetNFCFeliCaTag().CurrentIdm.ToArray());
+                NSData idm = tags[0].GetNFCFeliCaTag().CurrentIdm;
+                NSData systemCode = tags[0].GetNFCFeliCaTag().CurrentSystemCode;
+                TaskCompletionSource<NSData> pmmTask = new TaskCompletionSource<NSData>();
+                tags[0].GetNFCFeliCaTag().Polling(systemCode, PollingRequestCode.CommunicationPerformance, PollingTimeSlot.Max1, (pmm, requestData, error) =>
+                {
+                    pmmTask.SetResult(pmm);
+                });
+                NSData pmm = pmmTask.Task.GetAwaiter().GetResult();
+                _onScanAction(idm.Concat(pmm).Concat(systemCode).ToArray());
             }
             session.InvalidateSession();
         }
