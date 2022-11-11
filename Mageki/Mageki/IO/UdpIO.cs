@@ -59,10 +59,7 @@ namespace Mageki
         public override void SetAime(byte scanning, byte[] packet)
         {
             base.SetAime(scanning, packet);
-            if (scanning > 0)
-            {
-                SendMessage(new byte[] { (byte)MessageType.Scan, Convert.ToByte(scanning) }.Concat(Data.AimePacket).ToArray());
-            }
+            SendMessage(new byte[] { (byte)MessageType.Scan, Convert.ToByte(scanning) }.Concat(Data.AimePacket).ToArray());
         }
         public override void SetOptionButton(OptionButtons button, bool pressed)
         {
