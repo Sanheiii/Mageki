@@ -27,7 +27,7 @@ namespace Mageki
         private byte[] _inBuffer = new byte[4];
         private bool disposedValue;
         public int Port { get; private set; }
-        public override bool IsConnected =>isConnected;
+        public override bool IsConnected => isConnected;
         public TcpIO() : this(Settings.Port)
         {
 
@@ -115,10 +115,7 @@ namespace Mageki
         public override void SetAime(byte scanning, byte[] packet)
         {
             base.SetAime(scanning, packet);
-            if (scanning > 0)
-            {
-                SendMessage(new byte[] { (byte)MessageType.Scan, Convert.ToByte(scanning) }.Concat(Data.AimePacket).ToArray());
-            }
+            SendMessage(new byte[] { (byte)MessageType.Scan, Convert.ToByte(scanning) }.Concat(Data.AimePacket).ToArray());
         }
         public override void SetOptionButton(OptionButtons button, bool pressed)
         {
@@ -165,7 +162,7 @@ namespace Mageki
         {
             while (!disposedValue)
             {
-                if (!client?.Connected ?? false)
+                if ((!client?.Connected) ?? true)
                 {
                     Reconnect();
                     continue;
