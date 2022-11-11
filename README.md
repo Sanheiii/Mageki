@@ -38,9 +38,10 @@ Mageki能够通过USB或局域网连接到中的ongeki-io，使你的移动设�
 ## 待完善
 - 限定侧键范围，并在屏幕中间一块区域映射摇杆的绝对位置。
 - 设置页面的placeholder颜色显示异常
-- 允许多设备连接到IO
 
 ## 待发布
 - App图标，由[@松雨霖](https://space.bilibili.com/15355890/) 制作![icon](https://github.com/Sanheiii/Mageki/blob/master/Mageki/Mageki.iOS/Assets.xcassets/AppIcon.appiconset/Icon58.png?raw=true)
 - iOS刷卡(仅TestFlight)
+- 读取Felica Aime卡的AccessCode（需要服务器支持）
 - Android前台独占NFC
+- 允许多设备连接到IO分别控制不同的功能
