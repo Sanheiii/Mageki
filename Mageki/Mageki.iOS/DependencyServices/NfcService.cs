@@ -51,9 +51,9 @@ namespace Mageki.iOS.DependencyServices
                 NSData idm = tags[0].GetNFCFeliCaTag().CurrentIdm;
                 NSData systemCode = tags[0].GetNFCFeliCaTag().CurrentSystemCode;
                 TaskCompletionSource<NSData> pmmTask = new TaskCompletionSource<NSData>();
-                tags[0].GetNFCFeliCaTag().Polling(systemCode, PollingRequestCode.CommunicationPerformance, PollingTimeSlot.Max1, (pmm, requestData, error) =>
+                tags[0].GetNFCFeliCaTag().Polling(systemCode, PollingRequestCode.CommunicationPerformance, PollingTimeSlot.Max1, (_pmm, requestData, error) =>
                 {
-                    pmmTask.SetResult(pmm);
+                    pmmTask.SetResult(_pmm);
                 });
                 NSData pmm = pmmTask.Task.GetAwaiter().GetResult();
                 _onScanAction(idm.Concat(pmm).Concat(systemCode).ToArray());
