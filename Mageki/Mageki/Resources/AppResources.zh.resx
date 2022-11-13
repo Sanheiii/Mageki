@@ -192,4 +192,7 @@
   <data name="Error" xml:space="preserve">
     <value>错误</value>
   </data>
+  <data name="BeginNfcSessionAlert" xml:space="preserve">
+    <value>扫描Aime卡片，或取消以模拟刷卡。</value>
+  </data>
 </root>

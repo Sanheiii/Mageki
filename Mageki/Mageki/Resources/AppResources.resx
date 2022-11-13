@@ -192,4 +192,7 @@
   <data name="Error" xml:space="preserve">
     <value>Error</value>
   </data>
+  <data name="BeginNfcSessionAlert" xml:space="preserve">
+    <value>Scan your AIC Card or cancel to emulate card reading.</value>
+  </data>
 </root>

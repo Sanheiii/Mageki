@@ -34,7 +34,7 @@
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>允许访问本地网络以连接到IO</string>
+	<string>Allow access local network for IO connection.</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_leboremote._tcp</string>
@@ -47,5 +47,10 @@
 	<string>Read Aime cards with NFC.</string>
 	<key>CFBundleShortVersionString</key>
 	<string>2.0.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>zh</string>
+	</array>
 </dict>
 </plist>

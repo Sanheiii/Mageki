@@ -79,6 +79,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Scan your AIC Card or cancel to emulate card reading. 的本地化字符串。
+        /// </summary>
+        public static string BeginNfcSessionAlert {
+            get {
+                return ResourceManager.GetString("BeginNfcSessionAlert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Button bottom margin 的本地化字符串。
         /// </summary>
         public static string ButtonBottomMargin {

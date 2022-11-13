@@ -6,6 +6,7 @@ using Foundation;
 
 using Mageki.DependencyServices;
 using Mageki.iOS.DependencyServices;
+using Mageki.Resources;
 
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace Mageki.iOS.DependencyServices
             _onInvalidate = onInvalidate;
 
             _session = new NFCTagReaderSession(NFCPollingOption.Iso18092, this, null);
-            _session.AlertMessage = "扫描aime卡片，或取消以模拟刷卡";
+            _session.AlertMessage = AppResources.BeginNfcSessionAlert;
             _session.BeginSession();
         }
 
@@ -68,10 +69,6 @@ namespace Mageki.iOS.DependencyServices
 
                     _onScanAction(idm.Concat(pmm).Concat(systemCode).ToArray());
                     session.InvalidateSession();
-                    string idmString = "0x" + BitConverter.ToUInt64(idm.Reverse().ToArray(), 0).ToString("X16");
-                    string pmMString = "0x" + BitConverter.ToUInt64(pmm.Reverse().ToArray(), 0).ToString("X16");
-                    string systemCodeString = "0x" + BitConverter.ToUInt16(systemCode.Reverse().ToArray(), 0).ToString("X4");
-                    App.Logger.Debug($"IDm：{idmString}\nPMm：{pmMString}\nSystemCode：{systemCodeString}");
                 });
             }
         }

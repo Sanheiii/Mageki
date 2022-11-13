@@ -168,6 +168,12 @@ namespace Mageki
         public async void ScanFelica(byte[] packet)
         {
             if (nfcScanning || logoHoldUnhandled) return;
+
+            string idmString = "0x" + BitConverter.ToUInt64(packet[0..8].Reverse().ToArray(), 0).ToString("X16");
+            string pmMString = "0x" + BitConverter.ToUInt64(packet[8..16].Reverse().ToArray(), 0).ToString("X16");
+            string systemCodeString = "0x" + BitConverter.ToUInt16(packet[16..18].Reverse().ToArray(), 0).ToString("X4");
+            App.Logger.Debug($"FeliCa card is present\nIDm: {idmString}\nPMm: {pmMString}\nSystemCode: {systemCodeString}");
+
             nfcScanning = true;
             io.SetAime(2, packet);
             await Task.Delay(3000);

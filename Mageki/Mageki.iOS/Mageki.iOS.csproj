@@ -78,6 +78,8 @@
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <BundleResource Include="Resources\en.lproj\InfoPlist.strings" />
+    <BundleResource Include="Resources\zh.lproj\InfoPlist.strings" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
@@ -152,4 +154,5 @@
       <Name>Mageki</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
 </Project>
