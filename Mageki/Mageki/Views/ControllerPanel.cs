@@ -488,18 +488,20 @@ namespace Mageki
         }
         private void MoveLever(float x)
         {
+            short lever = io.Data.Lever;
             var threshold = short.MaxValue / (Settings.LeverLinearity / 2f);
-            int part = (int)(slider.Value / threshold);
+            int part = (int)(lever / threshold);
             var pixelWidth = Width * Xamarin.Essentials.DeviceDisplay.MainDisplayInfo.Density;
-            var oldValue = slider.Value;
-            slider.Value += (short)(x * (pixelWidth / 30) * Settings.LeverSensitivity);
+            var oldValue = lever;
+            lever += (short)(x * (pixelWidth / 30) * Settings.LeverSensitivity);
             // check会导致iOS端崩溃，使用土方法检查溢出
-            if (x < 0 && oldValue < slider.Value) slider.Value = short.MinValue;
-            else if (x > 0 && oldValue > slider.Value) slider.Value = short.MaxValue;
+            if (x < 0 && oldValue < lever) lever = short.MinValue;
+            else if (x > 0 && oldValue > lever) lever = short.MaxValue;
             // 仅在经过分界的时候发包
-            if ((int)(slider.Value / threshold) != part)
+            if ((int)(lever / threshold) != part)
             {
-                io.SetLever(slider.Value);
+                slider.Value = lever;
+                io.SetLever(lever);
                 return;
             }
         }
