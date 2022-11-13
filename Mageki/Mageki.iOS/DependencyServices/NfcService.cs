@@ -44,21 +44,36 @@ namespace Mageki.iOS.DependencyServices
             _session = null;
             _onInvalidate();
         }
-        public override void DidDetectTags(NFCTagReaderSession session, INFCTag[] tags)
+        public override async void DidDetectTags(NFCTagReaderSession session, INFCTag[] tags)
         {
             if (tags.Length > 0)
             {
                 NSData idm = tags[0].GetNFCFeliCaTag().CurrentIdm;
                 NSData systemCode = tags[0].GetNFCFeliCaTag().CurrentSystemCode;
-                TaskCompletionSource<NSData> pmmTask = new TaskCompletionSource<NSData>();
-                tags[0].GetNFCFeliCaTag().Polling(systemCode, PollingRequestCode.CommunicationPerformance, PollingTimeSlot.Max1, (_pmm, requestData, error) =>
+
+                await session.ConnectToAsync(tags[0]);
+
+                tags[0].GetNFCFeliCaTag().Polling(systemCode, PollingRequestCode.NoRequest, PollingTimeSlot.Max1, (pmm, requestData, error) =>
                 {
-                    pmmTask.SetResult(_pmm);
+                    if (error != null)
+                    {
+                        App.Logger.Error(error.ToString());
+                        throw new Exception(error.ToString());
+                    }
+                    if (idm.Length != 8 || pmm.Length != 8 || systemCode.Length != 2)
+                    {
+                        App.Logger.Error(error.ToString());
+                        throw new Exception();
+                    }
+
+                    _onScanAction(idm.Concat(pmm).Concat(systemCode).ToArray());
+                    session.InvalidateSession();
+                    string idmString = "0x" + BitConverter.ToUInt64(idm.Reverse().ToArray(), 0).ToString("X16");
+                    string pmMString = "0x" + BitConverter.ToUInt64(pmm.Reverse().ToArray(), 0).ToString("X16");
+                    string systemCodeString = "0x" + BitConverter.ToUInt16(systemCode.Reverse().ToArray(), 0).ToString("X4");
+                    App.Logger.Debug($"IDm：{idmString}\nPMm：{pmMString}\nSystemCode：{systemCodeString}");
                 });
-                NSData pmm = pmmTask.Task.GetAwaiter().GetResult();
-                _onScanAction(idm.Concat(pmm).Concat(systemCode).ToArray());
             }
-            session.InvalidateSession();
         }
     }
 }
