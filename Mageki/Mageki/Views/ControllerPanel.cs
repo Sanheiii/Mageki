@@ -97,6 +97,10 @@ namespace Mageki
             {
                 ForceGenRects();
             }
+            if (name == nameof(Settings.HideButtons))
+            {
+                canvasView.InvalidateSurface();
+            }
             if (name == nameof(Settings.Protocol) || name == nameof(Settings.Port))
             {
                 InitIO();
@@ -218,12 +222,20 @@ namespace Mageki
                 requireGenRects = false;
                 GenRects(info.Width, info.Height);
             }
-            foreach (IDrawable drawable in decorations)
+            if (!Settings.HideButtons)
             {
-                drawable.Draw(canvas);
+                foreach (IDrawable drawable in decorations)
+                {
+                    drawable.Draw(canvas);
+                }
             }
-            buttons.Draw(canvas);
             logo.Draw(canvas);
+            buttons.Draw(canvas, ButtonCollection.ButtonTypes.Side);
+            buttons.Draw(canvas, ButtonCollection.ButtonTypes.Menu);
+            if (!Settings.HideButtons)
+            {
+                buttons.Draw(canvas, ButtonCollection.ButtonTypes.MidButton);
+            }
             //canvas.DrawRect(slider.BackRect, slider.BackPaint);
             //canvas.DrawRect(slider.LeverRect, slider.LeverPaint);
             oldWidth = info.Width;
@@ -522,7 +534,7 @@ namespace Mageki
         {
             TouchArea area;
             // 大概点到中间六键的范围就会触发
-            if (pixelLocation.Y >= buttons.L1.BorderRect.Top - buttons.L1.BorderRect.Left)
+            if (!Settings.HideButtons && (pixelLocation.Y >= buttons.L1.BorderRect.Top - buttons.L1.BorderRect.Left))
             {
                 return GetArea(pixelLocation.X, width);
             }

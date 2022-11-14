@@ -36,6 +36,8 @@ namespace Mageki
 
         public bool SeparateButtonsAndLever { get => Settings.SeparateButtonsAndLever; set => Settings.SeparateButtonsAndLever = value; }
 
+        public bool HideButtons { get => Settings.HideButtons; set => Settings.HideButtons = value; }
+
         public bool HapticFeedback { get => Settings.HapticFeedback; set => Settings.HapticFeedback = value; }
 
         public Version Version => Version.Parse(VersionTracking.CurrentVersion);
@@ -78,6 +80,15 @@ namespace Mageki
             set
             {
                 Preferences.Set("separateButtonsAndLever", value);
+                OnValueChanged();
+            }
+        }
+        public static bool HideButtons
+        {
+            get => Preferences.Get("hideButtons", false);
+            set
+            {
+                Preferences.Set("hideButtons", value);
                 OnValueChanged();
             }
         }

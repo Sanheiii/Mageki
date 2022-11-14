@@ -187,6 +187,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Hide Buttons 的本地化字符串。
+        /// </summary>
+        public static string HideButtons {
+            get {
+                return ResourceManager.GetString("HideButtons", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Lever Linearity 的本地化字符串。
         /// </summary>
         public static string LeverLinearity {

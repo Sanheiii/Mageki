@@ -44,6 +44,11 @@ namespace Mageki
             ViewModel.SeparateButtonsAndLever = !ViewModel.SeparateButtonsAndLever;
         }
 
+        private void HideButtons_Tapped(object sender, EventArgs e)
+        {
+            ViewModel.HideButtons = !ViewModel.HideButtons;
+        }
+
         private void HapticFeedback_Tapped(object sender, EventArgs e)
         {
             ViewModel.HapticFeedback = !ViewModel.HapticFeedback;

@@ -46,19 +46,38 @@ namespace Mageki.Drawables
             get { return Buttons[r]; }
         }
 
-        public void Draw(SKCanvas canvas)
+        public void Draw(SKCanvas canvas, ButtonTypes types)
         {
-            LSide.Draw(canvas);
-            RSide.Draw(canvas);
-            LMenu.Draw(canvas);
-            RMenu.Draw(canvas);
 
-            L1.Draw(canvas);
-            L2.Draw(canvas);
-            L3.Draw(canvas);
-            R1.Draw(canvas);
-            R2.Draw(canvas);
-            R3.Draw(canvas);
+            if (types.HasFlag(ButtonTypes.Side))
+            {
+                LSide.Draw(canvas);
+                RSide.Draw(canvas);
+            }
+            if (types.HasFlag(ButtonTypes.Menu))
+            {
+                LMenu.Draw(canvas);
+                RMenu.Draw(canvas);
+            }
+
+            if (types.HasFlag(ButtonTypes.MidButton))
+            {
+                L1.Draw(canvas);
+                L2.Draw(canvas);
+                L3.Draw(canvas);
+                R1.Draw(canvas);
+                R2.Draw(canvas);
+                R3.Draw(canvas);
+            }
+        }
+        [Flags]
+        public enum ButtonTypes : byte
+        {
+            None = 0,
+            MidButton = 0b0001,
+            Side = 0b0010,
+            Menu = 0b0100,
+            All = 0b1111
         }
     }
 }

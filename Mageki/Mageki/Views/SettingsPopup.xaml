@@ -47,6 +47,12 @@
                             <Switch IsToggled="{Binding SeparateButtonsAndLever}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
+                    <ViewCell Tapped="HideButtons_Tapped">
+                        <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
+                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.HideButtons}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                            <Switch IsToggled="{Binding HideButtons}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
+                        </Grid>
+                    </ViewCell>
                     <ViewCell>
                         <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverSensitivity}" VerticalOptions="Center" Margin="16,0,0,0"/>

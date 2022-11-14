@@ -195,4 +195,7 @@
   <data name="BeginNfcSessionAlert" xml:space="preserve">
     <value>Scan your AIC Card or cancel to emulate card reading.</value>
   </data>
+  <data name="HideButtons" xml:space="preserve">
+    <value>Hide Buttons</value>
+  </data>
 </root>
