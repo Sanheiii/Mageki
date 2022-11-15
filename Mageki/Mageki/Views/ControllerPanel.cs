@@ -198,7 +198,7 @@ namespace Mageki
         }
         private void ScanFelicaInvalidated()
         {
-            ScanFelica(GetSimulatedAimeId());
+            ScanMifare(GetSimulatedAimeId());
         }
 
         public async Task PressAndReleaseTestButtonAsync()
