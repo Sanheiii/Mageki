@@ -20,6 +20,9 @@ namespace Mageki.Droid
     [Activity(Label = "Mageki", Icon = "@mipmap/ic_launcher", Theme = "@style/MainTheme", ScreenOrientation = ScreenOrientation.SensorLandscape, MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
+        private readonly byte[] AIME_KEY = { 0x57, 0x43, 0x43, 0x46, 0x76, 0x32 };
+        private readonly byte[] BANA_KEY = { 0x60, 0x90, 0xD0, 0x06, 0x32, 0xF5 };
+
         PendingIntent pendingIntent;
         IntentFilter[] intentFiltersArray;
         string[][] techListsArray;
@@ -37,7 +40,7 @@ namespace Mageki.Droid
                 IntentFilter tech = new IntentFilter(NfcAdapter.ActionTechDiscovered);
 
                 intentFiltersArray = new IntentFilter[] { tech };
-                techListsArray = new string[][] { new string[] { "android.nfc.tech.NfcF" } };
+                techListsArray = new string[][] { new string[] { "android.nfc.tech.NfcF" }, new string[] { "android.nfc.tech.MifareClassic" } };
             }
             catch (Exception ex) { }
             LoadApplication(new App());
@@ -57,20 +60,39 @@ namespace Mageki.Droid
         private void ProcessActionTechDiscoveredIntent(Intent intent)
         {
             string action = intent.Action;
-            if (action != NfcAdapter.ActionTechDiscovered)
-            {
-                return;
-            }
+            if (action != NfcAdapter.ActionTechDiscovered) return;
 
             var tag = intent.GetParcelableExtra(NfcAdapter.ExtraTag) as Tag;
-            if (tag != null)
+            if (tag == null) return;
+            var techList = tag.GetTechList();
+            if (techList.Contains("android.nfc.tech.NfcF"))
             {
                 NfcF nfc = NfcF.Get(tag);
                 var idm = tag.GetId();
                 var pmm = nfc.GetManufacturer();
                 var systemCode = nfc.GetSystemCode();
-                (DependencyService.Get<INfcService>() as DependencyServices.NfcService).OnScanAction(idm.Concat(pmm).Concat(systemCode).ToArray());
+                (DependencyService.Get<INfcService>() as DependencyServices.NfcService).OnFelicaScan(idm.Concat(pmm).Concat(systemCode).ToArray());
+            }
+            else if (techList.Contains("android.nfc.tech.MifareClassic"))
+            {
+                using var mifare = MifareClassic.Get(tag);
+                try
+                {
+                    mifare.Connect();
+                    var sectorIndex = mifare.BlockToSector(2);
+                    if (mifare.AuthenticateSectorWithKeyB(sectorIndex, AIME_KEY) ||
+                        mifare.AuthenticateSectorWithKeyA(sectorIndex, BANA_KEY))
+                    {
+                        var block = mifare.ReadBlock(2);
+                        var accessCode = block[6..];
 
+                        (DependencyService.Get<INfcService>() as DependencyServices.NfcService).OnMifareScan(accessCode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
         protected override void OnNewIntent(Intent intent)

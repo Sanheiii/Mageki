@@ -13,12 +13,14 @@ namespace Mageki.Droid.DependencyServices
     {
         public bool ReadingAvailable => true;
 
-        public Action<byte[]> OnScanAction;
+        public Action<byte[]> OnFelicaScan;
+        public Action<byte[]> OnMifareScan;
         public Action OnInvalidate;
 
-        public void StartReadFelicaId(Action<byte[]> onScanAction, Action onInvalidate)
+        public void StartReadAime(Action<byte[]> onFelicaScan, Action<byte[]> onMifareScan, Action onInvalidate)
         {
-            OnScanAction = onScanAction;
+            OnFelicaScan = onFelicaScan;
+            OnMifareScan = onMifareScan;
             OnInvalidate = onInvalidate;
         }
     }

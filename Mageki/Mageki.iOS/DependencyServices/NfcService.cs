@@ -24,13 +24,13 @@ namespace Mageki.iOS.DependencyServices
 {
     public class NfcService : NFCTagReaderSessionDelegate, INfcService
     {
-        Action<byte[]> _onScanAction;
+        Action<byte[]> _onFelicaScan;
         Action _onInvalidate;
         private NFCTagReaderSession _session;
         public bool ReadingAvailable => NFCReaderSession.ReadingAvailable;
-        public void StartReadFelicaId(Action<byte[]> onScanAction, Action onInvalidate)
+        public void StartReadAime(Action<byte[]> onFelicaScan, Action<byte[]> onMifareScan, Action onInvalidate)
         {
-            _onScanAction = onScanAction;
+            _onFelicaScan = onFelicaScan;
             _onInvalidate = onInvalidate;
 
             _session = new NFCTagReaderSession(NFCPollingOption.Iso18092, this, null);
@@ -67,7 +67,7 @@ namespace Mageki.iOS.DependencyServices
                         throw new Exception();
                     }
 
-                    _onScanAction(idm.Concat(pmm).Concat(systemCode).ToArray());
+                    _onFelicaScan(idm.Concat(pmm).Concat(systemCode).ToArray());
                     session.InvalidateSession();
                 });
             }

@@ -82,7 +82,7 @@ namespace Mageki
             {
                 try
                 {
-                    DependencyService.Get<INfcService>().StartReadFelicaId(ScanFelica, () => { });
+                    DependencyService.Get<INfcService>().StartReadAime(ScanFelica, ScanMifare, () => { });
                 }
                 catch (Exception ex) { }
             }
@@ -175,11 +175,23 @@ namespace Mageki
 
             string idmString = "0x" + BitConverter.ToUInt64(packet[0..8].Reverse().ToArray(), 0).ToString("X16");
             string pmMString = "0x" + BitConverter.ToUInt64(packet[8..16].Reverse().ToArray(), 0).ToString("X16");
-            string systemCodeString = "0x" + BitConverter.ToUInt16(packet[16..18].Reverse().ToArray(), 0).ToString("X4");
+            string systemCodeString =  BitConverter.ToUInt16(packet[16..18].Reverse().ToArray(), 0).ToString("X4");
             App.Logger.Debug($"FeliCa card is present\nIDm: {idmString}\nPMm: {pmMString}\nSystemCode: {systemCodeString}");
 
             nfcScanning = true;
             io.SetAime(2, packet);
+            await Task.Delay(3000);
+            io.SetAime(0, new byte[0]);
+            nfcScanning = false;
+        }
+        public async void ScanMifare(byte[] packet)
+        {
+            if (nfcScanning || logoHoldUnhandled) return;
+
+            App.Logger.Debug($"Mifare card is present\nAccessCode: {1}");
+
+            nfcScanning = true;
+            io.SetAime(1, packet);
             await Task.Delay(3000);
             io.SetAime(0, new byte[0]);
             nfcScanning = false;
@@ -369,7 +381,7 @@ namespace Mageki
                                                 if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
                                                 logoHoldUnhandled = false;
                                                 var nfcService = DependencyService.Get<INfcService>();
-                                                nfcService.StartReadFelicaId(ScanFelica, ScanFelicaInvalidated);
+                                                nfcService.StartReadAime(ScanFelica, ScanMifare, ScanFelicaInvalidated);
                                                 timer.Dispose();
                                             }
                                         });
