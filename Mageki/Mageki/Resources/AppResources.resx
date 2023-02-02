@@ -198,4 +198,13 @@
   <data name="HideButtons" xml:space="preserve">
     <value>Hide Buttons</value>
   </data>
+  <data name="Absolute" xml:space="preserve">
+    <value>Absolute</value>
+  </data>
+  <data name="Relative" xml:space="preserve">
+    <value>Relative</value>
+  </data>
+  <data name="LeverMoveMode" xml:space="preserve">
+    <value>Lever Move Mode</value>
+  </data>
 </root>

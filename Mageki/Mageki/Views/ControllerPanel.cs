@@ -106,6 +106,7 @@ namespace Mageki
             }
             if (name == nameof(Settings.HideButtons))
             {
+                ForceUpdate();
                 InvalidateSurface();
             }
             if (name == nameof(Settings.Protocol) || name == nameof(Settings.Port))
@@ -132,8 +133,8 @@ namespace Mageki
                 {
                     io = Settings.Protocol switch
                     {
-                        Protocols.UDP => new UdpIO(),
-                        Protocols.TCP => new TcpIO(),
+                        Protocol.UDP => new UdpIO(),
+                        Protocol.TCP => new TcpIO(),
                         _ => throw new NotImplementedException($"Unsupported protocols:{Settings.Protocol}"),
                     };
                     io.OnConnected += OnConnected;
@@ -246,10 +247,8 @@ namespace Mageki
                 Update(info.Width, info.Height);
             }
 
-            if (!Settings.HideButtons)
-            {
-                circles.Draw(canvas);
-            }
+            circles.Draw(canvas);
+
             lMenuFrame.Draw(canvas);
             rMenuFrame.Draw(canvas);
 
@@ -260,10 +259,7 @@ namespace Mageki
             lMenu.Draw(canvas);
             rMenu.Draw(canvas);
 
-            if (!Settings.HideButtons)
-            {
-                keyboard.Draw(canvas);
-            }
+            keyboard.Draw(canvas);
 
             settingButton.Draw(canvas);
 
@@ -285,6 +281,7 @@ namespace Mageki
             float baseCoef = 1 / (PanelPaddingRatio * 2 + LRSpacingCoef * (nSide / 2) + ButtonSpacingCoef * nSide * 2 + nSide * 3);
             // 以一个按钮的边长作为基数计算其他部分尺寸
             float baseLength = (width * baseCoef);
+            float buttonSideLength = baseLength;
 
             float menuSideLength = baseLength * MenuSizeCoef;
             float menuPadding = baseLength * MenuPaddingCoef;
@@ -292,11 +289,18 @@ namespace Mageki
 
             float bottomMargin = (height - baseLength) * Settings.ButtonBottomMargin;
 
+            if (Settings.HideButtons)
+            {
+                bottomMargin = 0;
+                buttonSideLength = 0;
+            }
+
             keyboard.Padding = new SKPoint(baseLength * PanelPaddingRatio, 0);
-            keyboard.Position = new SKPoint(0, height - bottomMargin - baseLength);
+            keyboard.Position = new SKPoint(0, height - bottomMargin - buttonSideLength);
             keyboard.Spacing = baseLength * LRSpacingCoef;
             keyboard.Size = new SKSize(width, height - keyboard.Position.Y);
             keyboard.Left.Spacing = keyboard.Right.Spacing = baseLength * ButtonSpacingCoef;
+            keyboard.Visible = !Settings.HideButtons;
 
             lMenu.Size = rMenu.Size = new SKSize(menuSideLength, menuSideLength);
             lMenu.Position = new SKPoint(menuPadding, keyboard.BoundingBox.Top - keyboardMarginTop - menuSideLength * 2);

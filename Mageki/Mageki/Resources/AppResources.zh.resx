@@ -198,4 +198,13 @@
   <data name="HideButtons" xml:space="preserve">
     <value>隐藏按钮</value>
   </data>
+  <data name="Absolute" xml:space="preserve">
+    <value>绝对</value>
+  </data>
+  <data name="Relative" xml:space="preserve">
+    <value>相对</value>
+  </data>
+  <data name="LeverMoveMode" xml:space="preserve">
+    <value>摇杆移动模式</value>
+  </data>
 </root>

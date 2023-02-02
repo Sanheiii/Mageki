@@ -8,6 +8,8 @@ using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using System.Linq;
+using Mageki.Drawables;
+using Mageki.Resources;
 
 namespace Mageki
 {
@@ -16,10 +18,14 @@ namespace Mageki
         // Math.Pow(10, 0.1)
         private const double leverSensitivityBase = 1.2589254117941673;
 
-        public Protocols Protocol { get => Settings.Protocol; set { Settings.Protocol = value; RaisePropertyChanged(); } }
-        public int ProtocolIndex { get => (int)Protocol; set { Protocol = (Protocols)value; RaisePropertyChanged(); } }
-        public List<string> Protocols => Enum.GetNames(typeof(Protocols)).ToList();
+        public Protocol Protocol { get => Settings.Protocol; set { Settings.Protocol = value; RaisePropertyChanged(); } }
+        public List<string> Protocols => Enum.GetNames(typeof(Protocol)).ToList();
+
         public ushort Port { get => Settings.Port; set { Settings.Port = value; RaisePropertyChanged(); } }
+
+        public LeverMoveMode LeverMoveMode { get => Settings.LeverMoveMode; set { Settings.LeverMoveMode = value; RaisePropertyChanged(); } }
+        public List<string> LeverMoveModes => Enum.GetNames(typeof(LeverMoveMode)).Select(name=>AppResources.ResourceManager.GetString(name)).ToList();
+
         // 0 => 1 , -10 => 0.1 , 10 => 10
         public float LeverSensitivity { get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase); set { Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value); RaisePropertyChanged(); } }
 
@@ -50,7 +56,7 @@ namespace Mageki
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
-    public enum Protocols
+    public enum Protocol
     {
         UDP = 0,
         TCP = 1
@@ -59,9 +65,9 @@ namespace Mageki
     {
         public const double MaxLeverLinearity = 540;
         public const double MinLeverLinearity = 54;
-        public static Protocols Protocol
+        public static Protocol Protocol
         {
-            get => (Protocols)Preferences.Get("protocol", (int)Protocols.TCP);
+            get => (Protocol)Preferences.Get("protocol", (int)Protocol.TCP);
             set
             {
                 if (value != Protocol)
@@ -115,6 +121,18 @@ namespace Mageki
                 if (value != HapticFeedback)
                 {
                     Preferences.Set("hapticFeedback", value);
+                    OnValueChanged();
+                }
+            }
+        }
+        public static LeverMoveMode LeverMoveMode
+        {
+            get => (LeverMoveMode)Preferences.Get("leverMoveMode", (int)LeverMoveMode.Relative);
+            set
+            {
+                if (value != LeverMoveMode)
+                {
+                    Preferences.Set("leverMoveMode", (int)value);
                     OnValueChanged();
                 }
             }

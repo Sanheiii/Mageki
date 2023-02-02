@@ -91,7 +91,7 @@ namespace Mageki.Drawables
 
         public override void Draw(SKCanvas canvas)
         {
-            if (!Visible) return;
+            if (!Visible || !keyboard.Visible) return;
             base.Draw(canvas);
             if (keyboard.ShowLeft)
             {

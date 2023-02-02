@@ -61,6 +61,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Absolute 的本地化字符串。
+        /// </summary>
+        public static string Absolute {
+            get {
+                return ResourceManager.GetString("Absolute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Aime ID 的本地化字符串。
         /// </summary>
         public static string AimeID {
@@ -205,6 +214,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Lever Move Mode 的本地化字符串。
+        /// </summary>
+        public static string LeverMoveMode {
+            get {
+                return ResourceManager.GetString("LeverMoveMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Lever Sensitivity 的本地化字符串。
         /// </summary>
         public static string LeverSensitivity {
@@ -255,6 +273,15 @@ namespace Mageki.Resources {
         public static string Protocol {
             get {
                 return ResourceManager.GetString("Protocol", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Relative 的本地化字符串。
+        /// </summary>
+        public static string Relative {
+            get {
+                return ResourceManager.GetString("Relative", resourceCulture);
             }
         }
         

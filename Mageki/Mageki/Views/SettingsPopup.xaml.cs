@@ -23,8 +23,7 @@ namespace Mageki
         SettingsViewModel ViewModel => BindingContext as SettingsViewModel;
         public SettingsPopup(ControllerPanel controller)
         {
-            InitializeComponent();
-            ProtocolPicker.SelectedIndex = ViewModel.ProtocolIndex;
+            InitializeComponent(); 
             this.controller = controller;
         }
 
@@ -87,6 +86,16 @@ namespace Mageki
                 await Utils.Update.CheckUpdateAsync(true);
                 cell.IsEnabled = true;
             }
+        }
+
+        private void ProtocolPicker_Tapped(object sender, EventArgs e)
+        {
+            ProtocolPicker.Focus();
+        }
+
+        private void LeverMoveModePicker_Tapped(object sender, EventArgs e)
+        {
+            LeverMoveModePicker.Focus();
         }
     }
 }

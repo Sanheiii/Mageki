@@ -58,11 +58,6 @@ namespace Mageki.Drawables
             }
         }
 
-        public LeverMoveMode Mode
-        {
-            get => GetValue(LeverMoveMode.Relative);
-            set => SetValueWithNotify(value);
-        }
         private SKPath capTopPath = new SKPath();
         private SKPath capSidePath = new SKPath();
         private SKPath holePath = new SKPath();
@@ -270,7 +265,8 @@ namespace Mageki.Drawables
         }
         public override bool HandleTouchPressed(long id, SKPoint point)
         {
-            if (touchPoints.Count == 0)
+            if ((Settings.LeverMoveMode == LeverMoveMode.Absolute && touchPoints.Count == 0) ||
+                Settings.LeverMoveMode == LeverMoveMode.Relative)
             {
                 touchPoints.Add(id, point);
             }
@@ -283,18 +279,17 @@ namespace Mageki.Drawables
             if (touchPoints.ContainsKey(id))
             {
                 var boundingBox = BoundingBox;
-                if (Mode == LeverMoveMode.Absolute)
+                if (Settings.LeverMoveMode == LeverMoveMode.Absolute)
                 {
                     var x = point.X - boundingBox.MidX;
                     Value = x / (boundingBox.Width / 2);
                 }
-                else if (Mode == LeverMoveMode.Relative)
+                else if (Settings.LeverMoveMode == LeverMoveMode.Relative)
                 {
                     lock (moveCache)
                     {
                         // 无法判断触点是哪一帧传来，所以在传来重复id时认为到了下一帧
                         bool idDuplicated = moveCache.Any(c => c.touchID == id);
-                        moveCache.Add((point.X - touchPoints[id].X, id));
                         if (idDuplicated)
                         {
                             // 计算全部移动的和，并将其限制在最大与最小值之间
@@ -315,6 +310,7 @@ namespace Mageki.Drawables
 
                             moveCache.Clear();
                         }
+                        moveCache.Add((point.X - touchPoints[id].X, id));
                     }
                 }
             }

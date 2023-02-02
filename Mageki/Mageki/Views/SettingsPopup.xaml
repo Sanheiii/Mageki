@@ -20,8 +20,10 @@
                 <Setter Property="ColumnSpacing" Value="0"/>
             </Style>
         </ResourceDictionary>
+        <views:ProtocolConverter x:Key="ProtocolConverter"/>
         <views:PortConverter x:Key="PortConverter"/>
         <views:AimeIdConverter x:Key="AimeIdConverter"/>
+        <views:LeverMoveModeConverter x:Key="LeverMoveModeConverter"/>
     </rg:PopupPage.Resources>
     <Grid RowDefinitions="Auto,*" BackgroundColor="Transparent">
         <mageki:NavigationBar Title="{x:Static resources:AppResources.Settings}" BackgroundColor="Transparent">
@@ -33,10 +35,10 @@
             <TableRoot>
                 <TableSection Title="{x:Static resources:AppResources.Connection}" TextColor="{StaticResource PrimaryColor}">
                     <mageki:EntryCell x:Name="PortCell" Label="{x:Static resources:AppResources.Port}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" Text="{Binding Port,Converter={StaticResource PortConverter},ConverterParameter={x:Reference PortCell}}" Placeholder="4354"/>
-                    <ViewCell>
+                    <ViewCell Tapped="ProtocolPicker_Tapped">
                         <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.Protocol}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Picker x:Name="ProtocolPicker" SelectedIndex="{Binding ProtocolIndex}" ItemsSource="{Binding Protocols}" BackgroundColor="Transparent" TextColor="LightGray" Grid.Column="1" HorizontalOptions="Fill" Margin="0,0,16,0" VerticalOptions="Center"/>
+                            <Picker x:Name="ProtocolPicker" ItemsSource="{Binding Protocols}" SelectedIndex="{Binding Protocol,Converter={StaticResource ProtocolConverter}}" BackgroundColor="Transparent" TextColor="LightGray" Grid.Column="1" HorizontalOptions="Fill" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
                 </TableSection>
@@ -51,6 +53,12 @@
                         <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.HideButtons}" VerticalOptions="Center" Margin="16,0,0,0"/>
                             <Switch IsToggled="{Binding HideButtons}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
+                        </Grid>
+                    </ViewCell>
+                    <ViewCell Tapped="LeverMoveModePicker_Tapped">
+                        <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
+                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverMoveMode}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                            <Picker x:Name="LeverMoveModePicker" ItemsSource="{Binding LeverMoveModes}" SelectedIndex="{Binding LeverMoveMode,Converter={StaticResource LeverMoveModeConverter}}" BackgroundColor="Transparent" TextColor="LightGray" Grid.Column="1" HorizontalOptions="Fill" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
                     </ViewCell>
                     <ViewCell>
