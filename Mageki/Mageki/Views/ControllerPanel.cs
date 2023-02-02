@@ -18,33 +18,38 @@ using System.Timers;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
-using Button = Mageki.Drawables.Button;
+using SquareButton = Mageki.Drawables.SquareButton;
 using DeviceInfo = Xamarin.Essentials.DeviceInfo;
-using Slider = Mageki.Drawables.Slider;
+using Keyboard = Mageki.Drawables.Keyboard;
 
 namespace Mageki
 {
     public class ControllerPanel : Grid
     {
         private IO io;
-        private bool requireGenRects = false;
-        private ButtonCollection buttons = new ButtonCollection();
-        private IDrawable[] decorations = new IDrawable[]
-        {
-            new Circles(),
-            new Circles(),
-        };
-
-        Logo logo = new Logo();
-
-        private Slider slider = new Slider();
+        private bool requireUpdate = false;
+        private Keyboard keyboard = new Keyboard();
+        private SideButton lSide = new SideButton() { Side = Side.Left, Color = SKColors.Pink };
+        private SideButton rSide = new SideButton() { Side = Side.Right, Color = SKColors.Purple };
+        private SquareButton lMenu = new SquareButton() { Color = ButtonColors.Red, BorderColor = new SKColor(0xFF880000) };
+        private SquareButton rMenu = new SquareButton() { Color = ButtonColors.Yellow, BorderColor = new SKColor(0xFF888800) };
+        private Lever lever = new Lever();
+        private MenuFrame lMenuFrame;
+        private MenuFrame rMenuFrame;
+        private Circles circles;
+        private SettingButton settingButton;
+        private IList<TouchableObject> touchableObject;
+        int oldWidth = -1;
+        int oldHeight = -1;
 
         #region 常量
-        const float PanelMarginCoef = 0.5f;
+        const float PanelPaddingRatio = 0.5f;
         const float LRSpacingCoef = 0.5f;
-        const float BMSpacingCoef = 0.75f;
+        const float KeyboardMarginTopCoef = 0.25f;
         const float ButtonSpacingCoef = 0.25f;
         const float MenuSizeCoef = 0.5f;
+        const float SettingSizeCoef = 0.4f;
+        const float MenuPaddingCoef = 1.125f;
         #endregion
 
         /// <summary>
@@ -55,21 +60,19 @@ namespace Mageki
         /// 捕获点击
         /// </summary>
         TouchEffect touchEffect = new TouchEffect { Capture = true };
-        /// <summary>
-        /// 保存多点触摸的数据
-        /// </summary>
-        Dictionary<long, (TouchArea button, SKPoint startPosition, SKPoint lastPosition)> touchPoints = new Dictionary<long, (TouchArea, SKPoint, SKPoint)>();
 
         bool inRhythmGame;
         private bool nfcScanning = false;
-        private bool logoHoldUnhandled = false;
-
-        public delegate void ClickEventHandler(object sender, EventArgs args);
-        public event ClickEventHandler LogoClickd;
 
 
         public ControllerPanel()
         {
+            settingButton = new SettingButton(this);
+            circles = new Circles(keyboard);
+            touchableObject = new List<TouchableObject>() { settingButton, keyboard, lMenu, rMenu, lever, lSide, rSide };
+
+            lMenuFrame = new MenuFrame(lMenu, Side.Left);
+            rMenuFrame = new MenuFrame(rMenu, Side.Right);
             //添加绘图面板
             Children.Add(canvasView);
             //注册绘图方法
@@ -77,6 +80,7 @@ namespace Mageki
             //捕获点击
             touchEffect.TouchAction += TouchEffect_TouchAction;
             Effects.Add(touchEffect);
+
             // 安卓平台可以免提示使用NFC刷卡
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
@@ -84,22 +88,25 @@ namespace Mageki
                 {
                     DependencyService.Get<INfcService>().StartReadAime(ScanFelica, ScanMifare, () => { });
                 }
-                catch (Exception ex) { }
+                catch (Exception ex)
+                {
+                    App.Logger.Error(ex);
+                }
             }
+
             InitIO();
             Settings.ValueChanged += Settings_ValueChanged;
-
         }
 
         private void Settings_ValueChanged(string name)
         {
             if (name == nameof(Settings.ButtonBottomMargin))
             {
-                ForceGenRects();
+                ForceUpdate();
             }
             if (name == nameof(Settings.HideButtons))
             {
-                canvasView.InvalidateSurface();
+                InvalidateSurface();
             }
             if (name == nameof(Settings.Protocol) || name == nameof(Settings.Port))
             {
@@ -139,11 +146,6 @@ namespace Mageki
                 catch (Exception ex)
                 {
                     App.Logger.Error(ex);
-                    //bool copy = App.Current.MainPage.DisplayAlert(AppResources.Error, ex.ToString(), AppResources.Copy, AppResources.Cancel).Result;
-                    //if (copy)
-                    //{
-                    //    Clipboard.SetTextAsync(ex.ToString());
-                    //}
                 }
             }
         }
@@ -155,27 +157,31 @@ namespace Mageki
 
         private void OnConnected(object sender, EventArgs e)
         {
-            logo.Color = SKColors.Black;
-            canvasView.InvalidateSurface();
+            //logo.Color = SKColors.Black;
+            InvalidateSurface();
         }
         private void OnDisconnected(object sender, EventArgs e)
         {
-            logo.Color = SKColors.LightGray;
+            //logo.Color = SKColors.LightGray;
+            InvalidateSurface();
+        }
+        public void InvalidateSurface()
+        {
             canvasView.InvalidateSurface();
         }
-        public void ForceGenRects()
+        public void ForceUpdate()
         {
-            requireGenRects = true;
+            requireUpdate = true;
             MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
 
         public async void ScanFelica(byte[] packet)
         {
-            if (nfcScanning || logoHoldUnhandled) return;
+            if (nfcScanning) return;
 
             string idmString = "0x" + BitConverter.ToUInt64(packet[0..8].Reverse().ToArray(), 0).ToString("X16");
             string pmMString = "0x" + BitConverter.ToUInt64(packet[8..16].Reverse().ToArray(), 0).ToString("X16");
-            string systemCodeString =  BitConverter.ToUInt16(packet[16..18].Reverse().ToArray(), 0).ToString("X4");
+            string systemCodeString = BitConverter.ToUInt16(packet[16..18].Reverse().ToArray(), 0).ToString("X4");
             App.Logger.Debug($"FeliCa card is present\nIDm: {idmString}\nPMm: {pmMString}\nSystemCode: {systemCodeString}");
 
             nfcScanning = true;
@@ -186,7 +192,7 @@ namespace Mageki
         }
         public async void ScanMifare(byte[] packet)
         {
-            if (nfcScanning || logoHoldUnhandled) return;
+            if (nfcScanning) return;
 
             App.Logger.Debug($"Mifare card is present\nAccessCode: {1}");
 
@@ -196,6 +202,7 @@ namespace Mageki
             io.SetAime(0, new byte[0]);
             nfcScanning = false;
         }
+
         private void ScanFelicaInvalidated()
         {
             ScanMifare(GetSimulatedAimeId());
@@ -214,8 +221,9 @@ namespace Mageki
             io.SetOptionButton(OptionButtons.Service, false);
         }
 
-        int oldWidth = -1;
-        int oldHeight = -1;
+#if DEBUG
+        Stopwatch sw = new Stopwatch();
+#endif
         /// <summary>
         /// 绘图
         /// </summary>
@@ -223,110 +231,93 @@ namespace Mageki
         /// <param name="e"></param>
         private void CanvasView_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
         {
+#if DEBUG
+            sw.Restart();
+#endif
             //获取绘图面板的信息
             SKImageInfo info = e.Info;
             SKSurface surface = e.Surface;
             SKCanvas canvas = surface.Canvas;
             //清空画布
             canvas.Clear(SKColors.White);
-            if (oldWidth != info.Width || oldHeight != info.Height || requireGenRects)
+            if (oldWidth != info.Width || oldHeight != info.Height || requireUpdate)
             {
-                requireGenRects = false;
-                GenRects(info.Width, info.Height);
+                requireUpdate = false;
+                Update(info.Width, info.Height);
             }
+
             if (!Settings.HideButtons)
             {
-                foreach (IDrawable drawable in decorations)
-                {
-                    drawable.Draw(canvas);
-                }
+                circles.Draw(canvas);
             }
-            logo.Draw(canvas);
-            buttons.Draw(canvas, ButtonCollection.ButtonTypes.Side);
-            buttons.Draw(canvas, ButtonCollection.ButtonTypes.Menu);
+            lMenuFrame.Draw(canvas);
+            rMenuFrame.Draw(canvas);
+
+            lSide.Draw(canvas);
+            rSide.Draw(canvas);
+            lever.Draw(canvas);
+
+            lMenu.Draw(canvas);
+            rMenu.Draw(canvas);
+
             if (!Settings.HideButtons)
             {
-                buttons.Draw(canvas, ButtonCollection.ButtonTypes.MidButton);
+                keyboard.Draw(canvas);
             }
-            //canvas.DrawRect(slider.BackRect, slider.BackPaint);
-            //canvas.DrawRect(slider.LeverRect, slider.LeverPaint);
+
+            settingButton.Draw(canvas);
+
             oldWidth = info.Width;
             oldHeight = info.Height;
+#if DEBUG
+            Debug.WriteLine($"[Draw Frame]: {sw.Elapsed.TotalMilliseconds}ms");
+            sw.Stop();
+#endif
         }
         /// <summary>
         /// 计算各个元素的位置和大小
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        private void GenRects(int width, int height)
+        private void Update(int width, int height)
         {
-            float buttonWidth = (width / (PanelMarginCoef * 2 + LRSpacingCoef * 1 + ButtonSpacingCoef * 4 + 6));
-            float buttonHeight = buttonWidth;
-            float menuSideLength = buttonHeight * MenuSizeCoef;
-            float panelMargin = buttonHeight * PanelMarginCoef;
-            float lrSpacing = buttonHeight * LRSpacingCoef;
-            float bmSpacing = buttonHeight * BMSpacingCoef;
-            float bottomMargin = (height - buttonHeight - bmSpacing - menuSideLength) * Settings.ButtonBottomMargin;
-            float buttonSpacing = buttonHeight * ButtonSpacingCoef;
+            var nSide = BitConverter.GetBytes(keyboard.ShowLeft)[0] + BitConverter.GetBytes(keyboard.ShowRight)[0];
+            float baseCoef = 1 / (PanelPaddingRatio * 2 + LRSpacingCoef * (nSide / 2) + ButtonSpacingCoef * nSide * 2 + nSide * 3);
+            // 以一个按钮的边长作为基数计算其他部分尺寸
+            float baseLength = (width * baseCoef);
 
-            float buttonBottom = height - bottomMargin;
+            float menuSideLength = baseLength * MenuSizeCoef;
+            float menuPadding = baseLength * MenuPaddingCoef;
+            float keyboardMarginTop = baseLength * KeyboardMarginTopCoef;
 
-            // Left 1
-            buttons.L1.Width = buttons.L1.Height = buttonWidth;
-            buttons.L1.Center = new SKPoint(panelMargin + buttonSpacing * 0 + buttonWidth * 0.5f, buttonBottom - buttonHeight / 2);
-            // Left 2
-            buttons.L2.Width = buttons.L2.Height = buttonWidth;
-            buttons.L2.Center = new SKPoint(panelMargin + buttonSpacing * 1 + buttonWidth * 1.5f, buttonBottom - buttonHeight / 2);
-            // Left 3
-            buttons.L3.Width = buttons.L3.Height = buttonWidth;
-            buttons.L3.Center = new SKPoint(panelMargin + buttonSpacing * 2 + buttonWidth * 2.5f, buttonBottom - buttonHeight / 2);
-            // Left side 不作绘制
-            //buttons.LSide.Center = default;
-            // Left menu
-            buttons.LMenu.Width = buttons.LMenu.Height = menuSideLength;
-            buttons.LMenu.BorderColor = new SKColor(0xFF880000);
-            buttons.LMenu.Color = ButtonColors.Red;
-            buttons.LMenu.Center = new SKPoint(panelMargin + buttonWidth - buttonSpacing, buttonBottom - buttonHeight - bmSpacing - menuSideLength / 2);
+            float bottomMargin = (height - baseLength) * Settings.ButtonBottomMargin;
 
-            //-------------------
-            // Right 1
-            buttons.R1.Width = buttons.R1.Height = buttonWidth;
-            buttons.R1.Center = new SKPoint(panelMargin + buttonSpacing * 2 + buttonWidth * 3.5f + lrSpacing, buttonBottom - buttonHeight / 2);
-            // Right 2
-            buttons.R2.Width = buttons.R2.Height = buttonWidth;
-            buttons.R2.Center = new SKPoint(panelMargin + buttonSpacing * 3 + buttonWidth * 4.5f + lrSpacing, buttonBottom - buttonHeight / 2);
-            // Right 3
-            buttons.R3.Width = buttons.R3.Height = buttonWidth;
-            buttons.R3.Center = new SKPoint(panelMargin + buttonSpacing * 4 + buttonWidth * 5.5f + lrSpacing, buttonBottom - buttonHeight / 2);
-            // Right side 不作绘制
-            //buttons.RSide.Center = default;
-            // Right menu
-            buttons.RMenu.Width = buttons.RMenu.Height = menuSideLength;
-            buttons.RMenu.BorderColor = new SKColor(0xFF888800);
-            buttons.RMenu.Color = ButtonColors.Yellow;
-            buttons.RMenu.Center = new SKPoint(width - (panelMargin + buttonWidth - buttonSpacing), buttonBottom - buttonHeight - bmSpacing - menuSideLength / 2);
-            // 绘制装饰用的环
-            if (decorations[0] is Circles circles0)
-            {
-                circles0.Center = buttons.L2.Center;
-                circles0.Radius = buttonWidth + buttonSpacing;
-                circles0.DrawLeftArc = true;
-                circles0.DrawRightArc = false;
-            }
-            if (decorations[1] is Circles circles1)
-            {
-                circles1.Center = buttons.R2.Center;
-                circles1.Radius = buttonWidth + buttonSpacing;
-                circles1.DrawLeftArc = false;
-                circles1.DrawRightArc = true;
-            }
-            // logo
-            logo.MaxHeight = menuSideLength;
-            logo.MaxWidth = width;
-            logo.Center = new SKPoint(width / 2, buttonBottom - buttonHeight - bmSpacing - logo.MaxHeight * 1.5f);
+            keyboard.Padding = new SKPoint(baseLength * PanelPaddingRatio, 0);
+            keyboard.Position = new SKPoint(0, height - bottomMargin - baseLength);
+            keyboard.Spacing = baseLength * LRSpacingCoef;
+            keyboard.Size = new SKSize(width, height - keyboard.Position.Y);
+            keyboard.Left.Spacing = keyboard.Right.Spacing = baseLength * ButtonSpacingCoef;
+
+            lMenu.Size = rMenu.Size = new SKSize(menuSideLength, menuSideLength);
+            lMenu.Position = new SKPoint(menuPadding, keyboard.BoundingBox.Top - keyboardMarginTop - menuSideLength * 2);
+            rMenu.Position = new SKPoint(width - menuPadding - menuSideLength, lMenu.Position.Y);
+
+            float sideButtonWidth = baseLength * (PanelPaddingRatio + 1.5f) + baseLength * ButtonSpacingCoef;
+            lSide.Size = rSide.Size = new SKSize(sideButtonWidth, height - keyboard.BoundingBox.Height - keyboardMarginTop);
+            lSide.Position = new SKPoint(0, 0);
+            rSide.Position = new SKPoint(width - sideButtonWidth, 0);
+            lSide.Padding = rSide.Padding = new SKPoint(0, keyboardMarginTop);
+
+            lever.Size = new SKSize(width - lSide.Size.Width - rSide.Size.Width, lSide.Size.Height);
+            lever.Position = new SKPoint(lSide.Size.Width, 0);
+            lever.Padding = new SKPoint(0, keyboard.BoundingBox.Top - lMenu.BoundingBox.Bottom);
+
+            float settingSideLength = baseLength * SettingSizeCoef;
+            settingButton.Size = new SKSize(settingSideLength, settingSideLength);
+            settingButton.Position = new SKPoint(settingSideLength * 0.5f, settingSideLength * 0.5f);
+            //settingButton.Padding = new SKPoint(settingSideLength * 0.1f, settingSideLength * 0.1f);
         }
-        private List<(float value, long touchID)> leverCache = new List<(float value, long touchID)>();
-        DateTime scanTime;
+
         /// <summary>
         /// 处理画布点击
         /// </summary>
@@ -338,141 +329,74 @@ namespace Mageki
             SKPoint pixelLocation = new SKPoint(
                 (float)(canvasView.CanvasSize.Width * args.Location.X / Width),
                 (float)(canvasView.CanvasSize.Height * args.Location.Y / Height));
-            TouchArea currentArea = GetArea(pixelLocation);
-            //处理点击事件
             switch (args.Type)
             {
                 case TouchActionType.Pressed:
+                    foreach (TouchableObject obj in touchableObject)
                     {
-                        if (touchPoints.ContainsKey(args.Id)) break;
-                        TouchArea area = currentArea;
-                        // 储存触点id与按下位置
-                        touchPoints.Add(args.Id, (area, pixelLocation, pixelLocation));
-                        // 按下按键
-                        if ((byte)area < 10)
+                        if (obj.Visible && obj.HitTest(pixelLocation) && obj.HandleTouchPressed(args.Id, pixelLocation))
                         {
-                            //按在这个按键上的触点数量
-                            byte count = (byte)touchPoints.Count(p => p.Value.button == area);
-                            // 设置io中按键的状态
-                            io.SetGameButton((int)area, count);
-                            buttons[(int)area].IsHold = true;
+                            break;
                         }
-                        // 按下logo根据放开时间刷卡或显示菜单
-                        else if (area == TouchArea.Logo)
-                        {
-                            if (!(nfcScanning || logoHoldUnhandled))
-                            {
-                                logoHoldUnhandled = true;
-                                scanTime = DateTime.Now;
-                                if (DeviceInfo.Platform != DevicePlatform.iOS || !DependencyService.Get<INfcService>().ReadingAvailable)
-                                {
-                                    io.SetAime(1, GetSimulatedAimeId());
-                                }
-                                //符合条件的iOS机型长按一秒打开读卡菜单，取消后可以继续模拟刷卡
-                                else
-                                {
-                                    Timer timer = new Timer(1000) { AutoReset = false };
-                                    timer.Elapsed += (sender, e) =>
-                                    {
-                                        MainThread.InvokeOnMainThreadAsync(() =>
-                                        {
-                                            if (logoHoldUnhandled)
-                                            {
-                                                if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
-                                                logoHoldUnhandled = false;
-                                                var nfcService = DependencyService.Get<INfcService>();
-                                                nfcService.StartReadAime(ScanFelica, ScanMifare, ScanFelicaInvalidated);
-                                                timer.Dispose();
-                                            }
-                                        });
-                                    };
-                                    timer.Start();
-                                }
-                                if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
-                            }
-                        }
-                        break;
                     }
+                    break;
                 case TouchActionType.Moved:
+                    foreach (TouchableObject obj in touchableObject)
                     {
-                        if (!touchPoints.ContainsKey(args.Id)) break;
-                        // 原本的按键
-                        TouchArea area0 = touchPoints[args.Id].button;
-                        // 新触发的按键
-                        TouchArea area1 = GetArea(pixelLocation.X, canvasView.CanvasSize.Width);
-                        if (Settings.SeparateButtonsAndLever && (int)area0 < 8 && (int)area0 % 5 < 3)
+                        if (obj.HandleTouchMoved(args.Id, pixelLocation))
                         {
-                            // 修改触点的触发区域
-                            touchPoints[args.Id] = (area1, touchPoints[args.Id].startPosition, pixelLocation);
-                            // 如果按键区不触发摇杆则允许搓
-                            if (area0 != area1 && (int)area1 < 8 && (int)area1 % 5 < 3)
-                            {
-                                // 搓到的新键上目前有几个触点
-                                byte count0 = (byte)touchPoints.Count(p => p.Value.button == area1);
-                                // 旧键上有几个触点
-                                byte count1 = (byte)touchPoints.Count(p => p.Value.button == area0);
-                                io.SetGameButton((int)area1, count0);
-                                io.SetGameButton((int)area0, count1);
-                                buttons[(int)area1].IsHold = true;
-                                if (count1 == 0)
-                                {
-                                    buttons[(int)area0].IsHold = false;
-                                }
-                            }
+                            break;
                         }
-                        // 拖动触发摇杆，多个手指在同一帧移动时只会取最大值
-                        else if (touchPoints.ContainsKey(args.Id))
-                        {
-                            lock (leverCache)
-                            {
-                                // 无法判断触点是哪一帧传来，所以在传来重复id时认为到了下一帧
-                                bool idDuplicated = leverCache.Any(c => c.touchID == args.Id);
-                                leverCache.Add((pixelLocation.X - touchPoints[args.Id].lastPosition.X, args.Id));
-                                if (idDuplicated)
-                                {
-                                    // 计算全部移动的和，并将其限制在最大与最小值之间
-                                    var min = leverCache.Select(v => v.value).Min();
-                                    var max = leverCache.Select(v => v.value).Max();
-                                    var sum = leverCache.Sum(v => v.value);
-                                    if (min < 0 && sum < min)
-                                    {
-                                        sum = min;
-                                    }
-                                    if (max > 0 && sum > max)
-                                    {
-                                        sum = max;
-                                    }
-                                    MoveLever(sum);
-                                    leverCache.Clear();
-                                }
-                            }
-                            // 修改触点上次检测的位置
-                            touchPoints[args.Id] = (area0, touchPoints[args.Id].startPosition, pixelLocation);
-                        }
-                        break;
                     }
+                    break;
                 case TouchActionType.Released:
-                case TouchActionType.Cancelled:
+                    foreach (TouchableObject obj in touchableObject)
                     {
-
-                        if (args.Type == TouchActionType.Cancelled && DeviceInfo.Platform == DevicePlatform.Android)
+                        if (obj.HandleTouchReleased(args.Id))
                         {
-                            while (touchPoints.Count > 0)
-                            {
-                                ReleaseTouchPoint(touchPoints.First().Key, currentArea);
-                            }
+                            break;
                         }
-                        else
-                        {
-                            ReleaseTouchPoint(args.Id, currentArea);
-                        }
-                        // 释放按键
-
-                        break;
                     }
+                    break;
+                case TouchActionType.Cancelled:
+                    foreach (TouchableObject obj in touchableObject)
+                    {
+                        obj.HandleTouchCancelled(args.Id);
+                    }
+                    break;
             }
+            //更新IO状态
+            UpdateIO();
             //通知重绘画布
-            canvasView.InvalidateSurface();
+            InvalidateSurface();
+            return;
+        }
+
+        private void UpdateIO()
+        {
+            ButtonBase[] buttons = new ButtonBase[]
+            {
+                    keyboard[0],
+                    keyboard[1],
+                    keyboard[2],
+                    lSide,
+                    lMenu,
+                    keyboard[3],
+                    keyboard[4],
+                    keyboard[5],
+                    rSide,
+                    rMenu
+            };
+            // buttons
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                if (io.Data.GameButtons[i] != buttons[i].TouchCount)
+                {
+                    io.SetGameButton(i, buttons[i].TouchCount);
+                }
+            }
+            // lever
+            MoveLever(lever.Value);
         }
 
         byte[] GetSimulatedAimeId()
@@ -486,136 +410,41 @@ namespace Mageki
             }
             return aimeId;
         }
-        /// <summary>
-        /// 释放按键
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="currentArea">释放时的点击区域</param>
-        void ReleaseTouchPoint(long id, TouchArea currentArea)
-        {
-            if (!touchPoints.ContainsKey(id)) return;
-            TouchArea button = touchPoints[id].button;
-            touchPoints.Remove(id);
-            byte count = (byte)touchPoints.Count(p => p.Value.button == button);
-            if ((int)button < 10)
-            {
-                if (count == 0)
-                {
-                    buttons[(int)button].IsHold = false;
-                    if (inRhythmGame && (int)button < 10 && (int)button % 5 < 3) buttons[10..13][(int)button % 5].IsHold = false;
-                }
-                io.SetGameButton((int)button, count);
-            }
-            else if (button == TouchArea.Logo && count == 0 && logoHoldUnhandled)
-            {
-                logoHoldUnhandled = false;
-                io.SetAime(0, new byte[0]);
-                // 按下超过一定时长不触发菜单
-                if (DateTime.Now - scanTime < TimeSpan.FromSeconds(0.3) && currentArea == button)
-                    LogoClickd.Invoke(this, EventArgs.Empty);
-                if (Settings.HapticFeedback) HapticFeedback.Perform(HapticFeedbackType.Click);
-            }
-        }
+
         private void MoveLever(float x)
         {
-            short lever = io.Data.Lever;
+            short newValue = (short)(short.MaxValue * x);
+            short oldValue = io.Data.Lever;
+
             var threshold = short.MaxValue / (Settings.LeverLinearity / 2f);
-            int part = (int)(lever / threshold);
-            var pixelWidth = Width * Xamarin.Essentials.DeviceDisplay.MainDisplayInfo.Density;
-            var oldValue = lever;
-            lever += (short)(x * (pixelWidth / 30) * Settings.LeverSensitivity);
-            // check会导致iOS端崩溃，使用土方法检查溢出
-            if (x < 0 && oldValue < lever) lever = short.MinValue;
-            else if (x > 0 && oldValue > lever) lever = short.MaxValue;
+
             // 仅在经过分界的时候发包
-            if ((int)(lever / threshold) != part)
+            if ((int)(newValue / threshold) != (int)(oldValue / threshold))
             {
-                slider.Value = lever;
-                io.SetLever(lever);
+                io.SetLever(newValue);
                 return;
             }
         }
 
-        private TouchArea GetArea(SKPoint pixelLocation)
-        {
-            float width = canvasView.CanvasSize.Width;
-            float height = canvasView.CanvasSize.Height;
-            return GetArea(pixelLocation, width, height);
-        }
-        private TouchArea GetArea(SKPoint pixelLocation, float width, float height)
-        {
-            TouchArea area;
-            // 大概点到中间六键的范围就会触发
-            if (!Settings.HideButtons && (pixelLocation.Y >= buttons.L1.BorderRect.Top - buttons.L1.BorderRect.Left))
-            {
-                return GetArea(pixelLocation.X, width);
-            }
-            else if (!inRhythmGame && buttons.LMenu.BorderRect.Contains(pixelLocation)) area = TouchArea.LMenu;
-            else if (!inRhythmGame && buttons.RMenu.BorderRect.Contains(pixelLocation)) area = TouchArea.RMenu;
-            else if (!inRhythmGame && logo.Rect.Contains(pixelLocation)) area = TouchArea.Logo;
-            else if (pixelLocation.X < width / 2) area = TouchArea.LSide;
-            else area = TouchArea.RSide;
-            //Debug.WriteLine(area);
-            return area;
-        }
-        private TouchArea GetArea(float x, float width)
-        {
-            TouchArea area;
-            if (x < (buttons.L1.BorderRect.Right + buttons.L2.BorderRect.Left) / 2) area = TouchArea.LButton1;
-            else if (x < (buttons.L2.BorderRect.Right + buttons.L3.BorderRect.Left) / 2) area = TouchArea.LButton2;
-            else if (x < (buttons.L3.BorderRect.Right + buttons.R1.BorderRect.Left) / 2) area = TouchArea.LButton3;
-            else if (x < (buttons.R1.BorderRect.Right + buttons.R2.BorderRect.Left) / 2) area = TouchArea.RButton1;
-            else if (x < (buttons.R2.BorderRect.Right + buttons.R3.BorderRect.Left) / 2) area = TouchArea.RButton2;
-            else area = TouchArea.RButton3;
-            return area;
-        }
-
         public void SetLed(ButtonColors[] colors)
         {
+            for (int i = 0; i < colors.Length; i++)
+            {
+                keyboard[i].Color = colors[i];
+            }
 
-            buttons.L1.Color = colors[0];
-            buttons.L2.Color = colors[1];
-            buttons.L3.Color = colors[2];
-            buttons.R1.Color = colors[3];
-            buttons.R2.Color = colors[4];
-            buttons.R3.Color = colors[5];
-
-            // 判断是否在游戏中
-            var midButtons = buttons[0..3].Concat(buttons[5..8]);
             bool temp =
-                midButtons.Count(b => (b as Button).Color == ButtonColors.Red) == 2 &&
-                midButtons.Count(b => (b as Button).Color == ButtonColors.Blue) == 2 &&
-                midButtons.Count(b => (b as Button).Color == ButtonColors.Green) == 2;
-            if (temp != inRhythmGame) ForceGenRects();
+                keyboard.Left[0].Color == keyboard.Right[0].Color &&
+                keyboard.Left[1].Color == keyboard.Right[1].Color &&
+                keyboard.Left[2].Color == keyboard.Right[2].Color &&
+                keyboard.Left[0].Color == ButtonColors.Red &&
+                keyboard.Left[1].Color == ButtonColors.Blue &&
+                keyboard.Left[2].Color == ButtonColors.Green;
+
+            if (temp != inRhythmGame) ForceUpdate();
             inRhythmGame = temp;
-
-            if (inRhythmGame)
-            {
-                buttons.LMenu.Visible = buttons.RMenu.Visible = false;
-            }
-            else
-            {
-                buttons.LMenu.Visible = buttons.RMenu.Visible = true;
-            }
+            lMenu.Visible = rMenu.Visible = settingButton.Visible = !inRhythmGame;
             MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
-        }
-
-
-        enum TouchArea : byte
-        {
-            LButton1 = 0,
-            LButton2 = 1,
-            LButton3 = 2,
-            LSide = 3,
-            LMenu = 4,
-            RButton1 = 5,
-            RButton2 = 6,
-            RButton3 = 7,
-            RSide = 8,
-            RMenu = 9,
-            Lever = 10,
-            Logo = 11,
-            Others = 12
         }
     }
 }

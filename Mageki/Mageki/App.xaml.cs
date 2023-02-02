@@ -47,7 +47,7 @@ namespace Mageki
             config.AddRule(LogLevel.Trace, LogLevel.Off, logConsole);
             LogManager.Configuration = config;
 
-            if (flag) LogDeviceInfo();
+            //if (flag) LogDeviceInfo();
         }
         /// <summary>
         /// 记录设备信息

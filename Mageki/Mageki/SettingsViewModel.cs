@@ -1,6 +1,4 @@
-﻿using PropertyChanged;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -13,38 +11,43 @@ using System.Linq;
 
 namespace Mageki
 {
-    [AddINotifyPropertyChangedInterface]
-    public class SettingsViewModel
+    public class SettingsViewModel : INotifyPropertyChanged
     {
         // Math.Pow(10, 0.1)
         private const double leverSensitivityBase = 1.2589254117941673;
 
-        public Protocols Protocol { get => Settings.Protocol; set => Settings.Protocol = value; }
-        public int ProtocolIndex { get => (int)Protocol; set => Protocol = (Protocols)value; }
+        public Protocols Protocol { get => Settings.Protocol; set { Settings.Protocol = value; RaisePropertyChanged(); } }
+        public int ProtocolIndex { get => (int)Protocol; set { Protocol = (Protocols)value; RaisePropertyChanged(); } }
         public List<string> Protocols => Enum.GetNames(typeof(Protocols)).ToList();
-        public ushort Port { get => Settings.Port; set => Settings.Port = value; }
+        public ushort Port { get => Settings.Port; set { Settings.Port = value; RaisePropertyChanged(); } }
         // 0 => 1 , -10 => 0.1 , 10 => 10
-        public float LeverSensitivity { get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase); set => Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value); }
+        public float LeverSensitivity { get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase); set { Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value); RaisePropertyChanged(); } }
 
         public double MaxLeverLinearity => Settings.MaxLeverLinearity;
         public double MinLeverLinearity => Settings.MinLeverLinearity;
-        public int LeverLinearity { get => Settings.LeverLinearity; set => Settings.LeverLinearity = value; }
+        public int LeverLinearity { get => Settings.LeverLinearity; set { Settings.LeverLinearity = value; RaisePropertyChanged(); } }
 
-        public float ButtonBottomMargin { get => Settings.ButtonBottomMargin; set => Settings.ButtonBottomMargin = value; }
+        public float ButtonBottomMargin { get => Settings.ButtonBottomMargin; set { Settings.ButtonBottomMargin = value; RaisePropertyChanged(); } }
 
-        public string Aimeid { get => Settings.AimeId; set => Settings.AimeId = value; }
+        public string Aimeid { get => Settings.AimeId; set { Settings.AimeId = value; RaisePropertyChanged(); } }
 
-        public bool SeparateButtonsAndLever { get => Settings.SeparateButtonsAndLever; set => Settings.SeparateButtonsAndLever = value; }
+        public bool SeparateButtonsAndLever { get => Settings.SeparateButtonsAndLever; set { Settings.SeparateButtonsAndLever = value; RaisePropertyChanged(); } }
 
-        public bool HideButtons { get => Settings.HideButtons; set => Settings.HideButtons = value; }
+        public bool HideButtons { get => Settings.HideButtons; set { Settings.HideButtons = value; RaisePropertyChanged(); } }
 
-        public bool HapticFeedback { get => Settings.HapticFeedback; set => Settings.HapticFeedback = value; }
+        public bool HapticFeedback { get => Settings.HapticFeedback; set { Settings.HapticFeedback = value; RaisePropertyChanged(); } }
 
         public Version Version => Version.Parse(VersionTracking.CurrentVersion);
 
         public SettingsViewModel()
         {
 
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void RaisePropertyChanged([CallerMemberName] string name = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
     public enum Protocols
@@ -61,8 +64,11 @@ namespace Mageki
             get => (Protocols)Preferences.Get("protocol", (int)Protocols.TCP);
             set
             {
-                Preferences.Set("protocol", (int)value);
-                OnValueChanged();
+                if (value != Protocol)
+                {
+                    Preferences.Set("protocol", (int)value);
+                    OnValueChanged();
+                }
             }
         }
         public static ushort Port
@@ -70,8 +76,11 @@ namespace Mageki
             get => (ushort)Preferences.Get("port", 4354);
             set
             {
-                Preferences.Set("port", value);
-                OnValueChanged();
+                if (value != Port)
+                {
+                    Preferences.Set("port", value);
+                    OnValueChanged();
+                }
             }
         }
         public static bool SeparateButtonsAndLever
@@ -79,8 +88,11 @@ namespace Mageki
             get => Preferences.Get("separateButtonsAndLever", false);
             set
             {
-                Preferences.Set("separateButtonsAndLever", value);
-                OnValueChanged();
+                if (value != SeparateButtonsAndLever)
+                {
+                    Preferences.Set("separateButtonsAndLever", value);
+                    OnValueChanged();
+                }
             }
         }
         public static bool HideButtons
@@ -88,8 +100,11 @@ namespace Mageki
             get => Preferences.Get("hideButtons", false);
             set
             {
-                Preferences.Set("hideButtons", value);
-                OnValueChanged();
+                if (value != HideButtons)
+                {
+                    Preferences.Set("hideButtons", value);
+                    OnValueChanged();
+                }
             }
         }
         public static bool HapticFeedback
@@ -97,8 +112,11 @@ namespace Mageki
             get => Preferences.Get("hapticFeedback", false);
             set
             {
-                Preferences.Set("hapticFeedback", value);
-                OnValueChanged();
+                if (value != HapticFeedback)
+                {
+                    Preferences.Set("hapticFeedback", value);
+                    OnValueChanged();
+                }
             }
         }
         public static float LeverSensitivity
@@ -106,8 +124,11 @@ namespace Mageki
             get => Preferences.Get("leverSensitivity", 1f);
             set
             {
-                Preferences.Set("leverSensitivity", value);
-                OnValueChanged();
+                if (value != LeverSensitivity)
+                {
+                    Preferences.Set("leverSensitivity", value);
+                    OnValueChanged();
+                }
             }
         }
         public static int LeverLinearity
@@ -115,10 +136,13 @@ namespace Mageki
             get => Preferences.Get("leverLinearity", (int)MaxLeverLinearity);
             set
             {
-                if (value < MinLeverLinearity) value = (int)MinLeverLinearity;
-                else if (value > MaxLeverLinearity) value = (int)MaxLeverLinearity;
-                Preferences.Set("leverLinearity", value);
-                OnValueChanged();
+                if (value != LeverLinearity)
+                {
+                    if (value < MinLeverLinearity) value = (int)MinLeverLinearity;
+                    else if (value > MaxLeverLinearity) value = (int)MaxLeverLinearity;
+                    Preferences.Set("leverLinearity", value);
+                    OnValueChanged();
+                }
             }
         }
         public static float ButtonBottomMargin
@@ -126,8 +150,11 @@ namespace Mageki
             get => Preferences.Get("buttonBottomMargin", 0.2f);
             set
             {
-                Preferences.Set("buttonBottomMargin", value);
-                OnValueChanged();
+                if (value != ButtonBottomMargin)
+                {
+                    Preferences.Set("buttonBottomMargin", value);
+                    OnValueChanged();
+                }
             }
         }
         public static string AimeId
@@ -135,8 +162,11 @@ namespace Mageki
             get => Preferences.Get("aimeId", string.Empty);
             set
             {
-                Preferences.Set("aimeId", value);
-                OnValueChanged();
+                if (value != AimeId)
+                {
+                    Preferences.Set("aimeId", value);
+                    OnValueChanged();
+                }
             }
         }
 
@@ -145,8 +175,11 @@ namespace Mageki
             get => Version.Parse(Preferences.Get("ignoredVersion", "0.0.0"));
             set
             {
-                Preferences.Set("ignoredVersion", value.ToString());
-                OnValueChanged();
+                if (value != IgnoredVersion)
+                {
+                    Preferences.Set("ignoredVersion", value.ToString());
+                    OnValueChanged();
+                }
             }
         }
 

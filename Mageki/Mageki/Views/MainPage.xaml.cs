@@ -13,18 +13,8 @@ namespace Mageki
         public MainPage()
         {
             InitializeComponent();
-            _= Update.CheckUpdateAsync();
+            _ = Update.CheckUpdateAsync();
         }
 
-        private SettingsPopup settingPopup;
-        private async void ControllerPanel_LogoClickd(object sender, EventArgs args)
-        {
-            var popup = settingPopup ?? (settingPopup = new SettingsPopup(Controller));
-            try
-            {
-                await Navigation.PushPopupAsync(popup);
-            }
-            catch { }
-        }
     }
 }

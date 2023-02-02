@@ -1,4 +1,7 @@
-﻿using System.Numerics;
+﻿using SkiaSharp;
+
+using System.Linq;
+using System.Numerics;
 
 namespace Mageki.Utils
 {
@@ -16,6 +19,16 @@ namespace Mageki.Utils
                 value /= 10;
             }
             return ret;
+        }
+        public static SKColor Standardization(this SKColor value)
+        {
+            var y = ((value.Red * 299) + (value.Green * 587) + (value.Blue * 114)) / 1000f / 255f;
+            float ratio = 1;
+            if (y != 0)
+            {
+                ratio = 255f / new byte[] { value.Red, value.Green, value.Blue }.Max();
+            }
+            return new SKColor((byte)(value.Red * ratio), (byte)(value.Green * ratio), (byte)(value.Blue * ratio), (byte)(value.Alpha * y));
         }
     }
 }

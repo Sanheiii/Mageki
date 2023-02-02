@@ -23,9 +23,9 @@ namespace Mageki
         SettingsViewModel ViewModel => BindingContext as SettingsViewModel;
         public SettingsPopup(ControllerPanel controller)
         {
-            this.controller = controller;
             InitializeComponent();
             ProtocolPicker.SelectedIndex = ViewModel.ProtocolIndex;
+            this.controller = controller;
         }
 
         public void Dismiss()
