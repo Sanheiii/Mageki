@@ -19,15 +19,15 @@ namespace Mageki.Views
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string str = (string)value;
-            EntryCell cell = (EntryCell)parameter;
-            SettingsViewModel viewModel = (SettingsViewModel)cell.BindingContext;
+            Entry entry = (Entry)parameter;
+            SettingsViewModel viewModel = (SettingsViewModel)entry.BindingContext;
             if (ushort.TryParse(str, out ushort num1))
             {
                 return num1;
             }
             else
             {
-                cell.Text = viewModel.Port.ToString();
+                entry.Text = viewModel.Port.ToString();
                 return viewModel.Port;
             }
         }

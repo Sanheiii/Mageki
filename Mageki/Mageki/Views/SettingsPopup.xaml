@@ -5,7 +5,9 @@
     xmlns:rg="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
     xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup" 
     xmlns:mageki="clr-namespace:Mageki"
-    BackgroundColor="#AA000000"
+    HasSystemPadding="False"
+    HasKeyboardOffset="False"
+    BackgroundColor="#AADDDDDD"
     xmlns:resources="clr-namespace:Mageki.Resources" xmlns:views="clr-namespace:Mageki.Views"
     x:Class="Mageki.SettingsPopup">
     <rg:PopupPage.BindingContext>
@@ -14,10 +16,20 @@
     <rg:PopupPage.Resources>
         <Color x:Key="PrimaryColor">#3498DB</Color>
         <ResourceDictionary>
-            <Style TargetType="Grid" x:Key="ViewCellGridStyle">
-                <Setter Property="Padding" Value="0,0,20,0"/>
+            <Style TargetType="Grid" x:Key="SettingsGridStyle">
                 <Setter Property="HeightRequest" Value="48"/>
+                <Setter Property="Padding" Value="16,0,16,0"/>
                 <Setter Property="ColumnSpacing" Value="0"/>
+                <Setter Property="ColumnDefinitions" Value="Auto,*"/>
+            </Style>
+            <Style TargetType="Frame" x:Key="SettingsFrameStyle">
+                <Setter Property="Margin" Value="16,0,16,0"/>
+                <Setter Property="Padding" Value="0,0,0,0"/>
+                <Setter Property="BackgroundColor" Value="#AAFFFFFF"/>
+            </Style>
+            <Style TargetType="Label" x:Key="SettingsFrameHeaderStyle">
+                <Setter Property="Margin" Value="24,0,0,0"/>
+                <Setter Property="TextColor" Value="{DynamicResource PrimaryColor}"/>
             </Style>
         </ResourceDictionary>
         <views:ProtocolConverter x:Key="ProtocolConverter"/>
@@ -31,89 +43,155 @@
                 <TapGestureRecognizer Tapped="Close_Tapped"/>
             </mageki:NavigationBar.GestureRecognizers>
         </mageki:NavigationBar>
-        <TableView HasUnevenRows="True" Intent="Settings" Grid.Row="1" BackgroundColor="Transparent">
-            <TableRoot>
-                <TableSection Title="{x:Static resources:AppResources.Connection}" TextColor="{StaticResource PrimaryColor}">
-                    <mageki:EntryCell x:Name="PortCell" Label="{x:Static resources:AppResources.Port}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" Text="{Binding Port,Converter={StaticResource PortConverter},ConverterParameter={x:Reference PortCell}}" Placeholder="4354"/>
-                    <ViewCell Tapped="ProtocolPicker_Tapped">
-                        <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.Protocol}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Picker x:Name="ProtocolPicker" ItemsSource="{Binding Protocols}" SelectedIndex="{Binding Protocol,Converter={StaticResource ProtocolConverter}}" BackgroundColor="Transparent" TextColor="LightGray" Grid.Column="1" HorizontalOptions="Fill" Margin="0,0,16,0" VerticalOptions="Center"/>
+        <ScrollView Grid.Row="1">
+            <StackLayout>
+                <Label Style="{StaticResource SettingsFrameHeaderStyle}" Text="{x:Static resources:AppResources.Connection}" />
+                <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
+                    <StackLayout>
+                        <Grid Style="{StaticResource SettingsGridStyle}">
+                            <Label Grid.Column="0" VerticalTextAlignment="Center" Text="{x:Static resources:AppResources.Port}"/>
+                            <Entry x:Name="PortEntry" Grid.Column="1" VerticalTextAlignment="Center" HorizontalOptions="Fill" Keyboard="Numeric" MaxLength="5" Text="{Binding Port,Converter={StaticResource PortConverter},ConverterParameter={x:Reference PortEntry}}" Placeholder="4354"/>
                         </Grid>
-                    </ViewCell>
-                </TableSection>
-                <TableSection Title="{x:Static resources:AppResources.Gameplay}" TextColor="{StaticResource PrimaryColor}">
-                    <ViewCell Tapped="SeparateButtonsAndLever_Tapped">
-                        <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.SeparateButtonsAndLever}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Switch IsToggled="{Binding SeparateButtonsAndLever}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
+                        <Grid Style="{StaticResource SettingsGridStyle}">
+                            <Label Text="{x:Static resources:AppResources.Protocol}" VerticalTextAlignment="Center"/>
+                            <Picker x:Name="ProtocolPicker" ItemsSource="{Binding Protocols}" SelectedIndex="{Binding Protocol,Converter={StaticResource ProtocolConverter}}" Grid.Column="1" HorizontalOptions="Fill" VerticalTextAlignment="Center"/>
                         </Grid>
-                    </ViewCell>
-                    <ViewCell Tapped="HideButtons_Tapped">
-                        <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.HideButtons}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Switch IsToggled="{Binding HideButtons}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
+                    </StackLayout>
+                </Frame>
+                <Label Style="{StaticResource SettingsFrameHeaderStyle}" Text="{x:Static resources:AppResources.Gameplay}" />
+                <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
+                    <StackLayout>
+                        <Grid Style="{StaticResource SettingsGridStyle}">
+                            <Label Text="{x:Static resources:AppResources.SeparateButtonsAndLever}" VerticalTextAlignment="Center"/>
+                            <Switch IsToggled="{Binding SeparateButtonsAndLever}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
                         </Grid>
-                    </ViewCell>
-                    <ViewCell Tapped="LeverMoveModePicker_Tapped">
-                        <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverMoveMode}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                        <Grid Style="{StaticResource SettingsGridStyle}">
+                            <Label Text="{x:Static resources:AppResources.HideButtons}" VerticalTextAlignment="Center"/>
+                            <Switch IsToggled="{Binding HideButtons}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
+                        </Grid>
+                        <Grid Style="{StaticResource SettingsGridStyle}">
+                            <Label Text="{x:Static resources:AppResources.LeverMoveMode}" VerticalOptions="Center"/>
                             <Picker x:Name="LeverMoveModePicker" ItemsSource="{Binding LeverMoveModes}" SelectedIndex="{Binding LeverMoveMode,Converter={StaticResource LeverMoveModeConverter}}" BackgroundColor="Transparent" TextColor="LightGray" Grid.Column="1" HorizontalOptions="Fill" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
-                    </ViewCell>
-                    <ViewCell>
-                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource ViewCellGridStyle}">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverSensitivity}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Label TextColor="LightGray" Text="{Binding LeverSensitivity,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
+                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}">
+                            <Label Text="{x:Static resources:AppResources.LeverSensitivity}" VerticalOptions="Center"/>
+                            <Label Text="{Binding LeverSensitivity,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
                             <Slider Maximum="10" Minimum="-10" Grid.Column="2" HeightRequest="48" Value="{Binding LeverSensitivity}" VerticalOptions="Center"/>
                         </Grid>
-                    </ViewCell>
-                    <ViewCell>
-                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource ViewCellGridStyle}">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverLinearity}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Label TextColor="LightGray" Text="{Binding LeverLinearity,StringFormat='1/{0}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
+                        <Grid  ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}">
+                            <Label Text="{x:Static resources:AppResources.LeverLinearity}" VerticalOptions="Center"/>
+                            <Label Text="{Binding LeverLinearity,StringFormat='1/{0}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
                             <Slider Maximum="{Binding MaxLeverLinearity,Mode=OneTime}" Minimum="{Binding MinLeverLinearity,Mode=OneTime}" Grid.Column="2" HeightRequest="48" Value="{Binding LeverLinearity}" VerticalOptions="Center"/>
-                        </Grid> 
-                    </ViewCell>
-                    <ViewCell>
-                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource ViewCellGridStyle}">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.ButtonBottomMargin}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Label TextColor="LightGray" Text="{Binding ButtonBottomMargin,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}">
+                            <Label  Text="{x:Static resources:AppResources.ButtonBottomMargin}" VerticalOptions="Center"/>
+                            <Label  Text="{Binding ButtonBottomMargin,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
                             <Slider Maximum="1" Minimum="0" Grid.Column="2" HeightRequest="48" Value="{Binding ButtonBottomMargin}" VerticalOptions="Center"/>
                         </Grid>
-                    </ViewCell>
-                    <ViewCell Tapped="HapticFeedback_Tapped">
-                        <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.HapticFeedback}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Switch IsToggled="{Binding HapticFeedback}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
+                        <!--<Grid Style="{StaticResource SettingsGridStyle}">
+                            <Label Text="{x:Static resources:AppResources.HapticFeedback}" VerticalOptions="Center"/>
+                            <Switch IsToggled="{Binding HapticFeedback}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
+                        </Grid>-->
+                        <Grid Style="{StaticResource SettingsGridStyle}">
+                            <Label Grid.Column="0" VerticalTextAlignment="Center" Text="{x:Static resources:AppResources.AimeID}"/>
+                            <Entry x:Name="AimeIdEntry" Grid.Column="1" VerticalTextAlignment="Center" HorizontalOptions="Fill" Keyboard="Numeric" MaxLength="20" Text="{Binding Aimeid}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
                         </Grid>
-                    </ViewCell>
-                    <mageki:EntryCell x:Name="AimeIdCell" Label="{x:Static resources:AppResources.AimeID}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" Text="{Binding Aimeid,Converter={StaticResource AimeIdConverter},ConverterParameter={Reference AimeIdCell}}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
+                    </StackLayout>
+                </Frame>
+                <!--端口-->
+
+                <!--<TableView HasUnevenRows="True" Intent="Settings" Grid.Row="1" BackgroundColor="Transparent">
+                    <TableRoot>
+                        <TableSection Title="{x:Static resources:AppResources.Connection}" TextColor="{StaticResource PrimaryColor}">
+                            <mageki:EntryCell x:Name="PortCell" Label="{x:Static resources:AppResources.Port}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" Text="{Binding Port,Converter={StaticResource PortConverter},ConverterParameter={x:Reference PortCell}}" Placeholder="4354"/>
+                            <ViewCell Tapped="ProtocolPicker_Tapped">
+                                <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
+                                    <Label TextColor="LightGray" Text="{x:Static resources:AppResources.Protocol}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                    <Picker x:Name="ProtocolPicker" ItemsSource="{Binding Protocols}" SelectedIndex="{Binding Protocol,Converter={StaticResource ProtocolConverter}}" BackgroundColor="Transparent" TextColor="LightGray" Grid.Column="1" HorizontalOptions="Fill" Margin="0,0,16,0" VerticalOptions="Center"/>
+                                </Grid>
+                            </ViewCell>
+                        </TableSection>
+                        <TableSection Title="{x:Static resources:AppResources.Gameplay}" TextColor="{StaticResource PrimaryColor}">
+                            <ViewCell Tapped="SeparateButtonsAndLever_Tapped">
+                                <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
+                                    <Label TextColor="LightGray" Text="{x:Static resources:AppResources.SeparateButtonsAndLever}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                    <Switch IsToggled="{Binding SeparateButtonsAndLever}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
+                                </Grid>
+                            </ViewCell>
+                            <ViewCell Tapped="HideButtons_Tapped">
+                                <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
+                                    <Label TextColor="LightGray" Text="{x:Static resources:AppResources.HideButtons}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                    <Switch IsToggled="{Binding HideButtons}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
+                                </Grid>
+                            </ViewCell>
+                            <ViewCell Tapped="LeverMoveModePicker_Tapped">
+                                <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
+                                    <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverMoveMode}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                    <Picker x:Name="LeverMoveModePicker" ItemsSource="{Binding LeverMoveModes}" SelectedIndex="{Binding LeverMoveMode,Converter={StaticResource LeverMoveModeConverter}}" BackgroundColor="Transparent" TextColor="LightGray" Grid.Column="1" HorizontalOptions="Fill" Margin="0,0,16,0" VerticalOptions="Center"/>
+                                </Grid>
+                            </ViewCell>
+                            <ViewCell>
+                                <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource ViewCellGridStyle}">
+                                    <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverSensitivity}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                    <Label TextColor="LightGray" Text="{Binding LeverSensitivity,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
+                                    <Slider Maximum="10" Minimum="-10" Grid.Column="2" HeightRequest="48" Value="{Binding LeverSensitivity}" VerticalOptions="Center"/>
+                                </Grid>
+                            </ViewCell>
+                <ViewCell>
+                                <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource ViewCellGridStyle}">
+                                    <Label TextColor="LightGray" Text="{x:Static resources:AppResources.LeverLinearity}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                    <Label TextColor="LightGray" Text="{Binding LeverLinearity,StringFormat='1/{0}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
+                                    <Slider Maximum="{Binding MaxLeverLinearity,Mode=OneTime}" Minimum="{Binding MinLeverLinearity,Mode=OneTime}" Grid.Column="2" HeightRequest="48" Value="{Binding LeverLinearity}" VerticalOptions="Center"/>
+                                </Grid>
+                            </ViewCell>
+                            <ViewCell>
+                                <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource ViewCellGridStyle}">
+                                    <Label TextColor="LightGray" Text="{x:Static resources:AppResources.ButtonBottomMargin}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                    <Label TextColor="LightGray" Text="{Binding ButtonBottomMargin,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
+                                    <Slider Maximum="1" Minimum="0" Grid.Column="2" HeightRequest="48" Value="{Binding ButtonBottomMargin}" VerticalOptions="Center"/>
+                                </Grid>
+                            </ViewCell>
+                            <ViewCell Tapped="HapticFeedback_Tapped">
+                                <Grid ColumnDefinitions="Auto,*" Style="{StaticResource ViewCellGridStyle}">
+                                    <Label TextColor="LightGray" Text="{x:Static resources:AppResources.HapticFeedback}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                    <Switch IsToggled="{Binding HapticFeedback}" Grid.Column="1" HorizontalOptions="End" Margin="0,0,16,0" VerticalOptions="Center"/>
+                                </Grid>
+                            </ViewCell>
+                            <mageki:EntryCell x:Name="AimeIdCell" Label="{x:Static resources:AppResources.AimeID}" Keyboard="Numeric" LabelColor="LightGray" TextColor="LightGray" PlaceholderColor="Gray" Text="{Binding Aimeid,Converter={StaticResource AimeIdConverter},ConverterParameter={Reference AimeIdCell}}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
+                        
+                
+                
+                
+                
                 </TableSection>
-                <TableSection Title="{x:Static resources:AppResources.Others}" TextColor="{StaticResource PrimaryColor}">
-                    <ViewCell Tapped="TestButton_Tapped">
-                        <Grid Style="{StaticResource ViewCellGridStyle}">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.TestButton}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                        </Grid>
-                    </ViewCell>
-                    <ViewCell Tapped="ServiceButton_Tapped">
-                        <Grid Style="{StaticResource ViewCellGridStyle}">
-                            <Label TextColor="LightGray" Text="{x:Static resources:AppResources.ServiceButton}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                        </Grid>
-                    </ViewCell>
-                    <ViewCell Tapped="Version_Tapped">
-                        <Grid ColumnDefinitions="Auto,Auto" Style="{StaticResource ViewCellGridStyle}">
-                            <Label Grid.Column="0" TextColor="LightGray" Text="{x:Static resources:AppResources.Version}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                            <Label  Grid.Column="1" TextColor="LightGray" Text="{Binding Version,Mode=OneTime}" VerticalOptions="Center" Margin="16,0,0,0"/>
-                        </Grid>
-                    </ViewCell>
-                    <!--<ViewCell Tapped="Exit_Tapped">
+                        <TableSection Title="{x:Static resources:AppResources.Others}" TextColor="{StaticResource PrimaryColor}">
+                            <ViewCell Tapped="TestButton_Tapped">
+                                <Grid Style="{StaticResource ViewCellGridStyle}">
+                                    <Label TextColor="LightGray" Text="{x:Static resources:AppResources.TestButton}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                </Grid>
+                            </ViewCell>
+                            <ViewCell Tapped="ServiceButton_Tapped">
+                                <Grid Style="{StaticResource ViewCellGridStyle}">
+                                    <Label TextColor="LightGray" Text="{x:Static resources:AppResources.ServiceButton}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                </Grid>
+                            </ViewCell>
+                            <ViewCell Tapped="Version_Tapped">
+                                <Grid ColumnDefinitions="Auto,Auto" Style="{StaticResource ViewCellGridStyle}">
+                                    <Label Grid.Column="0" TextColor="LightGray" Text="{x:Static resources:AppResources.Version}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                    <Label  Grid.Column="1" TextColor="LightGray" Text="{Binding Version,Mode=OneTime}" VerticalOptions="Center" Margin="16,0,0,0"/>
+                                </Grid>
+                            </ViewCell>
+                            -->
+                <!--<ViewCell Tapped="Exit_Tapped">
                         <ContentView  HeightRequest="48">
                             <Label TextColor="LightGray" Text="{x:Static resources:AppResources.Exit}" VerticalOptions="Center" Margin="16,0,0,0"/>
                         </ContentView>
                     </ViewCell>-->
-                </TableSection>
-            </TableRoot>
-        </TableView>
+                <!--
+                        </TableSection>
+                    </TableRoot>
+                </TableView>-->
+            </StackLayout>
+        </ScrollView>
     </Grid>
 </rg:PopupPage>

@@ -92,10 +92,5 @@ namespace Mageki
         {
             ProtocolPicker.Focus();
         }
-
-        private void LeverMoveModePicker_Tapped(object sender, EventArgs e)
-        {
-            LeverMoveModePicker.Focus();
-        }
     }
 }
