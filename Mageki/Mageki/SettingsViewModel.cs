@@ -26,7 +26,6 @@ namespace Mageki
         public ushort Port { get => Settings.Port; set { Settings.Port = value; RaisePropertyChanged(); } }
 
         public LeverMoveMode LeverMoveMode { get => Settings.LeverMoveMode; set { Settings.LeverMoveMode = value; RaisePropertyChanged(); } }
-        public List<string> LeverMoveModes => Enum.GetNames(typeof(LeverMoveMode)).Select(name => AppResources.ResourceManager.GetString(name)).ToList();
 
         // 0 => 1 , -10 => 0.1 , 10 => 10
         public float LeverSensitivity { get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase); set { Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value); RaisePropertyChanged(); } }
@@ -54,6 +53,7 @@ namespace Mageki
         public Command ToggleSwitch { get; }
         public Command FocusElement { get; }
         public Command SelectProtocol { get; }
+        public Command SelectLeverMoveMode { get; }
 
         public SettingsViewModel()
         {
@@ -62,6 +62,7 @@ namespace Mageki
             ToggleSwitch = new Command(ToggleSwitchExecute);
             FocusElement = new Command(FocusElementExecute);
             SelectProtocol = new Command(SelectProtocolExecute);
+            SelectLeverMoveMode = new Command(SelectLeverMoveModeExecute);
         }
 
         private void GoBackExecute(object obj)
@@ -119,17 +120,33 @@ namespace Mageki
             }
         }
 
+        private void SelectLeverMoveModeExecute(object obj)
+        {
+            var newValue = (LeverMoveMode)obj;
+            if (LeverMoveMode != newValue)
+            {
+                LeverMoveMode = newValue;
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void RaisePropertyChanged([CallerMemberName] string name = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
+
     public enum Protocol
     {
         UDP = 0,
         TCP = 1
     }
+
+    public enum LeverMoveMode
+    {
+        Relative, Absolute
+    }
+
     public static class Settings
     {
         public const double MaxLeverLinearity = 540;

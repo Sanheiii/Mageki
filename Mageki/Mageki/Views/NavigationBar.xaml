@@ -11,7 +11,7 @@
     <Grid HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
         <ContentView
             x:Name="BackButton"
-            Padding="15"
+            Padding="16"
             HorizontalOptions="Start"
             VerticalOptions="FillAndExpand"
             xct:TouchEffect.NativeAnimation="True">
@@ -19,12 +19,14 @@
                 FontFamily="MaterialIcons"
                 FontSize="20"
                 Text="&#xE5E0;"
+                TextColor="{AppThemeBinding Light=#FF222222, Dark=#FFDDDDDD}"
                 VerticalOptions="CenterAndExpand" />
         </ContentView>
         <Label
             FontSize="18"
             HorizontalOptions="CenterAndExpand"
             Text="{Binding Source={x:Reference this}, Path=Title}"
+            TextColor="{AppThemeBinding Light=#FF222222, Dark=#FFDDDDDD}"
             VerticalOptions="CenterAndExpand" />
     </Grid>
 </ContentView>

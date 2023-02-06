@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.CommunityToolkit.Extensions;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -21,7 +22,7 @@ namespace Mageki
     {
         public SettingsPopup()
         {
-            InitializeComponent(); 
+            InitializeComponent();
         }
     }
 }

@@ -64,17 +64,16 @@ namespace Mageki.Views
             return str;
         }
     }
-    public class ProtocolConverter : IValueConverter
+    public class EnumSelectedConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value.ToString() == (string)parameter;
+            return value.Equals(parameter);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Protocol protocol = Enum.Parse<Protocol>((string)parameter);
-            return protocol;
+            throw new NotImplementedException();
         }
     }
     public class LeverMoveModeConverter : IValueConverter

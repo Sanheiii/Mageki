@@ -131,5 +131,10 @@ namespace Mageki.Droid
         {
             Rg.Plugins.Popup.Popup.SendBackPressed(base.OnBackPressed);
         }
+        protected override void AttachBaseContext(Context @base)
+        {
+            @base.Resources.Configuration.FontScale = 1f;
+            base.AttachBaseContext(@base);
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 using Xamarin.Forms;
 
-namespace Mageki.Utils
+namespace Mageki.Views
 {
     public class ViewTag
     {
@@ -12,10 +12,9 @@ namespace Mageki.Utils
             propertyName: "Tag",
             defaultValue: null,
             returnType: typeof(object),
-            declaringType: typeof(VisualElement),
-            defaultBindingMode: BindingMode.TwoWay);
+            declaringType: typeof(VisualElement));
 
-        public static object GetTag(BindableObject? bindable)
+        public static object GetTag(BindableObject bindable)
         {
             if (bindable == null)
             {
@@ -25,7 +24,7 @@ namespace Mageki.Utils
             return bindable!.GetValue(TagProperty);
         }
 
-        public static void SetTag(BindableObject? bindable, object value)
+        public static void SetTag(BindableObject bindable, object value)
         {
             bindable?.SetValue(TagProperty, value);
         }
