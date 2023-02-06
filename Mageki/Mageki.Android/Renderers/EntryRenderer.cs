@@ -20,7 +20,7 @@ namespace Mageki.Droid.Renderers
 
         private void Control_ViewAttachedToWindow(object sender, ViewAttachedToWindowEventArgs e)
         {
-            //Control.Background = null;
+            Control.Background = null;
             Control.Enabled = !Control.Enabled;
             Control.Enabled = !Control.Enabled;
         }

@@ -9,6 +9,18 @@ using Xamarin.Forms;
 
 namespace Mageki.Views
 {
+    public class NotConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !(bool)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !(bool)value;
+        }
+    }
     public class PortConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -56,20 +68,13 @@ namespace Mageki.Views
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Protocol protocol)
-            {
-                return (int)protocol;
-            }
-            else return 0;
+            return value.ToString() == (string)parameter;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is int i)
-            {
-                return (Protocol)i;
-            }
-            else return default(Protocol);
+            Protocol protocol = Enum.Parse<Protocol>((string)parameter);
+            return protocol;
         }
     }
     public class LeverMoveModeConverter : IValueConverter

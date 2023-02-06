@@ -5,6 +5,7 @@
     xmlns:rg="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
     xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup" 
     xmlns:mageki="clr-namespace:Mageki"
+    xmlns:utils="clr-namespace:Mageki.Utils"
     xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
     HasSystemPadding="False"
     HasKeyboardOffset="False"
@@ -12,6 +13,9 @@
     xmlns:resources="clr-namespace:Mageki.Resources" xmlns:views="clr-namespace:Mageki.Views"
     x:Class="Mageki.SettingsPopup"
     x:Name="Root">
+    <rg:PopupPage.BindingContext>
+        <mageki:SettingsViewModel/>
+    </rg:PopupPage.BindingContext>
     <rg:PopupPage.Resources>
         <Color x:Key="PrimaryColor">#3498DB</Color>
         <ResourceDictionary>
@@ -31,18 +35,36 @@
                 <Setter Property="Margin" Value="24,0,0,0"/>
                 <Setter Property="TextColor" Value="{DynamicResource PrimaryColor}"/>
             </Style>
+            <Style TargetType="Slider" x:Key="SettingsSliderStyle">
+                <Setter Property="MinimumTrackColor" Value="{DynamicResource PrimaryColor}"/>
+                <Setter Property="VerticalOptions" Value="Center"/>
+            </Style>
+            <Style TargetType="Frame" x:Key="SettingsSelectionFrameStyle">
+                <Setter Property="HasShadow" Value="False"/>
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="Padding" Value="16,0"/>
+                <Setter Property="Margin" Value="8,8"/>
+                <Style.Triggers>
+                    <Trigger TargetType="Frame" Property="utils:ViewTag.Tag" Value="{x:Boolean true}">
+                        <Setter Property="BorderColor" Value="{DynamicResource PrimaryColor}"/>
+                    </Trigger>
+                    <Trigger TargetType="Frame" Property="utils:ViewTag.Tag" Value="{x:Boolean false}">
+                        <Setter Property="BorderColor" Value="Transparent"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="Label" x:Key="SettingsSelectionLabelStyle">
+                <Setter Property="VerticalTextAlignment" Value="Center"/>
+            </Style>
         </ResourceDictionary>
+        <views:NotConverter x:Key="NotConverter"/>
         <views:ProtocolConverter x:Key="ProtocolConverter"/>
         <views:PortConverter x:Key="PortConverter"/>
         <views:AimeIdConverter x:Key="AimeIdConverter"/>
         <views:LeverMoveModeConverter x:Key="LeverMoveModeConverter"/>
     </rg:PopupPage.Resources>
     <Grid RowDefinitions="Auto,*" BackgroundColor="Transparent">
-        <mageki:NavigationBar Title="{x:Static resources:AppResources.Settings}" BackgroundColor="Transparent">
-            <mageki:NavigationBar.GestureRecognizers>
-                <TapGestureRecognizer Tapped="Close_Tapped"/>
-            </mageki:NavigationBar.GestureRecognizers>
-        </mageki:NavigationBar>
+        <mageki:NavigationBar Title="{x:Static resources:AppResources.Settings}" GoBackCommand="{Binding GoBack}" GoBackCommandParameter="{x:Reference Root}"/>
         <ScrollView Grid.Row="1">
             <StackLayout Padding="0,0,0,16">
                 <Label Style="{StaticResource SettingsFrameHeaderStyle}" Text="{x:Static resources:AppResources.Connection}" />
@@ -52,9 +74,42 @@
                             <Label Grid.Column="0" VerticalTextAlignment="Center" Text="{x:Static resources:AppResources.Port}"/>
                             <Entry x:Name="PortEntry" Grid.Column="1" VerticalTextAlignment="Center" HorizontalOptions="Fill" Keyboard="Numeric" MaxLength="5" Text="{Binding Port,Converter={StaticResource PortConverter},ConverterParameter={x:Reference PortEntry}}" Placeholder="4354"/>
                         </Grid>
-                        <Grid Style="{StaticResource SettingsGridStyle}">
+                        <Grid ColumnDefinitions="*,Auto,Auto" Style="{StaticResource SettingsGridStyle}">
                             <Label Text="{x:Static resources:AppResources.Protocol}" VerticalTextAlignment="Center"/>
-                            <Picker x:Name="ProtocolPicker" ItemsSource="{Binding Protocols}" SelectedIndex="{Binding Protocol,Converter={StaticResource ProtocolConverter}}" Grid.Column="1" HorizontalOptions="Fill" VerticalTextAlignment="Center"/>
+                            <Frame Grid.Column="1" Style="{x:StaticResource SettingsSelectionFrameStyle}" 
+                                   utils:ViewTag.Tag="{Binding Protocol,Converter={StaticResource ProtocolConverter},Mode=OneWay,ConverterParameter='TCP'}"
+                                   xct:TouchEffect.NativeAnimation="True"
+                                   xct:TouchEffect.Command="{Binding SelectProtocol}"
+                                   xct:TouchEffect.CommandParameter="TCP">
+                                <Label Text="TCP" Style="{x:StaticResource SettingsSelectionLabelStyle}"/>
+                            </Frame>
+                            <Frame Grid.Column="2" Style="{x:StaticResource SettingsSelectionFrameStyle}"
+                                   utils:ViewTag.Tag="{Binding Protocol,Converter={StaticResource ProtocolConverter},Mode=OneWay,ConverterParameter='UDP'}"
+                                   xct:TouchEffect.NativeAnimation="True"
+                                   xct:TouchEffect.Command="{Binding SelectProtocol}"
+                                   xct:TouchEffect.CommandParameter="UDP">
+                                <Label Text="UDP" Style="{x:StaticResource SettingsSelectionLabelStyle}"/>
+                            </Frame>
+                            <!--
+                            <Picker x:Name="ProtocolPicker" ItemsSource="{Binding Protocols}" SelectedIndex="{Binding Protocol,Converter={StaticResource ProtocolConverter}}" Grid.Column="1" HorizontalOptions="Fill" VerticalTextAlignment="Center"/>-->
+                        </Grid>
+                    </StackLayout>
+                </Frame>
+                <Label Style="{StaticResource SettingsFrameHeaderStyle}" Text="{x:Static resources:AppResources.Layout}" />
+                <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
+                    <StackLayout Spacing="0">
+                        <Grid Style="{StaticResource SettingsGridStyle}" xct:TouchEffect.NativeAnimation="True" xct:TouchEffect.Command="{Binding ToggleSwitch}" xct:TouchEffect.CommandParameter="{x:Reference HideButtonsSwitch}">
+                            <Label Text="{x:Static resources:AppResources.HideButtons}" VerticalTextAlignment="Center"/>
+                            <Switch x:Name="HideButtonsSwitch" IsToggled="{Binding HideButtons}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
+                        </Grid>
+                        <Grid Style="{StaticResource SettingsGridStyle}" IsVisible="{Binding Source={x:Reference HideButtonsSwitch},Path=IsToggled,Converter={StaticResource NotConverter}}" xct:TouchEffect.NativeAnimation="True" xct:TouchEffect.Command="{Binding ToggleSwitch}" xct:TouchEffect.CommandParameter="{x:Reference SeparateButtonsAndLeverSwitch}">
+                            <Label Text="{x:Static resources:AppResources.SeparateButtonsAndLever}" VerticalTextAlignment="Center"/>
+                            <Switch x:Name="SeparateButtonsAndLeverSwitch" IsToggled="{Binding SeparateButtonsAndLever}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}" IsVisible="{Binding Source={x:Reference HideButtonsSwitch},Path=IsToggled,Converter={StaticResource NotConverter}}">
+                            <Label Text="{x:Static resources:AppResources.ButtonBottomMargin}" VerticalOptions="Center"/>
+                            <Label Text="{Binding ButtonBottomMargin,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
+                            <Slider Style="{StaticResource SettingsSliderStyle}" Maximum="1" Minimum="0" Grid.Column="2" Value="{Binding ButtonBottomMargin}"/>
                         </Grid>
                     </StackLayout>
                 </Frame>
@@ -62,32 +117,20 @@
                 <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
                     <StackLayout Spacing="0">
                         <Grid Style="{StaticResource SettingsGridStyle}">
-                            <Label Text="{x:Static resources:AppResources.SeparateButtonsAndLever}" VerticalTextAlignment="Center"/>
-                            <Switch IsToggled="{Binding SeparateButtonsAndLever}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid Style="{StaticResource SettingsGridStyle}">
-                            <Label Text="{x:Static resources:AppResources.HideButtons}" VerticalTextAlignment="Center"/>
-                            <Switch IsToggled="{Binding HideButtons}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid Style="{StaticResource SettingsGridStyle}">
                             <Label Text="{x:Static resources:AppResources.LeverMoveMode}" VerticalOptions="Center"/>
-                            <Picker x:Name="LeverMoveModePicker" ItemsSource="{Binding LeverMoveModes}" SelectedIndex="{Binding LeverMoveMode,Converter={StaticResource LeverMoveModeConverter}}" BackgroundColor="Transparent" TextColor="LightGray" Grid.Column="1" HorizontalOptions="Fill" Margin="0,0,16,0" VerticalOptions="Center"/>
+                            <Picker x:Name="LeverMoveModePicker" ItemsSource="{Binding LeverMoveModes}" SelectedIndex="{Binding LeverMoveMode,Converter={StaticResource LeverMoveModeConverter}}" Grid.Column="1" HorizontalOptions="Fill" Margin="0,0,16,0" VerticalOptions="Center"/>
                         </Grid>
                         <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}">
                             <Label Text="{x:Static resources:AppResources.LeverSensitivity}" VerticalOptions="Center"/>
                             <Label Text="{Binding LeverSensitivity,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
-                            <Slider Maximum="10" Minimum="-10" Grid.Column="2" HeightRequest="48" Value="{Binding LeverSensitivity}" VerticalOptions="Center"/>
+                            <Slider Style="{StaticResource SettingsSliderStyle}" Maximum="10" Minimum="-10" Grid.Column="2" Value="{Binding LeverSensitivity}"/>
                         </Grid>
                         <Grid  ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}">
                             <Label Text="{x:Static resources:AppResources.LeverLinearity}" VerticalOptions="Center"/>
                             <Label Text="{Binding LeverLinearity,StringFormat='1/{0}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
-                            <Slider Maximum="{Binding MaxLeverLinearity,Mode=OneTime}" Minimum="{Binding MinLeverLinearity,Mode=OneTime}" Grid.Column="2" HeightRequest="48" Value="{Binding LeverLinearity}" VerticalOptions="Center"/>
+                            <Slider Style="{StaticResource SettingsSliderStyle}" Maximum="{Binding MaxLeverLinearity,Mode=OneTime}" Minimum="{Binding MinLeverLinearity,Mode=OneTime}" Grid.Column="2" Value="{Binding LeverLinearity}"/>
                         </Grid>
-                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}">
-                            <Label  Text="{x:Static resources:AppResources.ButtonBottomMargin}" VerticalOptions="Center"/>
-                            <Label  Text="{Binding ButtonBottomMargin,StringFormat='{0:F2}'}" VerticalOptions="Center" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
-                            <Slider Maximum="1" Minimum="0" Grid.Column="2" HeightRequest="48" Value="{Binding ButtonBottomMargin}" VerticalOptions="Center"/>
-                        </Grid>
+
                         <!--<Grid Style="{StaticResource SettingsGridStyle}">
                             <Label Text="{x:Static resources:AppResources.HapticFeedback}" VerticalOptions="Center"/>
                             <Switch IsToggled="{Binding HapticFeedback}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
@@ -98,6 +141,7 @@
                         </Grid>
                     </StackLayout>
                 </Frame>
+                <Label Style="{StaticResource SettingsFrameHeaderStyle}" Text="{x:Static resources:AppResources.Others}" />
                 <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
                     <StackLayout Spacing="0">
                         <Grid Style="{StaticResource SettingsGridStyle}" xct:TouchEffect.NativeAnimation="True" xct:TouchEffect.State="{Binding TestState}">
@@ -106,10 +150,12 @@
                         <Grid Style="{StaticResource SettingsGridStyle}" xct:TouchEffect.NativeAnimation="True" xct:TouchEffect.State="{Binding ServiceState}">
                             <Label Grid.ColumnSpan="2" Text="{x:Static resources:AppResources.ServiceButton}" VerticalOptions="Center"/>
                         </Grid>
-                        <Grid Style="{StaticResource SettingsGridStyle}" ColumnSpacing="16" 
-                              xct:TouchEffect.NativeAnimation="True"
-                              xct:TouchEffect.Command="{Binding CheckUpdate}" 
-                              xct:TouchEffect.CommandParameter="{x:Reference Root}">
+                    </StackLayout>
+                </Frame>
+                <Label Style="{StaticResource SettingsFrameHeaderStyle}" Text="{x:Static resources:AppResources.About}" />
+                <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
+                    <StackLayout Spacing="0">
+                        <Grid Style="{StaticResource SettingsGridStyle}" ColumnSpacing="16" xct:TouchEffect.NativeAnimation="True" xct:TouchEffect.Command="{Binding CheckUpdate}" xct:TouchEffect.CommandParameter="{x:Reference Root}">
                             <Label Grid.Column="0" Text="{x:Static resources:AppResources.Version}" VerticalOptions="Center"/>
                             <Label  Grid.Column="1" Text="{Binding Version,Mode=OneTime}" VerticalOptions="Center"/>
                         </Grid>

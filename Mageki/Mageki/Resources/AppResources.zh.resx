@@ -207,4 +207,16 @@
   <data name="LeverMoveMode" xml:space="preserve">
     <value>摇杆移动模式</value>
   </data>
+  <data name="About" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="CheckUpdateFailed" xml:space="preserve">
+    <value>检查更新失败。</value>
+  </data>
+  <data name="Layout" xml:space="preserve">
+    <value>布局</value>
+  </data>
+  <data name="MagekiIsUpToDate" xml:space="preserve">
+    <value>Mageki已是最新版。</value>
+  </data>
 </root>

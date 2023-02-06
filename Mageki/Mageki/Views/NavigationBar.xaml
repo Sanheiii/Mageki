@@ -5,16 +5,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:toolkit="http://xamarin.com/schemas/2020/toolkit"
+    xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
     x:Name="this"
     mc:Ignorable="d">
-    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand" Padding="0,10,0,0">
+    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
         <ContentView
-            Margin="10,5,10,10"
+            x:Name="BackButton"
+            Padding="15"
             HorizontalOptions="Start"
-            VerticalOptions="FillAndExpand">
+            VerticalOptions="FillAndExpand"
+            xct:TouchEffect.NativeAnimation="True">
             <Label
-                Padding="0,2,0,0"
                 FontFamily="MaterialIcons"
                 FontSize="20"
                 Text="&#xE5E0;"

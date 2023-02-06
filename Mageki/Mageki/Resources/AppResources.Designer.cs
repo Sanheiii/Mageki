@@ -61,6 +61,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 About 的本地化字符串。
+        /// </summary>
+        public static string About {
+            get {
+                return ResourceManager.GetString("About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Absolute 的本地化字符串。
         /// </summary>
         public static string Absolute {
@@ -111,6 +120,15 @@ namespace Mageki.Resources {
         public static string Cancel {
             get {
                 return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Check update failed 的本地化字符串。
+        /// </summary>
+        public static string CheckUpdateFailed {
+            get {
+                return ResourceManager.GetString("CheckUpdateFailed", resourceCulture);
             }
         }
         
@@ -205,6 +223,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Layout 的本地化字符串。
+        /// </summary>
+        public static string Layout {
+            get {
+                return ResourceManager.GetString("Layout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Lever Linearity 的本地化字符串。
         /// </summary>
         public static string LeverLinearity {
@@ -228,6 +255,15 @@ namespace Mageki.Resources {
         public static string LeverSensitivity {
             get {
                 return ResourceManager.GetString("LeverSensitivity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Mageki is up to date 的本地化字符串。
+        /// </summary>
+        public static string MagekiIsUpToDate {
+            get {
+                return ResourceManager.GetString("MagekiIsUpToDate", resourceCulture);
             }
         }
         

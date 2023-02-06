@@ -22,7 +22,6 @@ namespace Mageki
         private const double leverSensitivityBase = 1.2589254117941673;
 
         public Protocol Protocol { get => Settings.Protocol; set { Settings.Protocol = value; RaisePropertyChanged(); } }
-        public List<string> Protocols => Enum.GetNames(typeof(Protocol)).ToList();
 
         public ushort Port { get => Settings.Port; set { Settings.Port = value; RaisePropertyChanged(); } }
 
@@ -50,12 +49,29 @@ namespace Mageki
         public TouchState TestState { get => (TouchState)(App.CurrentIO.Data.OptButtons & OptionButtons.Test); set { App.CurrentIO.SetOptionButton(OptionButtons.Test, value == TouchState.Pressed); RaisePropertyChanged(); } }
         public TouchState ServiceState { get => (TouchState)(App.CurrentIO.Data.OptButtons & OptionButtons.Service); set { App.CurrentIO.SetOptionButton(OptionButtons.Service, value == TouchState.Pressed); RaisePropertyChanged(); } }
 
+        public Command GoBack { get; }
         public Command CheckUpdate { get; }
+        public Command ToggleSwitch { get; }
+        public Command FocusElement { get; }
+        public Command SelectProtocol { get; }
 
         public SettingsViewModel()
         {
-            CheckUpdate = new Command(CheckUpdateExecute, (object obj) => !checkingUpdate);
+            GoBack = new Command(GoBackExecute);
+            CheckUpdate = new Command(CheckUpdateExecute, (obj) => !checkingUpdate);
+            ToggleSwitch = new Command(ToggleSwitchExecute);
+            FocusElement = new Command(FocusElementExecute);
+            SelectProtocol = new Command(SelectProtocolExecute);
         }
+
+        private void GoBackExecute(object obj)
+        {
+            SettingsPopup popup = (SettingsPopup)obj;
+
+            if (PopupNavigation.Instance.PopupStack?.Contains(popup) ?? false)
+                PopupNavigation.Instance.RemovePageAsync(popup);
+        }
+
         bool checkingUpdate = false;
         private async void CheckUpdateExecute(object obj)
         {
@@ -63,17 +79,44 @@ namespace Mageki
             checkingUpdate = true;
             CheckUpdate.ChangeCanExecute();
             var result = await Utils.Update.CheckUpdateAsync(true);
-            VisualElement element = PopupNavigation.Instance.PopupStack.Contains(popup)? popup : Application.Current.MainPage;
+            VisualElement element = PopupNavigation.Instance.PopupStack.Contains(popup) ? popup : Application.Current.MainPage;
             if (result == Utils.Update.CheckVersionResult.Latest)
             {
-                await element.DisplayToastAsync("已是最新版");
+                await element.DisplayToastAsync(AppResources.MagekiIsUpToDate);
             }
             else
             {
-                await element.DisplayToastAsync("检查更新失败");
+                await element.DisplayToastAsync(AppResources.CheckUpdateFailed);
             }
             checkingUpdate = false;
             CheckUpdate.ChangeCanExecute();
+        }
+        private void ToggleSwitchExecute(object obj)
+        {
+            if (obj is Switch s)
+            {
+                s.IsToggled = !s.IsToggled;
+            }
+        }
+        private void FocusElementExecute(object obj)
+        {
+            if (obj is VisualElement element)
+            {
+                element.Focus();
+            }
+            if (obj is Entry entry)
+            {
+                entry.CursorPosition = entry.Text.Length;
+            }
+        }
+
+        private void SelectProtocolExecute(object obj)
+        {
+            var newValue = Enum.Parse<Protocol>(obj.ToString());
+            if(Protocol!=newValue)
+            {
+                Protocol = newValue;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

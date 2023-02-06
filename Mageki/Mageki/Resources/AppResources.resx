@@ -207,4 +207,16 @@
   <data name="LeverMoveMode" xml:space="preserve">
     <value>Lever Move Mode</value>
   </data>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="CheckUpdateFailed" xml:space="preserve">
+    <value>Check update failed</value>
+  </data>
+  <data name="MagekiIsUpToDate" xml:space="preserve">
+    <value>Mageki is up to date</value>
+  </data>
+  <data name="Layout" xml:space="preserve">
+    <value>Layout</value>
+  </data>
 </root>
