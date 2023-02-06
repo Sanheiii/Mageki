@@ -80,14 +80,14 @@
                                    utils:ViewTag.Tag="{Binding Protocol,Converter={StaticResource ProtocolConverter},Mode=OneWay,ConverterParameter='TCP'}"
                                    xct:TouchEffect.NativeAnimation="True"
                                    xct:TouchEffect.Command="{Binding SelectProtocol}"
-                                   xct:TouchEffect.CommandParameter="TCP">
+                                   xct:TouchEffect.CommandParameter="{x:Static mageki:Protocol.TCP}">
                                 <Label Text="TCP" Style="{x:StaticResource SettingsSelectionLabelStyle}"/>
                             </Frame>
                             <Frame Grid.Column="2" Style="{x:StaticResource SettingsSelectionFrameStyle}"
                                    utils:ViewTag.Tag="{Binding Protocol,Converter={StaticResource ProtocolConverter},Mode=OneWay,ConverterParameter='UDP'}"
                                    xct:TouchEffect.NativeAnimation="True"
                                    xct:TouchEffect.Command="{Binding SelectProtocol}"
-                                   xct:TouchEffect.CommandParameter="UDP">
+                                   xct:TouchEffect.CommandParameter="{x:Static mageki:Protocol.UDP}">
                                 <Label Text="UDP" Style="{x:StaticResource SettingsSelectionLabelStyle}"/>
                             </Frame>
                             <!--

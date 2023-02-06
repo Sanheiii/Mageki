@@ -112,8 +112,8 @@ namespace Mageki
 
         private void SelectProtocolExecute(object obj)
         {
-            var newValue = Enum.Parse<Protocol>(obj.ToString());
-            if(Protocol!=newValue)
+            var newValue = (Protocol)obj;
+            if (Protocol != newValue)
             {
                 Protocol = newValue;
             }
