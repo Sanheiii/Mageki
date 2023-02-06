@@ -84,8 +84,10 @@ namespace Mageki
         }
         public virtual void SetOptionButton(OptionButtons button, bool pressed)
         {
-            if (pressed) data.OptButtons ^= button;
-            else data.OptButtons |= button;
+            if (pressed) 
+                data.OptButtons |= button;
+            else 
+                data.OptButtons &= ~button;
         }
         public void SetLed(uint data)
         {

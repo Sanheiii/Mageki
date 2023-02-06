@@ -98,7 +98,7 @@ namespace Mageki.Drawables
         {
             if (flag) return;
             flag = true;
-            var popup = settingPopup ?? (settingPopup = new SettingsPopup(controller));
+            var popup = settingPopup ?? (settingPopup = new SettingsPopup());
             try
             {
                 await Application.Current.MainPage.Navigation.PushPopupAsync(popup);

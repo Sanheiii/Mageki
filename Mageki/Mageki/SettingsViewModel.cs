@@ -1,15 +1,18 @@
-﻿using System;
+﻿using Mageki.Drawables;
+using Mageki.Resources;
+
+using Rg.Plugins.Popup.Services;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows.Input;
 
+using Xamarin.CommunityToolkit.Effects;
+using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using System.Linq;
-using Mageki.Drawables;
-using Mageki.Resources;
 
 namespace Mageki
 {
@@ -24,7 +27,7 @@ namespace Mageki
         public ushort Port { get => Settings.Port; set { Settings.Port = value; RaisePropertyChanged(); } }
 
         public LeverMoveMode LeverMoveMode { get => Settings.LeverMoveMode; set { Settings.LeverMoveMode = value; RaisePropertyChanged(); } }
-        public List<string> LeverMoveModes => Enum.GetNames(typeof(LeverMoveMode)).Select(name=>AppResources.ResourceManager.GetString(name)).ToList();
+        public List<string> LeverMoveModes => Enum.GetNames(typeof(LeverMoveMode)).Select(name => AppResources.ResourceManager.GetString(name)).ToList();
 
         // 0 => 1 , -10 => 0.1 , 10 => 10
         public float LeverSensitivity { get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase); set { Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value); RaisePropertyChanged(); } }
@@ -44,10 +47,33 @@ namespace Mageki
         public bool HapticFeedback { get => Settings.HapticFeedback; set { Settings.HapticFeedback = value; RaisePropertyChanged(); } }
 
         public Version Version => Version.Parse(VersionTracking.CurrentVersion);
+        public TouchState TestState { get => (TouchState)(App.CurrentIO.Data.OptButtons & OptionButtons.Test); set { App.CurrentIO.SetOptionButton(OptionButtons.Test, value == TouchState.Pressed); RaisePropertyChanged(); } }
+        public TouchState ServiceState { get => (TouchState)(App.CurrentIO.Data.OptButtons & OptionButtons.Service); set { App.CurrentIO.SetOptionButton(OptionButtons.Service, value == TouchState.Pressed); RaisePropertyChanged(); } }
+
+        public Command CheckUpdate { get; }
 
         public SettingsViewModel()
         {
-
+            CheckUpdate = new Command(CheckUpdateExecute, (object obj) => !checkingUpdate);
+        }
+        bool checkingUpdate = false;
+        private async void CheckUpdateExecute(object obj)
+        {
+            var popup = (SettingsPopup)obj;
+            checkingUpdate = true;
+            CheckUpdate.ChangeCanExecute();
+            var result = await Utils.Update.CheckUpdateAsync(true);
+            VisualElement element = PopupNavigation.Instance.PopupStack.Contains(popup)? popup : Application.Current.MainPage;
+            if (result == Utils.Update.CheckVersionResult.Latest)
+            {
+                await element.DisplayToastAsync("已是最新版");
+            }
+            else
+            {
+                await element.DisplayToastAsync("检查更新失败");
+            }
+            checkingUpdate = false;
+            CheckUpdate.ChangeCanExecute();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

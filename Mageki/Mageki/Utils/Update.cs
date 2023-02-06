@@ -3,9 +3,12 @@
 using Newtonsoft.Json.Linq;
 
 using System;
+using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using Xamarin.CommunityToolkit.Extensions;
+using Xamarin.CommunityToolkit.UI.Views.Options;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -13,10 +16,11 @@ namespace Mageki.Utils
 {
     public static class Update
     {
-        public static async Task CheckUpdateAsync(bool forcce = false)
+        public static async Task<CheckVersionResult> CheckUpdateAsync(bool force = false)
         {
             try
             {
+                await Task.Delay(5000);
                 using HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "mageki");
                 using var response = await client.GetAsync("https://api.github.com/repos/sanheiii/mageki/releases/latest");
@@ -24,7 +28,7 @@ namespace Mageki.Utils
                 JObject data = JObject.Parse(responseString);
                 Version current = Version.Parse(VersionTracking.CurrentVersion);
                 Version latest = Version.Parse(data["tag_name"].Value<string>());
-                if (current < latest && (forcce || Settings.IgnoredVersion < latest))
+                if (current < latest && (force || Settings.IgnoredVersion < latest))
                 {
                     string action = await Application.Current.MainPage.DisplayActionSheet(AppResources.NewVersionAvailable, AppResources.Cancel, AppResources.DoNotRemindMeAgain, AppResources.GoToReleasePage);
                     if (action == AppResources.GoToReleasePage)
@@ -35,9 +39,29 @@ namespace Mageki.Utils
                     {
                         Settings.IgnoredVersion = latest;
                     }
+                    return CheckVersionResult.CanUpdate;
+                }
+                else if (Settings.IgnoredVersion >= current)
+                {
+                    return CheckVersionResult.Ignored;
+                }
+                else
+                {
+                    return CheckVersionResult.Latest;
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                App.Logger.Error(ex);
+                return CheckVersionResult.Error;
+            }
+        }
+        public enum CheckVersionResult
+        {
+            CanUpdate,
+            Ignored,
+            Latest,
+            Error
         }
     }
 }

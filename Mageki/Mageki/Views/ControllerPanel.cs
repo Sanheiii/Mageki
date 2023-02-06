@@ -26,7 +26,6 @@ namespace Mageki
 {
     public class ControllerPanel : Grid
     {
-        private IO io;
         private bool requireUpdate = false;
         private Keyboard keyboard = new Keyboard();
         private SideButton lSide = new SideButton() { Side = Side.Left, Color = SKColors.Pink };
@@ -116,33 +115,33 @@ namespace Mageki
         }
         public void InitIO()
         {
-            bool protocolChanged = io is null || io.GetType().ToString().ToLower() != $"{Settings.Protocol}IO".ToLower();
+            bool protocolChanged = App.CurrentIO is null || App.CurrentIO.GetType().ToString().ToLower() != $"{Settings.Protocol}IO".ToLower();
             bool portChanged =
-                (io is UdpIO udpIO && udpIO.Port != Settings.Port) ||
-                (io is TcpIO tcpIO && tcpIO.Port != Settings.Port);
+                (App.CurrentIO is UdpIO udpIO && udpIO.Port != Settings.Port) ||
+                (App.CurrentIO is TcpIO tcpIO && tcpIO.Port != Settings.Port);
             if (protocolChanged || portChanged)
             {
-                if (io != null)
+                if (App.CurrentIO != null)
                 {
-                    io.OnConnected -= OnConnected;
-                    io.OnDisconnected -= OnDisconnected;
-                    io.OnLedChanged -= OnLedChanged;
-                    io.Dispose();
+                    App.CurrentIO.OnConnected -= OnConnected;
+                    App.CurrentIO.OnDisconnected -= OnDisconnected;
+                    App.CurrentIO.OnLedChanged -= OnLedChanged;
+                    App.CurrentIO.Dispose();
                 }
                 try
                 {
-                    io = Settings.Protocol switch
+                    App.CurrentIO = Settings.Protocol switch
                     {
                         Protocol.UDP => new UdpIO(),
                         Protocol.TCP => new TcpIO(),
                         _ => throw new NotImplementedException($"Unsupported protocols:{Settings.Protocol}"),
                     };
-                    io.OnConnected += OnConnected;
-                    io.OnDisconnected += OnDisconnected;
-                    io.OnLedChanged += OnLedChanged;
+                    App.CurrentIO.OnConnected += OnConnected;
+                    App.CurrentIO.OnDisconnected += OnDisconnected;
+                    App.CurrentIO.OnLedChanged += OnLedChanged;
                     OnDisconnected(this, EventArgs.Empty);
                     OnLedChanged(this, EventArgs.Empty);
-                    io.Init();
+                    App.CurrentIO.Init();
                 }
                 catch (Exception ex)
                 {
@@ -153,7 +152,7 @@ namespace Mageki
 
         private void OnLedChanged(object sender, EventArgs e)
         {
-            SetLed(io.Colors);
+            SetLed(App.CurrentIO.Colors);
         }
 
         private void OnConnected(object sender, EventArgs e)
@@ -186,9 +185,9 @@ namespace Mageki
             App.Logger.Debug($"FeliCa card is present\nIDm: {idmString}\nPMm: {pmMString}\nSystemCode: {systemCodeString}");
 
             nfcScanning = true;
-            io.SetAime(2, packet);
+            App.CurrentIO.SetAime(2, packet);
             await Task.Delay(3000);
-            io.SetAime(0, new byte[0]);
+            App.CurrentIO.SetAime(0, new byte[0]);
             nfcScanning = false;
         }
         public async void ScanMifare(byte[] packet)
@@ -198,9 +197,9 @@ namespace Mageki
             App.Logger.Debug($"Mifare card is present\nAccessCode: {1}");
 
             nfcScanning = true;
-            io.SetAime(1, packet);
+            App.CurrentIO.SetAime(1, packet);
             await Task.Delay(3000);
-            io.SetAime(0, new byte[0]);
+            App.CurrentIO.SetAime(0, new byte[0]);
             nfcScanning = false;
         }
 
@@ -211,15 +210,15 @@ namespace Mageki
 
         public async Task PressAndReleaseTestButtonAsync()
         {
-            io.SetOptionButton(OptionButtons.Test, true);
+            App.CurrentIO.SetOptionButton(OptionButtons.Test, true);
             await Task.Delay(1000);
-            io.SetOptionButton(OptionButtons.Test, false);
+            App.CurrentIO.SetOptionButton(OptionButtons.Test, false);
         }
         public async Task PressAndReleaseServiceButtonAsync()
         {
-            io.SetOptionButton(OptionButtons.Service, true);
+            App.CurrentIO.SetOptionButton(OptionButtons.Service, true);
             await Task.Delay(1000);
-            io.SetOptionButton(OptionButtons.Service, false);
+            App.CurrentIO.SetOptionButton(OptionButtons.Service, false);
         }
 
 #if DEBUG
@@ -394,9 +393,9 @@ namespace Mageki
             // buttons
             for (int i = 0; i < buttons.Length; i++)
             {
-                if (io.Data.GameButtons[i] != buttons[i].TouchCount)
+                if (App.CurrentIO.Data.GameButtons[i] != buttons[i].TouchCount)
                 {
-                    io.SetGameButton(i, buttons[i].TouchCount);
+                    App.CurrentIO.SetGameButton(i, buttons[i].TouchCount);
                 }
             }
             // lever
@@ -418,14 +417,14 @@ namespace Mageki
         private void MoveLever(float x)
         {
             short newValue = (short)(short.MaxValue * x);
-            short oldValue = io.Data.Lever;
+            short oldValue = App.CurrentIO.Data.Lever;
 
             var threshold = short.MaxValue / (Settings.LeverLinearity / 2f);
 
             // 仅在经过分界的时候发包
             if ((int)(newValue / threshold) != (int)(oldValue / threshold))
             {
-                io.SetLever(newValue);
+                App.CurrentIO.SetLever(newValue);
                 return;
             }
         }

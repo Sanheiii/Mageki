@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -18,13 +19,12 @@ namespace Mageki
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SettingsPopup : PopupPage
     {
-        private ControllerPanel controller;
 
         SettingsViewModel ViewModel => BindingContext as SettingsViewModel;
-        public SettingsPopup(ControllerPanel controller)
+        public SettingsPopup()
         {
+            this.BindingContext = new SettingsViewModel();
             InitializeComponent(); 
-            this.controller = controller;
         }
 
         public void Dismiss()
@@ -53,39 +53,9 @@ namespace Mageki
             ViewModel.HapticFeedback = !ViewModel.HapticFeedback;
         }
 
-        private async void TestButton_Tapped(object sender, EventArgs e)
-        {
-            if (sender is ViewCell cell)
-            {
-                cell.IsEnabled = false;
-                await controller.PressAndReleaseTestButtonAsync();
-                cell.IsEnabled = true;
-            }
-        }
-
-        private async void ServiceButton_Tapped(object sender, EventArgs e)
-        {
-            if (sender is ViewCell cell)
-            {
-                cell.IsEnabled = false;
-                await controller.PressAndReleaseServiceButtonAsync();
-                cell.IsEnabled = true;
-            }
-        }
-
         private void Exit_Tapped(object sender, EventArgs e)
         {
             DependencyService.Get<ICloseApplication>().Close();
-        }
-
-        private async void Version_Tapped(object sender, EventArgs e)
-        {
-            if (sender is ViewCell cell)
-            {
-                cell.IsEnabled = false;
-                await Utils.Update.CheckUpdateAsync(true);
-                cell.IsEnabled = true;
-            }
         }
 
         private void ProtocolPicker_Tapped(object sender, EventArgs e)
