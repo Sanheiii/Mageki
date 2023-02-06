@@ -26,6 +26,8 @@ namespace Mageki.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            AppDomain.CurrentDomain.UnhandledException += App.CurrentDomainOnUnhandledException;
+            TaskScheduler.UnobservedTaskException += App.TaskSchedulerOnUnobservedTaskException;
             Rg.Plugins.Popup.Popup.Init();
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());

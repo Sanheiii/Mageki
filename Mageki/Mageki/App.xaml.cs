@@ -12,6 +12,7 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Mageki.Resources;
+using System.Threading.Tasks;
 
 namespace Mageki
 {
@@ -90,6 +91,16 @@ namespace Mageki
             };
             File.WriteAllText(Path.Combine(FileSystem.CacheDirectory, "crash.json"), json.ToString());
             return;
+        }
+
+        public static void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
+        {
+            UnhandledException(unobservedTaskExceptionEventArgs.Exception);
+        }
+
+        public static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+        {
+            UnhandledException(unhandledExceptionEventArgs.ExceptionObject as Exception);
         }
 
         protected override async void OnStart()
