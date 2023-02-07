@@ -86,7 +86,7 @@
                     <StackLayout Spacing="0">
                         <!--端口-->
                         <Grid Style="{StaticResource SettingsGridStyle}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Grid.Column="0" Text="{x:Static resources:AppResources.Port}"/>
+                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.Port}"/>
                             <Entry Style="{StaticResource SettingsEntryStyle}" x:Name="PortEntry" Grid.Column="1" Keyboard="Numeric" MaxLength="5" Text="{Binding Port,Converter={StaticResource PortConverter},ConverterParameter={x:Reference PortEntry}}" Placeholder="4354"/>
                         </Grid>
                         <!--协议-->
@@ -169,16 +169,16 @@
                                 </MultiBinding>
                             </Grid.IsVisible>
                             <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.SeparateButtonsAndLever}"/>
-                            <Switch x:Name="SeparateButtonsAndLeverSwitch" IsToggled="{Binding SeparateButtonsAndLever}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
+                            <Switch IsToggled="{Binding SeparateButtonsAndLever}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
                         </Grid>
                         <!--触摸反馈-->
-                        <!--<Grid Style="{StaticResource SettingsGridStyle}">
-                            <Label Text="{x:Static resources:AppResources.HapticFeedback}" VerticalOptions="Center"/>
+                        <Grid Style="{StaticResource SettingsGridStyle}">
+                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.HapticFeedback}"/>
                             <Switch IsToggled="{Binding HapticFeedback}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
-                        </Grid>-->
+                        </Grid>
                         <!--Aime卡号-->
                         <Grid Style="{StaticResource SettingsGridStyle}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Grid.Column="0" Text="{x:Static resources:AppResources.AimeID}"/>
+                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.AimeID}"/>
                             <Entry Style="{StaticResource SettingsEntryStyle}" x:Name="AimeIdEntry" Grid.Column="1" Keyboard="Numeric" MaxLength="20" Text="{Binding Aimeid}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
                         </Grid>
                     </StackLayout>
@@ -203,7 +203,7 @@
                     <StackLayout Spacing="0">
                         <!--版本-->
                         <Grid Style="{StaticResource SettingsGridStyle}" ColumnSpacing="16" xct:TouchEffect.NativeAnimation="True" xct:TouchEffect.Command="{Binding CheckUpdate}" xct:TouchEffect.CommandParameter="{x:Reference Root}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Grid.Column="0" Text="{x:Static resources:AppResources.Version}"/>
+                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.Version}"/>
                             <Label Style="{StaticResource SettingsLabelStyle}" Grid.Column="1" Text="{Binding Version,Mode=OneTime}"/>
                         </Grid>
                     </StackLayout>

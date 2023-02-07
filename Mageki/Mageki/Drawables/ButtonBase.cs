@@ -2,6 +2,8 @@
 
 using System.Collections.Generic;
 
+using Xamarin.Essentials;
+
 namespace Mageki.Drawables
 {
     public abstract class ButtonBase : Box
@@ -18,7 +20,18 @@ namespace Mageki.Drawables
             { ButtonColors.White, new SKColor(0xFFFFFFFF) },
         };
 
-        public byte TouchCount { get => GetValue((byte)0); set => SetValueWithNotify(value); }
+        public byte TouchCount
+        {
+            get => GetValue((byte)0);
+            set
+            {
+                SetValueWithNotify(value);
+                if (Settings.HapticFeedback && TouchCount != value)
+                {
+                    HapticFeedback.Perform(HapticFeedbackType.Click);
+                }
+            }
+        }
 
         public ButtonBase() : base() { }
 
