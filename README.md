@@ -14,7 +14,7 @@ Mageki能够通过USB或局域网连接到中的[ongeki-io](https://github.com/S
 ## 请注意
 - __项目名中的Ma取自Xamarin，geki取自ONGEKI，请不要使用其它任何汉字或Emoji来代替它们。__
 - __不提供游戏下载。__
-- __[蓝色的文字都可以点。]()__
+- __[蓝色的文字都可以点。](https://github.com/Sanheiii/Mageki/wiki/Mageki%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C)__
 ## 开始使用
 请前往 __[wiki页面](https://github.com/Sanheiii/Mageki/wiki/Mageki%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C)__ 查看 __配置与连接说明__
 
