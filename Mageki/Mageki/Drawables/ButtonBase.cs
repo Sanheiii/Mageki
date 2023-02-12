@@ -25,11 +25,11 @@ namespace Mageki.Drawables
             get => GetValue((byte)0);
             set
             {
-                SetValueWithNotify(value);
-                if (Settings.HapticFeedback && TouchCount != value)
+                if (Settings.EnableHapticFeedback && TouchCount != value)
                 {
                     HapticFeedback.Perform(HapticFeedbackType.Click);
                 }
+                SetValueWithNotify(value);
             }
         }
 
@@ -47,13 +47,13 @@ namespace Mageki.Drawables
             return base.HandleTouchMoved(id, point);
         }
 
-        public override bool HandleTouchReleased(long id)
+        public override void HandleTouchReleased(long id)
         {
             if (touchPoints.ContainsKey(id))
             {
                 TouchCount--;
             }
-            return base.HandleTouchReleased(id);
+            base.HandleTouchReleased(id);
         }
     }
 }

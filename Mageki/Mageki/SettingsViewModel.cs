@@ -1,14 +1,11 @@
 ﻿using Mageki.Drawables;
 using Mageki.Resources;
-
 using Rg.Plugins.Popup.Services;
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-
 using Xamarin.CommunityToolkit.Effects;
 using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Essentials;
@@ -21,32 +18,131 @@ namespace Mageki
         // Math.Pow(10, 0.1)
         private const double leverSensitivityBase = 1.2589254117941673;
 
-        public Protocol Protocol { get => Settings.Protocol; set { Settings.Protocol = value; RaisePropertyChanged(); } }
+        public Protocol Protocol
+        {
+            get => Settings.Protocol;
+            set
+            {
+                Settings.Protocol = value;
+                RaisePropertyChanged();
+            }
+        }
 
-        public ushort Port { get => Settings.Port; set { Settings.Port = value; RaisePropertyChanged(); } }
+        public ushort Port
+        {
+            get => Settings.Port;
+            set
+            {
+                Settings.Port = value;
+                RaisePropertyChanged();
+            }
+        }
 
-        public LeverMoveMode LeverMoveMode { get => Settings.LeverMoveMode; set { Settings.LeverMoveMode = value; RaisePropertyChanged(); } }
+        public LeverMoveMode LeverMoveMode
+        {
+            get => Settings.LeverMoveMode;
+            set
+            {
+                Settings.LeverMoveMode = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool EnableCompositeMode
+        {
+            get => Settings.EnableCompositeMode;
+            set
+            {
+                Settings.EnableCompositeMode = value;
+                RaisePropertyChanged();
+            }
+        }
 
         // 0 => 1 , -10 => 0.1 , 10 => 10
-        public float LeverSensitivity { get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase); set { Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value); RaisePropertyChanged(); } }
+        public float LeverSensitivity
+        {
+            get => (float)Math.Log(Settings.LeverSensitivity, leverSensitivityBase);
+            set
+            {
+                Settings.LeverSensitivity = (float)Math.Pow(leverSensitivityBase, value);
+                RaisePropertyChanged();
+            }
+        }
 
         public double MaxLeverLinearity => Settings.MaxLeverLinearity;
         public double MinLeverLinearity => Settings.MinLeverLinearity;
-        public int LeverLinearity { get => Settings.LeverLinearity; set { Settings.LeverLinearity = value; RaisePropertyChanged(); } }
 
-        public float ButtonBottomMargin { get => Settings.ButtonBottomMargin; set { Settings.ButtonBottomMargin = value; RaisePropertyChanged(); } }
+        public int LeverLinearity
+        {
+            get => Settings.LeverLinearity;
+            set
+            {
+                Settings.LeverLinearity = value;
+                RaisePropertyChanged();
+            }
+        }
 
-        public string Aimeid { get => Settings.AimeId; set { Settings.AimeId = value; RaisePropertyChanged(); } }
+        public float ButtonBottomMargin
+        {
+            get => Settings.ButtonBottomMargin;
+            set
+            {
+                Settings.ButtonBottomMargin = value;
+                RaisePropertyChanged();
+            }
+        }
 
-        public bool SeparateButtonsAndLever { get => Settings.SeparateButtonsAndLever; set { Settings.SeparateButtonsAndLever = value; RaisePropertyChanged(); } }
+        public string Aimeid
+        {
+            get => Settings.AimeId;
+            set
+            {
+                Settings.AimeId = value;
+                RaisePropertyChanged();
+            }
+        }
 
-        public bool HideButtons { get => Settings.HideButtons; set { Settings.HideButtons = value; RaisePropertyChanged(); } }
+        public bool HideButtons
+        {
+            get => Settings.HideButtons;
+            set
+            {
+                Settings.HideButtons = value;
+                RaisePropertyChanged();
+            }
+        }
 
-        public bool HapticFeedback { get => Settings.HapticFeedback; set { Settings.HapticFeedback = value; RaisePropertyChanged(); } }
+        public bool EnableHapticFeedback
+        {
+            get => Settings.EnableHapticFeedback;
+            set
+            {
+                Settings.EnableHapticFeedback = value;
+                RaisePropertyChanged();
+            }
+        }
 
         public Version Version => Version.Parse(VersionTracking.CurrentVersion);
-        public TouchState TestState { get => (TouchState)(App.CurrentIO.Data.OptButtons & OptionButtons.Test); set { App.CurrentIO.SetOptionButton(OptionButtons.Test, value == TouchState.Pressed); RaisePropertyChanged(); } }
-        public TouchState ServiceState { get => (TouchState)(App.CurrentIO.Data.OptButtons & OptionButtons.Service); set { App.CurrentIO.SetOptionButton(OptionButtons.Service, value == TouchState.Pressed); RaisePropertyChanged(); } }
+
+        public TouchState TestState
+        {
+            get => (TouchState)(App.CurrentIO.Data.OptButtons & OptionButtons.Test);
+            set
+            {
+                App.CurrentIO.SetOptionButton(OptionButtons.Test, value == TouchState.Pressed);
+                RaisePropertyChanged();
+            }
+        }
+
+        public TouchState ServiceState
+        {
+            get => (TouchState)(App.CurrentIO.Data.OptButtons & OptionButtons.Service);
+            set
+            {
+                App.CurrentIO.SetOptionButton(OptionButtons.Service, value == TouchState.Pressed);
+                RaisePropertyChanged();
+            }
+        }
 
         public Command GoBack { get; }
         public Command CheckUpdate { get; }
@@ -74,13 +170,16 @@ namespace Mageki
         }
 
         bool checkingUpdate = false;
+
         private async void CheckUpdateExecute(object obj)
         {
             var popup = (SettingsPopup)obj;
             checkingUpdate = true;
             CheckUpdate.ChangeCanExecute();
             var result = await Utils.Update.CheckUpdateAsync(true);
-            VisualElement element = PopupNavigation.Instance.PopupStack.Contains(popup) ? popup : Application.Current.MainPage;
+            VisualElement element = PopupNavigation.Instance.PopupStack.Contains(popup)
+                ? popup
+                : Application.Current.MainPage;
             if (result == Utils.Update.CheckVersionResult.Latest)
             {
                 await element.DisplayToastAsync(AppResources.MagekiIsUpToDate);
@@ -89,9 +188,11 @@ namespace Mageki
             {
                 await element.DisplayToastAsync(AppResources.CheckUpdateFailed);
             }
+
             checkingUpdate = false;
             CheckUpdate.ChangeCanExecute();
         }
+
         private void ToggleSwitchExecute(object obj)
         {
             if (obj is Switch s)
@@ -99,12 +200,14 @@ namespace Mageki
                 s.IsToggled = !s.IsToggled;
             }
         }
+
         private void FocusElementExecute(object obj)
         {
             if (obj is VisualElement element)
             {
                 element.Focus();
             }
+
             if (obj is Entry entry)
             {
                 entry.CursorPosition = entry.Text.Length;
@@ -130,6 +233,7 @@ namespace Mageki
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         public void RaisePropertyChanged([CallerMemberName] string name = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -144,13 +248,15 @@ namespace Mageki
 
     public enum LeverMoveMode
     {
-        Relative, Absolute
+        Relative,
+        Absolute
     }
 
     public static class Settings
     {
         public const double MaxLeverLinearity = 540;
         public const double MinLeverLinearity = 54;
+
         public static Protocol Protocol
         {
             get => (Protocol)Preferences.Get("protocol", (int)Protocol.TCP);
@@ -163,6 +269,7 @@ namespace Mageki
                 }
             }
         }
+
         public static ushort Port
         {
             get => (ushort)Preferences.Get("port", 4354);
@@ -175,18 +282,7 @@ namespace Mageki
                 }
             }
         }
-        public static bool SeparateButtonsAndLever
-        {
-            get => Preferences.Get("separateButtonsAndLever", false);
-            set
-            {
-                if (value != SeparateButtonsAndLever)
-                {
-                    Preferences.Set("separateButtonsAndLever", value);
-                    OnValueChanged();
-                }
-            }
-        }
+
         public static bool HideButtons
         {
             get => Preferences.Get("hideButtons", false);
@@ -199,30 +295,43 @@ namespace Mageki
                 }
             }
         }
-        public static bool HapticFeedback
+
+        public static bool EnableHapticFeedback
         {
             get => Preferences.Get("hapticFeedback", false);
             set
             {
-                if (value != HapticFeedback)
+                if (value != EnableHapticFeedback)
                 {
                     Preferences.Set("hapticFeedback", value);
                     OnValueChanged();
                 }
             }
         }
+
         public static LeverMoveMode LeverMoveMode
         {
             get => (LeverMoveMode)Preferences.Get("leverMoveMode", (int)LeverMoveMode.Relative);
             set
             {
-                if (value != LeverMoveMode)
-                {
-                    Preferences.Set("leverMoveMode", (int)value);
-                    OnValueChanged();
-                }
+                if (value == LeverMoveMode) return;
+                if (value == LeverMoveMode.Absolute) EnableCompositeMode = false;
+                Preferences.Set("leverMoveMode", (int)value);
+                OnValueChanged();
             }
         }
+
+        public static bool EnableCompositeMode
+        {
+            get => Preferences.Get("enableCompositeMode", false);
+            set
+            {
+                if (value == EnableCompositeMode) return;
+                Preferences.Set("enableCompositeMode", value);
+                OnValueChanged();
+            }
+        }
+
         public static float LeverSensitivity
         {
             get => Preferences.Get("leverSensitivity", 1f);
@@ -235,6 +344,7 @@ namespace Mageki
                 }
             }
         }
+
         public static int LeverLinearity
         {
             get => Preferences.Get("leverLinearity", (int)MaxLeverLinearity);
@@ -249,6 +359,7 @@ namespace Mageki
                 }
             }
         }
+
         public static float ButtonBottomMargin
         {
             get => Preferences.Get("buttonBottomMargin", 0.2f);
@@ -261,6 +372,7 @@ namespace Mageki
                 }
             }
         }
+
         public static string AimeId
         {
             get => Preferences.Get("aimeId", string.Empty);
@@ -293,6 +405,7 @@ namespace Mageki
         }
 
         public delegate void ValueChangedEventHandler(string name);
+
         public static event ValueChangedEventHandler ValueChanged;
     }
 }

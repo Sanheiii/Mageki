@@ -89,14 +89,14 @@ namespace Mageki.Drawables
             return base.HandleTouchMoved(id, point);
         }
 
-        public override bool HandleTouchReleased(long id)
+        public override void HandleTouchReleased(long id)
         {
             if (touchPoints.ContainsKey(id))
             {
                 var index = GetKeyIndexFromX(touchPoints[id].X);
                 this[index].TouchCount--;
             }
-            return base.HandleTouchReleased(id);
+            base.HandleTouchReleased(id);
         }
 
         public int GetKeyIndexFromX(float x)

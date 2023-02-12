@@ -1,5 +1,4 @@
 ﻿using SkiaSharp;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,36 +13,45 @@ namespace Mageki.Drawables
         /// 眼睛距离面板的距离
         /// </summary>
         const float eyePanelDistanceMM = 500f;
+
         const float holeWidthMM = 86f;
         const float holeHeightMM = 14f;
+
         /// <summary>
         /// 摇杆直径
         /// </summary>
         const float stickDiameterMM = 8f;
+
         /// <summary>
         /// 摇杆长度
         /// </summary>
         const float stickLengthMM = 160f;
+
         /// <summary>
         /// 摇杆帽直径
         /// </summary>
         const float capDiameterMM = 34f;
+
         /// <summary>
         /// 摇杆帽高度
         /// </summary>
         const float capHeightMM = 60f;
+
         /// <summary>
         /// 转轴和面板的距离
         /// </summary>
         const float panelShaftDistanceMM = 63f;
+
         /// <summary>
         /// 限位器的直径
         /// </summary>
         const float limiterDiameterMM = 5f;
+
         /// <summary>
         /// 两个限位器中心的距离
         /// </summary>
         const float limitersDistanceMM = 49f;
+
         /// <summary>
         /// -1 -> 1
         /// </summary>
@@ -64,64 +72,76 @@ namespace Mageki.Drawables
         private SKPath stickSide = new SKPath();
         private SKPath stickHighLightPath = new SKPath();
         private SKPath capHighLightPath = new SKPath();
+
         private SKPaint stickSidePaint = new SKPaint()
         {
             Style = SKPaintStyle.Fill,
             Color = new SKColor(0xFFD0D0D0)
         };
+
         private SKPaint stickHighLightPaint = new SKPaint()
         {
             Style = SKPaintStyle.Fill,
             Color = SKColors.White,
             MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 5)
         };
+
         private SKPaint capHighLightPaint = new SKPaint()
         {
             Style = SKPaintStyle.Fill,
             Color = SKColors.White,
             MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 20)
         };
+
         private SKPaint stickTopBorderPaint = new SKPaint()
         {
             Style = SKPaintStyle.Stroke,
             StrokeWidth = 10,
             Color = new SKColor(0xFF222222)
         };
+
         private SKPaint capPaint = new SKPaint()
         {
             Style = SKPaintStyle.Fill,
             Color = new SKColor(0xFF222222)
         };
+
         private SKPaint capStrokePaint = new SKPaint()
         {
             Style = SKPaintStyle.Stroke,
             Color = new SKColor(0xFF888888)
         };
+
         private SKPaint stickSideBorderPaint = new SKPaint()
         {
             Style = SKPaintStyle.Stroke,
             Color = new SKColor(0xFF222222)
         };
+
         private SKPaint holePaint = new SKPaint
         {
             Style = SKPaintStyle.StrokeAndFill,
             Color = new SKColor(0xFF666666)
         };
+
         private SKPaint backPaint = new SKPaint
         {
             Style = SKPaintStyle.StrokeAndFill,
             Color = SKColors.White
         };
+
         public override void Update()
         {
             var boundingBox = BoundingBox;
             // 摇杆末端的最大运动范围
             var endPointRangeMM = stickLengthMM;
-            var endPointRangePx = (Size.Width - Padding.X * 2) * stickLengthMM / (stickLengthMM + capDiameterMM * 0.5f/*cos 60°*/);
+            var endPointRangePx = (Size.Width - Padding.X * 2) * stickLengthMM /
+                                  (stickLengthMM + capDiameterMM * 0.5f /*cos 60°*/);
             // 摇杆末端在最边上的高度
             var endPointMinHeightMM = stickLengthMM * MathF.Cos(MathF.PI / 6);
             // 计算面板平面上像素密度
-            var panelPlanePixelPerMM = endPointRangePx / endPointRangeMM / eyePanelDistanceMM * (eyePanelDistanceMM - (endPointMinHeightMM - panelShaftDistanceMM));
+            var panelPlanePixelPerMM = endPointRangePx / endPointRangeMM / eyePanelDistanceMM *
+                                       (eyePanelDistanceMM - (endPointMinHeightMM - panelShaftDistanceMM));
             var holeWidthPx = holeWidthMM * panelPlanePixelPerMM;
             var holeHeightPx = holeHeightMM * panelPlanePixelPerMM;
 
@@ -145,14 +165,16 @@ namespace Mageki.Drawables
             // 摇杆末端高度
             var endPointHeightMM = stickLengthMM * MathF.Cos(MathF.PI / 6f * Value);
             // 摇杆末端水平面的像素密度
-            var endPointPlanePixelPerMM = panelPlanePixelPerMM / (eyePanelDistanceMM - (endPointHeightMM - panelShaftDistanceMM)) * eyePanelDistanceMM;
+            var endPointPlanePixelPerMM = panelPlanePixelPerMM /
+                (eyePanelDistanceMM - (endPointHeightMM - panelShaftDistanceMM)) * eyePanelDistanceMM;
 
             var endPointStickDiameterPx = stickDiameterMM * endPointPlanePixelPerMM;
 
             // 计算限位器水平面的像素密度与摇杆直径
             var limiterRangeMM = limitersDistanceMM - limiterDiameterMM - stickDiameterMM;
             var limiterPlaneHeightMM = -panelShaftDistanceMM + limiterRangeMM / 2 / (MathF.Tan(MathF.PI / 6f));
-            var limiterPlanePixelPerMM = panelPlanePixelPerMM / (eyePanelDistanceMM - (limiterPlaneHeightMM - panelShaftDistanceMM)) * eyePanelDistanceMM;
+            var limiterPlanePixelPerMM = panelPlanePixelPerMM /
+                (eyePanelDistanceMM - (limiterPlaneHeightMM - panelShaftDistanceMM)) * eyePanelDistanceMM;
             var limiterPlaneStickDiameterPx = stickDiameterMM * limiterPlanePixelPerMM;
             var limiterRangePx = limiterRangeMM * limiterPlanePixelPerMM;
 
@@ -172,31 +194,39 @@ namespace Mageki.Drawables
             stickSide.MoveTo(holeMidX + endPointRangePx / 2f * Value, holeMidY + endPointStickDiameterPx / 2f);
             stickSide.LineTo(holeMidX + limiterRangePx / 2f * Value, holeMidY + limiterPlaneStickDiameterPx / 2f);
             stickSide.ArcTo(new SKRect(
-                holeMidX + limiterRangePx / 2f * Value - limiterPlaneStickDiameterPx / 2 * ratio,
-                holeMidY - limiterPlaneStickDiameterPx / 2f,
-                holeMidX + limiterRangePx / 2f * Value + limiterPlaneStickDiameterPx / 2 * ratio,
-                holeMidY + limiterPlaneStickDiameterPx / 2f),
+                    holeMidX + limiterRangePx / 2f * Value - limiterPlaneStickDiameterPx / 2 * ratio,
+                    holeMidY - limiterPlaneStickDiameterPx / 2f,
+                    holeMidX + limiterRangePx / 2f * Value + limiterPlaneStickDiameterPx / 2 * ratio,
+                    holeMidY + limiterPlaneStickDiameterPx / 2f),
                 90, Value > 0 ? 180 : -180, false);
             stickSide.LineTo(holeMidX + endPointRangePx / 2f * Value, holeMidY - endPointStickDiameterPx / 2f);
 
             // 面板下至限位器部分摇杆渐隐效果，额外加上(limiterPlaneStickDiameterPx / 2f * ratio * (Value < 0 ? 1 : -1))使渐隐末端看起来是圆头
             stickSideBorderPaint.Shader = SKShader.CreateLinearGradient(
                 new SKPoint(holeMidX + holeWidthPx / 2f * Value, holeMidY),
-                new SKPoint(holeMidX + limiterRangePx / 2f * Value + (limiterPlaneStickDiameterPx / 2f * ratio * (Value < 0 ? 1 : -1)), holeMidY),
+                new SKPoint(
+                    holeMidX + limiterRangePx / 2f * Value +
+                    (limiterPlaneStickDiameterPx / 2f * ratio * (Value < 0 ? 1 : -1)), holeMidY),
                 new SKColor[] { stickSideBorderPaint.Color, stickSideBorderPaint.Color.WithAlpha(0) },
                 SKShaderTileMode.Clamp);
             stickSidePaint.Shader = SKShader.CreateLinearGradient(
                 new SKPoint(holeMidX + holeWidthPx / 2f * Value, holeMidY),
-                new SKPoint(holeMidX + limiterRangePx / 2f * Value + (limiterPlaneStickDiameterPx / 2f * ratio * (Value < 0 ? 1 : -1)), holeMidY),
+                new SKPoint(
+                    holeMidX + limiterRangePx / 2f * Value +
+                    (limiterPlaneStickDiameterPx / 2f * ratio * (Value < 0 ? 1 : -1)), holeMidY),
                 new SKColor[] { stickSidePaint.Color, stickSidePaint.Color.WithAlpha(0) },
                 SKShaderTileMode.Clamp);
 
             // 摇杆高光使摇杆更立体
             stickHighLightPath.Reset();
-            stickHighLightPath.MoveTo(holeMidX + limiterRangePx / 2f * Value, holeMidY + limiterPlaneStickDiameterPx * -0.1f / 2f);
-            stickHighLightPath.LineTo(holeMidX + endPointRangePx / 2f * Value, holeMidY + endPointStickDiameterPx * -0.1f / 2f);
-            stickHighLightPath.LineTo(holeMidX + endPointRangePx / 2f * Value, holeMidY + endPointStickDiameterPx * -0.7f / 2f);
-            stickHighLightPath.LineTo(holeMidX + limiterRangePx / 2f * Value, holeMidY + limiterPlaneStickDiameterPx * -0.7f / 2f);
+            stickHighLightPath.MoveTo(holeMidX + limiterRangePx / 2f * Value,
+                holeMidY + limiterPlaneStickDiameterPx * -0.1f / 2f);
+            stickHighLightPath.LineTo(holeMidX + endPointRangePx / 2f * Value,
+                holeMidY + endPointStickDiameterPx * -0.1f / 2f);
+            stickHighLightPath.LineTo(holeMidX + endPointRangePx / 2f * Value,
+                holeMidY + endPointStickDiameterPx * -0.7f / 2f);
+            stickHighLightPath.LineTo(holeMidX + limiterRangePx / 2f * Value,
+                holeMidY + limiterPlaneStickDiameterPx * -0.7f / 2f);
             stickHighLightPaint.Shader = SKShader.CreateLinearGradient(
                 new SKPoint(holeMidX + holeWidthPx / 2f * Value, holeMidY),
                 new SKPoint(holeMidX + limiterRangePx / 2f * Value, holeMidY),
@@ -215,17 +245,18 @@ namespace Mageki.Drawables
             var capBottomRangeMM = endPointRangeMM / stickLengthMM * (stickLengthMM - capHeightMM);
             // 摇杆帽底面相对于转轴的高度
             var capBottomHeightMM = (stickLengthMM - capHeightMM) * MathF.Cos(MathF.PI / 6f * Value);
-            var capBottomPlanePixelPerMM = panelPlanePixelPerMM / (eyePanelDistanceMM - (capBottomHeightMM - panelShaftDistanceMM)) * eyePanelDistanceMM;
+            var capBottomPlanePixelPerMM = panelPlanePixelPerMM /
+                (eyePanelDistanceMM - (capBottomHeightMM - panelShaftDistanceMM)) * eyePanelDistanceMM;
             var capBottomRangePx = capBottomRangeMM * capBottomPlanePixelPerMM;
             var capBottomDiameterPx = capDiameterMM * capBottomPlanePixelPerMM;
             capSidePath.Reset();
             capSidePath.MoveTo(holeMidX + endPointRangePx / 2f * Value, holeMidY + capDiameterPx / 2f);
             capSidePath.LineTo(holeMidX + capBottomRangePx / 2f * Value, holeMidY + capBottomDiameterPx / 2f);
             capSidePath.ArcTo(new SKRect(
-                holeMidX + capBottomRangePx / 2f * Value - capBottomDiameterPx / 2 * ratio,
-                holeMidY - capBottomDiameterPx / 2f,
-                holeMidX + capBottomRangePx / 2f * Value + capBottomDiameterPx / 2 * ratio,
-                holeMidY + capBottomDiameterPx / 2f),
+                    holeMidX + capBottomRangePx / 2f * Value - capBottomDiameterPx / 2 * ratio,
+                    holeMidY - capBottomDiameterPx / 2f,
+                    holeMidX + capBottomRangePx / 2f * Value + capBottomDiameterPx / 2 * ratio,
+                    holeMidY + capBottomDiameterPx / 2f),
                 90, Value > 0 ? 180 : -180, false);
             capSidePath.LineTo(holeMidX + endPointRangePx / 2f * Value, holeMidY - capDiameterPx / 2f);
             capStrokePaint.StrokeWidth = stickSideBorderPaint.StrokeWidth = capDiameterPx / 20;
@@ -244,6 +275,7 @@ namespace Mageki.Drawables
 
             base.Update();
         }
+
         public override void Draw(SKCanvas canvas)
         {
             if (!Visible) return;
@@ -263,6 +295,7 @@ namespace Mageki.Drawables
             canvas.DrawPath(capTopPath, capStrokePaint);
             //canvas.DrawPath(ballPath, stickTopPaint);
         }
+
         public override bool HandleTouchPressed(long id, SKPoint point)
         {
             if ((Settings.LeverMoveMode == LeverMoveMode.Absolute && touchPoints.Count == 0) ||
@@ -270,10 +303,14 @@ namespace Mageki.Drawables
             {
                 touchPoints.Add(id, point);
             }
-            return base.HandleTouchPressed(id, point);
+
+            bool handled = base.HandleTouchPressed(id, point);
+            if (Settings.EnableCompositeMode) return false;
+            else return handled;
         }
 
         private List<(float value, long touchID)> moveCache = new List<(float value, long touchID)>();
+
         public override bool HandleTouchMoved(long id, SKPoint point)
         {
             if (touchPoints.ContainsKey(id))
@@ -300,20 +337,23 @@ namespace Mageki.Drawables
                             {
                                 sum = min;
                             }
+
                             if (max > 0 && sum > max)
                             {
                                 sum = max;
                             }
 
-                            var diff = (point.X - touchPoints[id].X) / (boundingBox.Width / 2);
+                            var diff = (point.X - touchPoints[id].X) / (boundingBox.Width / 2 - Padding.X);
                             Value += diff * Settings.LeverSensitivity;
 
                             moveCache.Clear();
                         }
+
                         moveCache.Add((point.X - touchPoints[id].X, id));
                     }
                 }
             }
+
             return base.HandleTouchMoved(id, point);
         }
     }

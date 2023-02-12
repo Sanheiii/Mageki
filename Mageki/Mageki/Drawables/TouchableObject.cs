@@ -30,16 +30,11 @@ namespace Mageki.Drawables
             }
         }
 
-        public virtual bool HandleTouchReleased(long id)
+        public virtual void HandleTouchReleased(long id)
         {
             if (touchPoints.ContainsKey(id))
             {
                 touchPoints.Remove(id);
-                return true;
-            }
-            else
-            {
-                return false;
             }
         }
 

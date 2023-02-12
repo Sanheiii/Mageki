@@ -1,9 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<rg:PopupPage 
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<rg:PopupPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:rg="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
-    xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup" 
+    xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup"
     xmlns:mageki="clr-namespace:Mageki"
     xmlns:views="clr-namespace:Mageki.Views"
     xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
@@ -14,186 +15,231 @@
     x:Class="Mageki.SettingsPopup"
     x:Name="Root">
     <rg:PopupPage.BindingContext>
-        <mageki:SettingsViewModel/>
+        <mageki:SettingsViewModel />
     </rg:PopupPage.BindingContext>
     <rg:PopupPage.Resources>
         <Color x:Key="PrimaryColor">#3498DB</Color>
         <ResourceDictionary>
             <Style TargetType="Grid" x:Key="SettingsGridStyle">
-                <Setter Property="HeightRequest" Value="48"/>
-                <Setter Property="Padding" Value="16,0,16,0"/>
-                <Setter Property="ColumnSpacing" Value="0"/>
-                <Setter Property="ColumnDefinitions" Value="Auto,*"/>
+                <Setter Property="HeightRequest" Value="48" />
+                <Setter Property="Padding" Value="16,0,16,0" />
+                <Setter Property="ColumnSpacing" Value="0" />
+                <Setter Property="ColumnDefinitions" Value="Auto,*" />
             </Style>
             <Style TargetType="Frame" x:Key="SettingsFrameStyle">
-                <Setter Property="Margin" Value="16,0,16,0"/>
-                <Setter Property="Padding" Value="0,0,0,0"/>
-                <Setter Property="HasShadow" Value="False"/>
-                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#AAFFFFFF, Dark=#AA222222}"/>
+                <Setter Property="Margin" Value="16,0,16,0" />
+                <Setter Property="Padding" Value="0,0,0,0" />
+                <Setter Property="HasShadow" Value="False" />
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#AAFFFFFF, Dark=#AA222222}" />
             </Style>
             <Style TargetType="Label" x:Key="SettingsFrameHeaderStyle">
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="Margin" Value="24,0,0,0"/>
-                <Setter Property="TextColor" Value="{DynamicResource PrimaryColor}"/>
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="Margin" Value="24,0,0,0" />
+                <Setter Property="TextColor" Value="{DynamicResource PrimaryColor}" />
             </Style>
             <Style TargetType="Label" x:Key="SettingsLabelStyle">
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="VerticalTextAlignment" Value="Center"/>
-                <Setter Property="TextColor" Value="{AppThemeBinding Light=#FF000000, Dark=#FFFFFFFF}"/>
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#FF000000, Dark=#FFFFFFFF}" />
             </Style>
             <Style TargetType="Entry" x:Key="SettingsEntryStyle">
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="VerticalTextAlignment" Value="Center"/>
-                <Setter Property="TextColor" Value="{AppThemeBinding Light=#FF000000, Dark=#FFFFFFFF}"/>
-                <Setter Property="HorizontalOptions" Value="FillAndExpand"/>
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#FF000000, Dark=#FFFFFFFF}" />
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
             </Style>
             <Style TargetType="Slider" x:Key="SettingsSliderStyle">
-                <Setter Property="MinimumTrackColor" Value="{DynamicResource PrimaryColor}"/>
-                <Setter Property="VerticalOptions" Value="Center"/>
+                <Setter Property="MinimumTrackColor" Value="{DynamicResource PrimaryColor}" />
+                <Setter Property="VerticalOptions" Value="Center" />
             </Style>
             <Style TargetType="Frame" x:Key="SettingsSelectionFrameStyle">
-                <Setter Property="HasShadow" Value="False"/>
-                <Setter Property="BackgroundColor" Value="Transparent"/>
-                <Setter Property="Padding" Value="16,0"/>
-                <Setter Property="Margin" Value="8,8"/>
+                <Setter Property="HasShadow" Value="False" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="Padding" Value="16,0" />
+                <Setter Property="Margin" Value="8,8" />
                 <Style.Triggers>
                     <Trigger TargetType="Frame" Property="views:ViewTag.Tag" Value="{x:Boolean true}">
-                        <Setter Property="BorderColor" Value="{DynamicResource PrimaryColor}"/>
+                        <Setter Property="BorderColor" Value="{DynamicResource PrimaryColor}" />
                     </Trigger>
                     <Trigger TargetType="Frame" Property="views:ViewTag.Tag" Value="{x:Boolean false}">
-                        <Setter Property="BorderColor" Value="Transparent"/>
+                        <Setter Property="BorderColor" Value="Transparent" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
             <Style TargetType="Label" x:Key="SettingsSelectionLabelStyle">
-                <Setter Property="VerticalTextAlignment" Value="Center"/>
+                <Setter Property="VerticalTextAlignment" Value="Center" />
             </Style>
         </ResourceDictionary>
-        <views:NotConverter x:Key="NotConverter"/>
-        <views:AndConverter x:Key="AndConverter"/>
-        <views:EnumSelectedConverter x:Key="EnumSelectedConverter"/>
-        <views:PortConverter x:Key="PortConverter"/>
-        <views:AimeIdConverter x:Key="AimeIdConverter"/>
-        <views:LeverMoveModeConverter x:Key="LeverMoveModeConverter"/>
+        <views:NotConverter x:Key="NotConverter" />
+        <views:AndConverter x:Key="AndConverter" />
+        <views:EnumSelectedConverter x:Key="EnumSelectedConverter" />
+        <views:PortConverter x:Key="PortConverter" />
+        <views:AimeIdConverter x:Key="AimeIdConverter" />
+        <views:LeverMoveModeConverter x:Key="LeverMoveModeConverter" />
     </rg:PopupPage.Resources>
     <Grid RowDefinitions="Auto,*" BackgroundColor="Transparent">
-        <mageki:NavigationBar Title="{x:Static resources:AppResources.Settings}" GoBackCommand="{Binding GoBack}" GoBackCommandParameter="{x:Reference Root}"/>
+        <mageki:NavigationBar Title="{x:Static resources:AppResources.Settings}" GoBackCommand="{Binding GoBack}"
+                              GoBackCommandParameter="{x:Reference Root}" />
         <ScrollView Grid.Row="1">
             <StackLayout Padding="0,0,0,16">
                 <!--连接-->
-                <Label Style="{StaticResource SettingsFrameHeaderStyle}" Text="{x:Static resources:AppResources.Connection}" />
+                <Label Style="{StaticResource SettingsFrameHeaderStyle}"
+                       Text="{x:Static resources:AppResources.Connection}" />
                 <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
                     <StackLayout Spacing="0">
                         <!--端口-->
                         <Grid Style="{StaticResource SettingsGridStyle}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.Port}"/>
-                            <Entry Style="{StaticResource SettingsEntryStyle}" x:Name="PortEntry" Grid.Column="1" Keyboard="Numeric" MaxLength="5" Text="{Binding Port,Converter={StaticResource PortConverter},ConverterParameter={x:Reference PortEntry}}" Placeholder="4354"/>
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.Port}" />
+                            <Entry Style="{StaticResource SettingsEntryStyle}" x:Name="PortEntry" Grid.Column="1"
+                                   Keyboard="Numeric" MaxLength="5"
+                                   Text="{Binding Port,Converter={StaticResource PortConverter},ConverterParameter={x:Reference PortEntry}}"
+                                   Placeholder="4354" />
                         </Grid>
                         <!--协议-->
                         <Grid ColumnDefinitions="*,Auto,Auto" Style="{StaticResource SettingsGridStyle}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.Protocol}"/>
-                            <Frame Grid.Column="1" Style="{x:StaticResource SettingsSelectionFrameStyle}" 
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.Protocol}" />
+                            <Frame Grid.Column="1" Style="{x:StaticResource SettingsSelectionFrameStyle}"
                                    views:ViewTag.Tag="{Binding Protocol,Converter={StaticResource EnumSelectedConverter},ConverterParameter={x:Static mageki:Protocol.TCP}}"
                                    xct:TouchEffect.NativeAnimation="True"
                                    xct:TouchEffect.Command="{Binding SelectProtocol}"
                                    xct:TouchEffect.CommandParameter="{x:Static mageki:Protocol.TCP}">
-                                <Label Text="TCP" Style="{x:StaticResource SettingsSelectionLabelStyle}"/>
+                                <Label Text="TCP" Style="{x:StaticResource SettingsSelectionLabelStyle}" />
                             </Frame>
                             <Frame Grid.Column="2" Style="{x:StaticResource SettingsSelectionFrameStyle}"
                                    views:ViewTag.Tag="{Binding Protocol,Converter={StaticResource EnumSelectedConverter},ConverterParameter={x:Static mageki:Protocol.UDP}}"
                                    xct:TouchEffect.NativeAnimation="True"
                                    xct:TouchEffect.Command="{Binding SelectProtocol}"
                                    xct:TouchEffect.CommandParameter="{x:Static mageki:Protocol.UDP}">
-                                <Label Text="UDP" Style="{x:StaticResource SettingsSelectionLabelStyle}"/>
+                                <Label Text="UDP" Style="{x:StaticResource SettingsSelectionLabelStyle}" />
                             </Frame>
                         </Grid>
                     </StackLayout>
                 </Frame>
                 <!--布局-->
-                <Label Style="{StaticResource SettingsFrameHeaderStyle}" Text="{x:Static resources:AppResources.Layout}" />
+                <Label Style="{StaticResource SettingsFrameHeaderStyle}"
+                       Text="{x:Static resources:AppResources.Layout}" />
                 <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
                     <StackLayout Spacing="0">
                         <!--隐藏按钮-->
-                        <Grid Style="{StaticResource SettingsGridStyle}" xct:TouchEffect.NativeAnimation="True" xct:TouchEffect.Command="{Binding ToggleSwitch}" xct:TouchEffect.CommandParameter="{x:Reference HideButtonsSwitch}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.HideButtons}"/>
-                            <Switch x:Name="HideButtonsSwitch" IsToggled="{Binding HideButtons}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
+                        <Grid Style="{StaticResource SettingsGridStyle}" xct:TouchEffect.NativeAnimation="True"
+                              xct:TouchEffect.Command="{Binding ToggleSwitch}"
+                              xct:TouchEffect.CommandParameter="{x:Reference HideButtonsSwitch}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.HideButtons}" />
+                            <Switch x:Name="HideButtonsSwitch" IsToggled="{Binding HideButtons}" Grid.Column="1"
+                                    HorizontalOptions="End" VerticalOptions="Center" />
                         </Grid>
                         <!--按钮下边距-->
-                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}" IsVisible="{Binding Source={x:Reference HideButtonsSwitch},Path=IsToggled,Converter={StaticResource NotConverter}}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.ButtonBottomMargin}"/>
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{Binding ButtonBottomMargin,StringFormat='{0:F2}'}" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
-                            <Slider Style="{StaticResource SettingsSliderStyle}" Maximum="1" Minimum="0" Grid.Column="2" Value="{Binding ButtonBottomMargin}"/>
+                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}"
+                              IsVisible="{Binding Source={x:Reference HideButtonsSwitch},Path=IsToggled,Converter={StaticResource NotConverter}}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.ButtonBottomMargin}" />
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{Binding ButtonBottomMargin,StringFormat='{0:F2}'}" Grid.Column="1"
+                                   Margin="16,0,0,0" WidthRequest="50" />
+                            <Slider Style="{StaticResource SettingsSliderStyle}" Maximum="1" Minimum="0"
+                                    Grid.Column="2" Value="{Binding ButtonBottomMargin}" />
                         </Grid>
                     </StackLayout>
                 </Frame>
-                <!--游戏性-->
-                <Label Style="{StaticResource SettingsFrameHeaderStyle}" Text="{x:Static resources:AppResources.Gameplay}" />
+                <!--摇杆与侧键-->
+                <Label Style="{StaticResource SettingsFrameHeaderStyle}"
+                       Text="{x:Static resources:AppResources.LeverAndWAD}" />
                 <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
                     <StackLayout Spacing="0">
                         <!--摇杆移动模式-->
                         <Grid ColumnDefinitions="*,Auto,Auto" Style="{StaticResource SettingsGridStyle}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.LeverMoveMode}"/>
-                            <Frame Grid.Column="1" Style="{x:StaticResource SettingsSelectionFrameStyle}" 
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.LeverMoveMode}" />
+                            <Frame Grid.Column="1" Style="{x:StaticResource SettingsSelectionFrameStyle}"
                                    views:ViewTag.Tag="{Binding LeverMoveMode,Converter={StaticResource EnumSelectedConverter},ConverterParameter={x:Static mageki:LeverMoveMode.Relative}}"
                                    xct:TouchEffect.NativeAnimation="True"
                                    xct:TouchEffect.Command="{Binding SelectLeverMoveMode}"
                                    xct:TouchEffect.CommandParameter="{x:Static mageki:LeverMoveMode.Relative}">
-                                <Label Text="{x:Static resources:AppResources.Relative}" Style="{x:StaticResource SettingsSelectionLabelStyle}"/>
+                                <Label Text="{x:Static resources:AppResources.Relative}"
+                                       Style="{x:StaticResource SettingsSelectionLabelStyle}" />
                             </Frame>
                             <Frame Grid.Column="2" Style="{x:StaticResource SettingsSelectionFrameStyle}"
                                    views:ViewTag.Tag="{Binding LeverMoveMode,Converter={StaticResource EnumSelectedConverter},ConverterParameter={x:Static mageki:LeverMoveMode.Absolute}}"
                                    xct:TouchEffect.NativeAnimation="True"
                                    xct:TouchEffect.Command="{Binding SelectLeverMoveMode}"
                                    xct:TouchEffect.CommandParameter="{x:Static mageki:LeverMoveMode.Absolute}">
-                                <Label Text="{x:Static resources:AppResources.Absolute}" Style="{x:StaticResource SettingsSelectionLabelStyle}"/>
+                                <Label Text="{x:Static resources:AppResources.Absolute}"
+                                       Style="{x:StaticResource SettingsSelectionLabelStyle}" />
                             </Frame>
                         </Grid>
                         <!--摇杆线性度-->
-                        <Grid  ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.LeverLinearity}"/>
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{Binding LeverLinearity,StringFormat='1/{0}'}" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
-                            <Slider Style="{StaticResource SettingsSliderStyle}" Maximum="{Binding MaxLeverLinearity,Mode=OneTime}" Minimum="{Binding MinLeverLinearity,Mode=OneTime}" Grid.Column="2" Value="{Binding LeverLinearity}"/>
+                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.LeverLinearity}" />
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{Binding LeverLinearity,StringFormat='1/{0}'}" Grid.Column="1"
+                                   Margin="16,0,0,0" WidthRequest="50" />
+                            <Slider Style="{StaticResource SettingsSliderStyle}"
+                                    Maximum="{Binding MaxLeverLinearity,Mode=OneTime}"
+                                    Minimum="{Binding MinLeverLinearity,Mode=OneTime}" Grid.Column="2"
+                                    Value="{Binding LeverLinearity}" />
                         </Grid>
                         <!--摇杆灵敏度-->
-                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}" IsVisible="{Binding LeverMoveMode,Converter={StaticResource EnumSelectedConverter},ConverterParameter={x:Static mageki:LeverMoveMode.Relative}}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.LeverSensitivity}"/>
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{Binding LeverSensitivity,StringFormat='{0:F2}'}" Grid.Column="1" Margin="16,0,0,0" WidthRequest="50"/>
-                            <Slider Style="{StaticResource SettingsSliderStyle}" Maximum="10" Minimum="-10" Grid.Column="2" Value="{Binding LeverSensitivity}"/>
+                        <Grid ColumnDefinitions="Auto,Auto,*" Style="{StaticResource SettingsGridStyle}"
+                              IsVisible="{Binding LeverMoveMode,Converter={StaticResource EnumSelectedConverter},ConverterParameter={x:Static mageki:LeverMoveMode.Relative}}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.LeverSensitivity}" />
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{Binding LeverSensitivity,StringFormat='{0:F2}'}" Grid.Column="1"
+                                   Margin="16,0,0,0" WidthRequest="50" />
+                            <Slider Style="{StaticResource SettingsSliderStyle}" Maximum="10" Minimum="-10"
+                                    Grid.Column="2" Value="{Binding LeverSensitivity}" />
                         </Grid>
-                        <!--分离按钮与摇杆-->
-                        <Grid Style="{StaticResource SettingsGridStyle}">
-                            <Grid.IsVisible>
-                                <MultiBinding Converter="{StaticResource AndConverter}">
-                                    <Binding Source="{x:Reference HideButtonsSwitch}" Path="IsToggled" Converter="{StaticResource NotConverter}"/>
-                                    <Binding Source="{x:Reference Root}" Path="BindingContext.LeverMoveMode" Converter="{StaticResource EnumSelectedConverter}" ConverterParameter="{x:Static mageki:LeverMoveMode.Relative}"/>
-                                </MultiBinding>
-                            </Grid.IsVisible>
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.SeparateButtonsAndLever}"/>
-                            <Switch IsToggled="{Binding SeparateButtonsAndLever}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
-                        </Grid>
-                        <!--触摸反馈-->
-                        <Grid Style="{StaticResource SettingsGridStyle}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.HapticFeedback}"/>
-                            <Switch IsToggled="{Binding HapticFeedback}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
-                        </Grid>
-                        <!--Aime卡号-->
-                        <Grid Style="{StaticResource SettingsGridStyle}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.AimeID}"/>
-                            <Entry Style="{StaticResource SettingsEntryStyle}" x:Name="AimeIdEntry" Grid.Column="1" Keyboard="Numeric" MaxLength="20" Text="{Binding Aimeid}" Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}"/>
+                        <!--合并摇杆与侧键-->
+                        <Grid Style="{StaticResource SettingsGridStyle}"
+                              IsVisible="{Binding LeverMoveMode,Converter={StaticResource EnumSelectedConverter},ConverterParameter={x:Static mageki:LeverMoveMode.Relative}}"
+                              xct:TouchEffect.NativeAnimation="True"
+                              xct:TouchEffect.Command="{Binding ToggleSwitch}"
+                              xct:TouchEffect.CommandParameter="{x:Reference MergeLeverAndSideButtonSwitch}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.EnableCompositeMode}" />
+                            <Switch x:Name="MergeLeverAndSideButtonSwitch" IsToggled="{Binding EnableCompositeMode}"
+                                    Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center" />
                         </Grid>
                     </StackLayout>
                 </Frame>
                 <!--其它-->
-                <Label Style="{StaticResource SettingsFrameHeaderStyle}" Text="{x:Static resources:AppResources.Others}" />
+                <Label Style="{StaticResource SettingsFrameHeaderStyle}"
+                       Text="{x:Static resources:AppResources.Others}" />
                 <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
                     <StackLayout Spacing="0">
+                        <!--触摸反馈-->
+                        <Grid Style="{StaticResource SettingsGridStyle}"
+                              xct:TouchEffect.NativeAnimation="True"
+                              xct:TouchEffect.Command="{Binding ToggleSwitch}"
+                              xct:TouchEffect.CommandParameter="{x:Reference HapticFeedbackSwitch}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.EnableHapticFeedback}" />
+                            <Switch x:Name="HapticFeedbackSwitch" IsToggled="{Binding EnableHapticFeedback}" Grid.Column="1" HorizontalOptions="End"
+                                    VerticalOptions="Center" />
+                        </Grid>
+                        <!--Aime卡号-->
+                        <Grid Style="{StaticResource SettingsGridStyle}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.AimeID}" />
+                            <Entry Style="{StaticResource SettingsEntryStyle}" x:Name="AimeIdEntry" Grid.Column="1"
+                                   Keyboard="Numeric" MaxLength="20" Text="{Binding Aimeid}"
+                                   Placeholder="{x:Static resources:AppResources.AimeIDPlaceHolder}" />
+                        </Grid>
                         <!--Test键-->
-                        <Grid Style="{StaticResource SettingsGridStyle}" xct:TouchEffect.NativeAnimation="True" xct:TouchEffect.State="{Binding TestState}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Grid.ColumnSpan="2" Text="{x:Static resources:AppResources.TestButton}"/>
+                        <Grid Style="{StaticResource SettingsGridStyle}" xct:TouchEffect.NativeAnimation="True"
+                              xct:TouchEffect.State="{Binding TestState}">
+                            <Label Style="{StaticResource SettingsLabelStyle}" Grid.ColumnSpan="2"
+                                   Text="{x:Static resources:AppResources.TestButton}" />
                         </Grid>
                         <!--Service键-->
-                        <Grid Style="{StaticResource SettingsGridStyle}" xct:TouchEffect.NativeAnimation="True" xct:TouchEffect.State="{Binding ServiceState}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Grid.ColumnSpan="2" Text="{x:Static resources:AppResources.ServiceButton}"/>
+                        <Grid Style="{StaticResource SettingsGridStyle}" xct:TouchEffect.NativeAnimation="True"
+                              xct:TouchEffect.State="{Binding ServiceState}">
+                            <Label Style="{StaticResource SettingsLabelStyle}" Grid.ColumnSpan="2"
+                                   Text="{x:Static resources:AppResources.ServiceButton}" />
                         </Grid>
                     </StackLayout>
                 </Frame>
@@ -202,9 +248,13 @@
                 <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
                     <StackLayout Spacing="0">
                         <!--版本-->
-                        <Grid Style="{StaticResource SettingsGridStyle}" ColumnSpacing="16" xct:TouchEffect.NativeAnimation="True" xct:TouchEffect.Command="{Binding CheckUpdate}" xct:TouchEffect.CommandParameter="{x:Reference Root}">
-                            <Label Style="{StaticResource SettingsLabelStyle}" Text="{x:Static resources:AppResources.Version}"/>
-                            <Label Style="{StaticResource SettingsLabelStyle}" Grid.Column="1" Text="{Binding Version,Mode=OneTime}"/>
+                        <Grid Style="{StaticResource SettingsGridStyle}" ColumnSpacing="16"
+                              xct:TouchEffect.NativeAnimation="True" xct:TouchEffect.Command="{Binding CheckUpdate}"
+                              xct:TouchEffect.CommandParameter="{x:Reference Root}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.Version}" />
+                            <Label Style="{StaticResource SettingsLabelStyle}" Grid.Column="1"
+                                   Text="{Binding Version,Mode=OneTime}" />
                         </Grid>
                     </StackLayout>
                 </Frame>

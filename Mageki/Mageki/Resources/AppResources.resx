@@ -141,20 +141,17 @@
   <data name="ButtonBottomMargin" xml:space="preserve">
     <value>Button bottom margin</value>
   </data>
-  <data name="Exit" xml:space="preserve">
-    <value>Exit</value>
-  </data>
-  <data name="GameTestMenu" xml:space="preserve">
-    <value>Game Test Menu</value>
+  <data name="EnableCompositeMode" xml:space="preserve">
+    <value>Enable Composite Mode</value>
   </data>
   <data name="Others" xml:space="preserve">
     <value>Others</value>
   </data>
-  <data name="SeparateButtonsAndLever" xml:space="preserve">
-    <value>Separate Buttons and Lever</value>
+  <data name="LeverAndWAD" xml:space="preserve">
+    <value>Lever And W.A.D</value>
   </data>
-  <data name="HapticFeedback" xml:space="preserve">
-    <value>Haptic Feedback</value>
+  <data name="EnableHapticFeedback" xml:space="preserve">
+    <value>Enable Haptic Feedback</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>

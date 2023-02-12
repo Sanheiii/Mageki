@@ -80,13 +80,13 @@ namespace Mageki.Drawables
             base.Draw(canvas);
         }
 
-        public override bool HandleTouchReleased(long id)
+        public override void HandleTouchReleased(long id)
         {
             if (touchPoints.ContainsKey(id) && HitTest(touchPoints[id]))
             {
                 Pressed();
             }
-            return base.HandleTouchReleased(id);
+            base.HandleTouchReleased(id);
         }
 
         private void Pressed()

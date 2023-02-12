@@ -141,19 +141,16 @@
   <data name="ButtonBottomMargin" xml:space="preserve">
     <value>按钮下边距</value>
   </data>
-  <data name="Exit" xml:space="preserve">
-    <value>退出</value>
-  </data>
-  <data name="GameTestMenu" xml:space="preserve">
-    <value>游戏测试菜单</value>
+  <data name="EnableCompositeMode" xml:space="preserve">
+    <value>融合模式</value>
   </data>
   <data name="Others" xml:space="preserve">
     <value>其它</value>
   </data>
-  <data name="SeparateButtonsAndLever" xml:space="preserve">
-    <value>分离按钮与摇杆</value>
+  <data name="LeverAndWAD" xml:space="preserve">
+    <value>摇杆与侧键</value>
   </data>
-  <data name="HapticFeedback" xml:space="preserve">
+  <data name="EnableHapticFeedback" xml:space="preserve">
     <value>触摸反馈</value>
   </data>
   <data name="Cancel" xml:space="preserve">

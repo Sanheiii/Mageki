@@ -3,10 +3,8 @@ using Mageki.Drawables;
 using Mageki.Resources;
 using Mageki.TouchTracking;
 using Mageki.Utils;
-
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,10 +12,8 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Timers;
-
 using Xamarin.Essentials;
 using Xamarin.Forms;
-
 using SquareButton = Mageki.Drawables.SquareButton;
 using DeviceInfo = Xamarin.Essentials.DeviceInfo;
 using Keyboard = Mageki.Drawables.Keyboard;
@@ -30,8 +26,13 @@ namespace Mageki
         private Keyboard keyboard = new Keyboard();
         private SideButton lSide = new SideButton() { Side = Side.Left, Color = SKColors.Pink };
         private SideButton rSide = new SideButton() { Side = Side.Right, Color = SKColors.Purple };
-        private SquareButton lMenu = new SquareButton() { Color = ButtonColors.Red, BorderColor = new SKColor(0xFF880000) };
-        private SquareButton rMenu = new SquareButton() { Color = ButtonColors.Yellow, BorderColor = new SKColor(0xFF888800) };
+
+        private SquareButton lMenu = new SquareButton()
+            { Color = ButtonColors.Red, BorderColor = new SKColor(0xFF880000) };
+
+        private SquareButton rMenu = new SquareButton()
+            { Color = ButtonColors.Yellow, BorderColor = new SKColor(0xFF888800) };
+
         private Lever lever = new Lever();
         private MenuFrame lMenuFrame;
         private MenuFrame rMenuFrame;
@@ -42,6 +43,7 @@ namespace Mageki
         int oldHeight = -1;
 
         #region 常量
+
         const float PanelPaddingRatio = 0.5f;
         const float LRSpacingCoef = 0.5f;
         const float KeyboardMarginTopCoef = 0.25f;
@@ -49,12 +51,15 @@ namespace Mageki
         const float MenuSizeCoef = 0.5f;
         const float SettingSizeCoef = 0.4f;
         const float MenuPaddingCoef = 1.125f;
+        const float LeverWidth = 0.6f;
+
         #endregion
 
         /// <summary>
         /// 绘图面板
         /// </summary>
         SKCanvasView canvasView = new SKCanvasView();
+
         /// <summary>
         /// 捕获点击
         /// </summary>
@@ -68,7 +73,8 @@ namespace Mageki
         {
             settingButton = new SettingButton(this);
             circles = new Circles(keyboard);
-            touchableObject = new List<TouchableObject>() { settingButton, keyboard, lMenu, rMenu, lever, lSide, rSide };
+            touchableObject = new List<TouchableObject>()
+                { settingButton, keyboard, lMenu, rMenu, lever, lSide, rSide };
 
             lMenuFrame = new MenuFrame(lMenu, Side.Left);
             rMenuFrame = new MenuFrame(rMenu, Side.Right);
@@ -99,23 +105,24 @@ namespace Mageki
 
         private void Settings_ValueChanged(string name)
         {
-            if (name == nameof(Settings.ButtonBottomMargin))
+            if (name == nameof(Settings.ButtonBottomMargin) ||
+                name == nameof(Settings.HideButtons) ||
+                name == nameof(Settings.EnableCompositeMode) ||
+                name == nameof(Settings.LeverMoveMode))
             {
                 ForceUpdate();
             }
-            if (name == nameof(Settings.HideButtons))
-            {
-                ForceUpdate();
-                InvalidateSurface();
-            }
+
             if (name == nameof(Settings.Protocol) || name == nameof(Settings.Port))
             {
                 InitIO();
             }
         }
+
         public void InitIO()
         {
-            bool protocolChanged = App.CurrentIO is null || App.CurrentIO.GetType().ToString().ToLower() != $"{Settings.Protocol}IO".ToLower();
+            bool protocolChanged = App.CurrentIO is null ||
+                                   App.CurrentIO.GetType().ToString().ToLower() != $"{Settings.Protocol}IO".ToLower();
             bool portChanged =
                 (App.CurrentIO is UdpIO udpIO && udpIO.Port != Settings.Port) ||
                 (App.CurrentIO is TcpIO tcpIO && tcpIO.Port != Settings.Port);
@@ -128,6 +135,7 @@ namespace Mageki
                     App.CurrentIO.OnLedChanged -= OnLedChanged;
                     App.CurrentIO.Dispose();
                 }
+
                 try
                 {
                     App.CurrentIO = Settings.Protocol switch
@@ -160,15 +168,18 @@ namespace Mageki
             //logo.Color = SKColors.Black;
             InvalidateSurface();
         }
+
         private void OnDisconnected(object sender, EventArgs e)
         {
             //logo.Color = SKColors.LightGray;
             InvalidateSurface();
         }
+
         public void InvalidateSurface()
         {
             canvasView.InvalidateSurface();
         }
+
         public void ForceUpdate()
         {
             requireUpdate = true;
@@ -182,7 +193,8 @@ namespace Mageki
             string idmString = "0x" + BitConverter.ToUInt64(packet[0..8].Reverse().ToArray(), 0).ToString("X16");
             string pmMString = "0x" + BitConverter.ToUInt64(packet[8..16].Reverse().ToArray(), 0).ToString("X16");
             string systemCodeString = BitConverter.ToUInt16(packet[16..18].Reverse().ToArray(), 0).ToString("X4");
-            App.Logger.Debug($"FeliCa card is present\nIDm: {idmString}\nPMm: {pmMString}\nSystemCode: {systemCodeString}");
+            App.Logger.Debug(
+                $"FeliCa card is present\nIDm: {idmString}\nPMm: {pmMString}\nSystemCode: {systemCodeString}");
 
             nfcScanning = true;
             App.CurrentIO.SetAime(2, packet);
@@ -190,6 +202,7 @@ namespace Mageki
             App.CurrentIO.SetAime(0, new byte[0]);
             nfcScanning = false;
         }
+
         public async void ScanMifare(byte[] packet)
         {
             if (nfcScanning) return;
@@ -208,22 +221,6 @@ namespace Mageki
             ScanMifare(GetSimulatedAimeId());
         }
 
-        public async Task PressAndReleaseTestButtonAsync()
-        {
-            App.CurrentIO.SetOptionButton(OptionButtons.Test, true);
-            await Task.Delay(1000);
-            App.CurrentIO.SetOptionButton(OptionButtons.Test, false);
-        }
-        public async Task PressAndReleaseServiceButtonAsync()
-        {
-            App.CurrentIO.SetOptionButton(OptionButtons.Service, true);
-            await Task.Delay(1000);
-            App.CurrentIO.SetOptionButton(OptionButtons.Service, false);
-        }
-
-#if DEBUG
-        Stopwatch sw = new Stopwatch();
-#endif
         /// <summary>
         /// 绘图
         /// </summary>
@@ -231,9 +228,6 @@ namespace Mageki
         /// <param name="e"></param>
         private void CanvasView_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
         {
-#if DEBUG
-            sw.Restart();
-#endif
             //获取绘图面板的信息
             SKImageInfo info = e.Info;
             SKSurface surface = e.Surface;
@@ -253,10 +247,11 @@ namespace Mageki
 
             lSide.Draw(canvas);
             rSide.Draw(canvas);
-            lever.Draw(canvas);
 
             lMenu.Draw(canvas);
             rMenu.Draw(canvas);
+
+            lever.Draw(canvas);
 
             keyboard.Draw(canvas);
 
@@ -264,11 +259,8 @@ namespace Mageki
 
             oldWidth = info.Width;
             oldHeight = info.Height;
-#if DEBUG
-            Debug.WriteLine($"[Draw Frame]: {sw.Elapsed.TotalMilliseconds}ms");
-            sw.Stop();
-#endif
         }
+
         /// <summary>
         /// 计算各个元素的位置和大小
         /// </summary>
@@ -277,7 +269,8 @@ namespace Mageki
         private void Update(int width, int height)
         {
             var nSide = BitConverter.GetBytes(keyboard.ShowLeft)[0] + BitConverter.GetBytes(keyboard.ShowRight)[0];
-            float baseCoef = 1 / (PanelPaddingRatio * 2 + LRSpacingCoef * (nSide / 2) + ButtonSpacingCoef * nSide * 2 + nSide * 3);
+            float baseCoef = 1 / (PanelPaddingRatio * 2 + LRSpacingCoef * (nSide / 2) + ButtonSpacingCoef * nSide * 2 +
+                                  nSide * 3);
             // 以一个按钮的边长作为基数计算其他部分尺寸
             float baseLength = (width * baseCoef);
             float buttonSideLength = baseLength;
@@ -302,18 +295,33 @@ namespace Mageki
             keyboard.Visible = !Settings.HideButtons;
 
             lMenu.Size = rMenu.Size = new SKSize(menuSideLength, menuSideLength);
-            lMenu.Position = new SKPoint(menuPadding, keyboard.BoundingBox.Top - keyboardMarginTop - menuSideLength * 2);
+            lMenu.Position =
+                new SKPoint(menuPadding, keyboard.BoundingBox.Top - keyboardMarginTop - menuSideLength * 2);
             rMenu.Position = new SKPoint(width - menuPadding - menuSideLength, lMenu.Position.Y);
 
-            float sideButtonWidth = baseLength * (PanelPaddingRatio + 1.5f) + baseLength * ButtonSpacingCoef;
-            lSide.Size = rSide.Size = new SKSize(sideButtonWidth, height - keyboard.BoundingBox.Height - keyboardMarginTop);
+            lSide.ButtonHeight = rSide.ButtonHeight = baseLength;
+            lSide.Size = rSide.Size =
+                new SKSize(width / 2f,
+                    height - keyboard.BoundingBox.Height - keyboardMarginTop);
+            lSide.ButtonHeight = rSide.ButtonHeight = baseLength;
             lSide.Position = new SKPoint(0, 0);
-            rSide.Position = new SKPoint(width - sideButtonWidth, 0);
+            rSide.Position = new SKPoint(width / 2f, 0);
             lSide.Padding = rSide.Padding = new SKPoint(0, keyboardMarginTop);
+            lSide.Visible = rSide.Visible = LeverWidth != 1f;
 
-            lever.Size = new SKSize(width - lSide.Size.Width - rSide.Size.Width, lSide.Size.Height);
-            lever.Position = new SKPoint(lSide.Size.Width, 0);
-            lever.Padding = new SKPoint(0, keyboard.BoundingBox.Top - lMenu.BoundingBox.Bottom);
+            if (Settings.EnableCompositeMode)
+            {
+                lever.Size = new SKSize(width, lSide.Size.Height);
+                lever.Position = new SKPoint(0, 0);
+                lever.Padding = new SKPoint(width * (1 - LeverWidth) / 2,
+                    keyboard.BoundingBox.Top - lMenu.BoundingBox.Bottom);
+            }
+            else
+            {
+                lever.Size = new SKSize(width * LeverWidth, lSide.Size.Height);
+                lever.Position = new SKPoint(width * (1 - LeverWidth) / 2, 0);
+                lever.Padding = new SKPoint(0, keyboard.BoundingBox.Top - lMenu.BoundingBox.Bottom);
+            }
 
             float settingSideLength = baseLength * SettingSizeCoef;
             settingButton.Size = new SKSize(settingSideLength, settingSideLength);
@@ -342,6 +350,7 @@ namespace Mageki
                             break;
                         }
                     }
+
                     break;
                 case TouchActionType.Moved:
                     foreach (TouchableObject obj in touchableObject)
@@ -351,23 +360,24 @@ namespace Mageki
                             break;
                         }
                     }
+
                     break;
                 case TouchActionType.Released:
                     foreach (TouchableObject obj in touchableObject)
                     {
-                        if (obj.HandleTouchReleased(args.Id))
-                        {
-                            break;
-                        }
+                        obj.HandleTouchReleased(args.Id);
                     }
+
                     break;
                 case TouchActionType.Cancelled:
                     foreach (TouchableObject obj in touchableObject)
                     {
                         obj.HandleTouchCancelled(args.Id);
                     }
+
                     break;
             }
+
             //更新IO状态
             UpdateIO();
             //通知重绘画布
@@ -379,16 +389,16 @@ namespace Mageki
         {
             ButtonBase[] buttons = new ButtonBase[]
             {
-                    keyboard[0],
-                    keyboard[1],
-                    keyboard[2],
-                    lSide,
-                    lMenu,
-                    keyboard[3],
-                    keyboard[4],
-                    keyboard[5],
-                    rSide,
-                    rMenu
+                keyboard[0],
+                keyboard[1],
+                keyboard[2],
+                lSide,
+                lMenu,
+                keyboard[3],
+                keyboard[4],
+                keyboard[5],
+                rSide,
+                rMenu
             };
             // buttons
             for (int i = 0; i < buttons.Length; i++)
@@ -398,6 +408,7 @@ namespace Mageki
                     App.CurrentIO.SetGameButton(i, buttons[i].TouchCount);
                 }
             }
+
             // lever
             MoveLever(lever.Value);
         }
@@ -411,6 +422,7 @@ namespace Mageki
                 var bytes = new byte[10 - bcd.Length].Concat(bcd);
                 aimeId = bytes.ToArray();
             }
+
             return aimeId;
         }
 

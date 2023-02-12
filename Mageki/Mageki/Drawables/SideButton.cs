@@ -1,7 +1,5 @@
 ﻿using Mageki.Utils;
-
 using SkiaSharp;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +11,49 @@ namespace Mageki.Drawables
     public class SideButton : ButtonBase
     {
         public const float colorSaturation = 0.6f;
-        public SideButtonMode Mode { get => GetValue(SideButtonMode.Touch); set => SetValueWithNotify(value); }
-        public SKColor Color { get => GetValue(SKColors.Black); set => SetValueWithNotify(value); }
-        public float CornerRatio { get => GetValue(0.025f); set => SetValueWithNotify(value); }
-        public float BorderWidthRatio { get => GetValue(0.4f); set => SetValueWithNotify(value); }
-        public float ButtonWidthRatio { get => GetValue(0.04f); set => SetValueWithNotify(value); }
-        public float Aspect { get => GetValue(0.08f); set => SetValueWithNotify(value); }
-        public Side Side { get => GetValue(default(Side)); set => SetValueWithNotify(value); }
+
+        public SideButtonMode Mode
+        {
+            get => GetValue(SideButtonMode.Touch);
+            set => SetValueWithNotify(value);
+        }
+
+        public SKColor Color
+        {
+            get => GetValue(SKColors.Black);
+            set => SetValueWithNotify(value);
+        }
+
+        public float CornerRatio
+        {
+            get => GetValue(0.025f);
+            set => SetValueWithNotify(value);
+        }
+
+        public float BorderWidthRatio
+        {
+            get => GetValue(0.4f);
+            set => SetValueWithNotify(value);
+        }
+
+        public float ButtonHeight
+        {
+            get => GetValue(0f);
+            set => SetValueWithNotify(value);
+        }
+
+        public float Aspect
+        {
+            get => GetValue(0.08f);
+            set => SetValueWithNotify(value);
+        }
+
+        public Side Side
+        {
+            get => GetValue(default(Side));
+            set => SetValueWithNotify(value);
+        }
+
         public float Pressure
         {
             get => GetValue(default(float));
@@ -30,9 +64,24 @@ namespace Mageki.Drawables
                 SetValueWithNotify(value);
             }
         }
-        public float MaxPressure { get => GetValue(0.95f); set => SetValueWithNotify(value); }
-        public float MinPressure { get => GetValue(0.05f); set => SetValueWithNotify(value); }
-        public float Trigger { get => GetValue(0.5f); set => SetValueWithNotify(value); }
+
+        public float MaxPressure
+        {
+            get => GetValue(0.95f);
+            set => SetValueWithNotify(value);
+        }
+
+        public float MinPressure
+        {
+            get => GetValue(0.05f);
+            set => SetValueWithNotify(value);
+        }
+
+        public float Trigger
+        {
+            get => GetValue(0.5f);
+            set => SetValueWithNotify(value);
+        }
 
 
         private SKPaint buttonFramePaint = new SKPaint
@@ -40,37 +89,44 @@ namespace Mageki.Drawables
             Style = SKPaintStyle.StrokeAndFill,
             Color = new SKColor(0xFF222222)
         };
+
         private SKPaint buttonPaint = new SKPaint
         {
             Style = SKPaintStyle.Fill,
             //MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Solid, 30)
         };
+
         private SKPaint buttonBlankPaint = new SKPaint
         {
             Style = SKPaintStyle.Fill,
             Color = Colors[ButtonColors.Blank]
         };
+
         private SKPaint lightPaint = new SKPaint
         {
             Style = SKPaintStyle.Fill,
             MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 100)
         };
+
         private SKPaint buttonBorderPaint = new SKPaint
         {
             Style = SKPaintStyle.Stroke,
             Color = new SKColor(0xFF222222)
         };
+
         private SKPaint separatorPaint = new SKPaint
         {
             Style = SKPaintStyle.Stroke,
             Color = new SKColor(0x44666666)
         };
+
         private SKPaint holdMaskPaint = new SKPaint()
         {
             Style = SKPaintStyle.Fill,
             Color = new SKColor(0x66000000),
             //MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Solid, 10)
         };
+
         SKPath buttonPath = new SKPath();
         SKRect buttonFrame = new SKRect();
         SKPath buttonBorderPath = new SKPath();
@@ -79,7 +135,6 @@ namespace Mageki.Drawables
 
         public SideButton()
         {
-
         }
 
         public override void Update()
@@ -106,10 +161,11 @@ namespace Mageki.Drawables
                     TouchCount = 0;
                 }
             }
+
             int n = Side == Side.Left ? 1 : -1;
             SKRect boundingBox = BoundingBox;
-            float buttonWidth = boundingBox.Width * ButtonWidthRatio;
-            float buttonHeight = buttonWidth / Aspect;
+            float buttonHeight = ButtonHeight;
+            float buttonWidth = buttonHeight * Aspect;
 
             var buttonTopFaceLeft = boundingBox.MidX - boundingBox.Width / 2 * n;
             var buttonTopFaceRight = buttonTopFaceLeft + (buttonWidth * (1 - Pressure)) * n;
@@ -141,7 +197,8 @@ namespace Mageki.Drawables
             separatorPath.MoveTo(buttonTopFaceRight, buttonTopFaceTop);
             separatorPath.LineTo(buttonTopFaceRight, buttonTopFaceBottom);
 
-            buttonFrame = SKRect.Create(buttonSideFaceRight, buttonSideFaceTop, buttonWidth * (Pressure * 0.4f), buttonSideFaceBottom - buttonSideFaceTop);
+            buttonFrame = SKRect.Create(buttonSideFaceRight, buttonSideFaceTop, buttonWidth * (Pressure * 0.4f),
+                buttonSideFaceBottom - buttonSideFaceTop);
 
             lightBox = new SKRect(
                 buttonTopFaceRight + (buttonWidth * 2) * n,
@@ -152,10 +209,14 @@ namespace Mageki.Drawables
             buttonPaint.Color = Color.Standardization();
             lightPaint.Color = buttonPaint.Color.WithAlpha((byte)(buttonPaint.Color.Alpha));
             lightPaint.Shader = SKShader.CreateLinearGradient(
-                                new SKPoint(lightBox.Left, lightBox.MidY),
-                                new SKPoint(lightBox.Right, lightBox.MidY),
-                                new SKColor[] { new SKColor(lightPaint.Color.Red, lightPaint.Color.Green, lightPaint.Color.Blue, 0xAA), new SKColor(lightPaint.Color.Red, lightPaint.Color.Green, lightPaint.Color.Blue, 0x44) },
-                                SKShaderTileMode.Clamp);
+                new SKPoint(lightBox.Left, lightBox.MidY),
+                new SKPoint(lightBox.Right, lightBox.MidY),
+                new SKColor[]
+                {
+                    new SKColor(lightPaint.Color.Red, lightPaint.Color.Green, lightPaint.Color.Blue, 0xAA),
+                    new SKColor(lightPaint.Color.Red, lightPaint.Color.Green, lightPaint.Color.Blue, 0x44)
+                },
+                SKShaderTileMode.Clamp);
 
             buttonBorderPaint.StrokeWidth = buttonFramePaint.StrokeWidth = buttonWidth * 0.5f;
             separatorPaint.StrokeWidth = buttonWidth * 0.2f;
@@ -174,12 +235,14 @@ namespace Mageki.Drawables
             {
                 canvas.DrawPath(buttonPath, holdMaskPaint);
             }
+
             canvas.DrawPath(separatorPath, separatorPaint);
             canvas.DrawPath(buttonBorderPath, buttonBorderPaint);
             canvas.DrawRect(buttonFrame, buttonFramePaint);
 
             //canvas.DrawRect(lightBox, lightPaint);
         }
+
         public override bool HandleTouchPressed(long id, SKPoint point)
         {
             if (Mode == SideButtonMode.Touch)
@@ -194,6 +257,7 @@ namespace Mageki.Drawables
         }
 
         private List<(float value, long touchID)> moveCache = new List<(float value, long touchID)>();
+
         public override bool HandleTouchMoved(long id, SKPoint point)
         {
             if (Mode == SideButtonMode.Slide)
@@ -215,6 +279,7 @@ namespace Mageki.Drawables
                             {
                                 sum = min;
                             }
+
                             if (max > 0 && sum > max)
                             {
                                 sum = max;
@@ -222,7 +287,9 @@ namespace Mageki.Drawables
 
                             int n = Side == Side.Left ? 1 : -1;
                             SKRect boundingBox = BoundingBox;
-                            float buttonWidth = boundingBox.Width * ButtonWidthRatio;
+
+                            float buttonHeight = ButtonHeight;
+                            float buttonWidth = buttonHeight * Aspect;
 
                             Pressure += sum / buttonWidth * -n;
 
@@ -231,14 +298,15 @@ namespace Mageki.Drawables
                     }
                 }
             }
-            return base.HandleTouchMoved(id, point);
 
+            return base.HandleTouchMoved(id, point);
         }
-        public override bool HandleTouchReleased(long id)
+
+        public override void HandleTouchReleased(long id)
         {
             if (Mode == SideButtonMode.Touch)
             {
-                return base.HandleTouchReleased(id);
+                base.HandleTouchReleased(id);
             }
             else if (touchPoints.ContainsKey(id))
             {
@@ -248,14 +316,10 @@ namespace Mageki.Drawables
                     Pressure = 0;
                     Update();
                 }
-                return true;
-            }
-            else
-            {
-                return false;
             }
         }
     }
+
     public enum SideButtonMode
     {
         Touch,
