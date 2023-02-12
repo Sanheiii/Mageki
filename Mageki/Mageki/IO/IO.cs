@@ -44,17 +44,24 @@ namespace Mageki
         public OutputData Data => data;
         protected ButtonColors[] colors = new ButtonColors[6];
         public ButtonColors[] Colors => colors;
-        public abstract bool IsConnected { get; }
+        private Status status;
 
-        public event EventHandler<EventArgs> OnConnected;
-        protected void RaiseOnConnected(EventArgs args)
+        public Status Status
         {
-            OnConnected?.Invoke(this, args);
+            get => status;
+            protected set
+            {
+                var oldValue = status;
+                status = value;
+                if (oldValue != value)
+                    RaiseOnStatusChanged(new OnStatusChangedEventArgs(oldValue, value));
+            }
         }
-        public event EventHandler<EventArgs> OnDisconnected;
-        protected void RaiseOnDisconnected(EventArgs args)
+
+        public event EventHandler<OnStatusChangedEventArgs> OnStatusChanged;
+        protected void RaiseOnStatusChanged(OnStatusChangedEventArgs args)
         {
-            OnDisconnected?.Invoke(this, args);
+            OnStatusChanged?.Invoke(this, args);
         }
         public event EventHandler<EventArgs> OnLedChanged;
         protected void RaiseOnLedChanged(EventArgs args)
@@ -84,9 +91,9 @@ namespace Mageki
         }
         public virtual void SetOptionButton(OptionButtons button, bool pressed)
         {
-            if (pressed) 
+            if (pressed)
                 data.OptButtons |= button;
-            else 
+            else
                 data.OptButtons &= ~button;
         }
         public void SetLed(uint data)
@@ -115,5 +122,24 @@ namespace Mageki
         SetLever = 21,
         // 寻找在线设备
         Hello = 255
+    }
+
+    public enum Status
+    {
+        None,
+        Disconnected,
+        Connected,
+        Error
+    }
+
+    public class OnStatusChangedEventArgs : EventArgs
+    {
+        public Status OldStatus { get; protected set; }
+        public Status NewStatus { get; protected set; }
+        public OnStatusChangedEventArgs(Status oldStatus, Status newStatus)
+        {
+            OldStatus = oldStatus;
+            NewStatus = newStatus;
+        }
     }
 }

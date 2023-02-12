@@ -74,8 +74,7 @@
         <views:AndConverter x:Key="AndConverter" />
         <views:EnumSelectedConverter x:Key="EnumSelectedConverter" />
         <views:PortConverter x:Key="PortConverter" />
-        <views:AimeIdConverter x:Key="AimeIdConverter" />
-        <views:LeverMoveModeConverter x:Key="LeverMoveModeConverter" />
+        <views:StatusConverter x:Key="StatusConverter" />
     </rg:PopupPage.Resources>
     <Grid RowDefinitions="Auto,*" BackgroundColor="Transparent">
         <mageki:NavigationBar Title="{x:Static resources:AppResources.Settings}" GoBackCommand="{Binding GoBack}"
@@ -114,6 +113,13 @@
                                    xct:TouchEffect.CommandParameter="{x:Static mageki:Protocol.UDP}">
                                 <Label Text="UDP" Style="{x:StaticResource SettingsSelectionLabelStyle}" />
                             </Frame>
+                        </Grid>
+                        <!--状态-->
+                        <Grid Style="{StaticResource SettingsGridStyle}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.Status}" />
+                            <Label Style="{StaticResource SettingsLabelStyle}" Grid.Column="1" HorizontalTextAlignment="End" Margin="16,0"
+                                   Text="{Binding Status,Converter={StaticResource StatusConverter}}"/>
                         </Grid>
                     </StackLayout>
                 </Frame>

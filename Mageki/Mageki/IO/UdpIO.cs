@@ -25,7 +25,6 @@ namespace Mageki
         private bool disposedValue;
 
         public int Port { get; private set; }
-        public override bool IsConnected => !remoteEP.Address.Equals(IPAddress.Broadcast);
 
         public UdpIO() : this(Settings.Port)
         {
@@ -38,13 +37,22 @@ namespace Mageki
         }
         public override void Init()
         {
-            helloRandomValue = (byte)(new Random().Next() % 255);
-            client = new UdpClient();
-            heartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
-            heartbeatTimer.Start();
-            disconnectTimer.Elapsed += DisconnectTimer_Elapsed;
-            pollThread = new Thread(PollThread);
-            pollThread.Start();
+            try
+            {
+                helloRandomValue = (byte)(new Random().Next() % 255);
+                client = new UdpClient();
+                heartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
+                heartbeatTimer.Start();
+                disconnectTimer.Elapsed += DisconnectTimer_Elapsed;
+                pollThread = new Thread(PollThread);
+                pollThread.Start();
+                Status = Status.Disconnected;
+            }
+            catch (Exception e)
+            {
+                App.Logger.Error(e);
+                Status = Status.Error;
+            }
         }
         public override void SetGameButton(int index, byte value)
         {
@@ -103,12 +111,12 @@ namespace Mageki
         private void DisconnectTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             remoteEP = new IPEndPoint(IPAddress.Broadcast, Port);
-            RaiseOnDisconnected(EventArgs.Empty);
+            Status = Status.Disconnected;
         }
         private void SendMessage(byte[] data)
         {
             // 没有连接到就不发送数据
-            if (!IsConnected && data[0] != (byte)MessageType.Hello)
+            if (Status != Status.Connected && data[0] != (byte)MessageType.Hello)
             {
                 return;
             }
@@ -131,11 +139,11 @@ namespace Mageki
             }
             else if (buffer[0] == (byte)MessageType.Hello && buffer.Length == 2 && buffer[1] == helloRandomValue)
             {
-                if (!IsConnected)
+                if (Status != Status.Connected)
                 {
                     remoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
                     RequestValues();
-                    RaiseOnConnected(EventArgs.Empty);
+                    Status = Status.Connected;
                 }
                 disconnectTimer.Stop();
                 disconnectTimer.Start();
@@ -155,8 +163,8 @@ namespace Mageki
                 if (disposing)
                 {
                     // TODO: 释放托管状态(托管对象)
-                    if (IsConnected)
-                        RaiseOnDisconnected(EventArgs.Empty);
+                    if (Status == Status.Connected)
+                        Status = Status.Disconnected;
                     client.Dispose();
                     disconnectTimer.Dispose();
                     heartbeatTimer.Dispose();

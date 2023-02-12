@@ -216,4 +216,16 @@
   <data name="MagekiIsUpToDate" xml:space="preserve">
     <value>Mageki已是最新版。</value>
   </data>
+  <data name="Status" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>已连接</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>未连接</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>无</value>
+  </data>
 </root>

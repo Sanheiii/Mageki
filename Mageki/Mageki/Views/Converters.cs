@@ -1,4 +1,5 @@
 ﻿using Mageki.Drawables;
+using Mageki.Resources;
 
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace Mageki.Views
             return !(bool)value;
         }
     }
+
     public class PortConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -45,26 +47,7 @@ namespace Mageki.Views
             }
         }
     }
-    public class AimeIdConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value;
-        }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            string str = (string)value;
-            EntryCell cell = (EntryCell)parameter;
-            SettingsViewModel viewModel = (SettingsViewModel)cell.BindingContext;
-            if (str.Length > 20)
-            {
-                cell.Text = viewModel.Aimeid;
-                str = viewModel.Aimeid;
-            }
-            return str;
-        }
-    }
     public class EnumSelectedConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -77,26 +60,7 @@ namespace Mageki.Views
             throw new NotImplementedException();
         }
     }
-    public class LeverMoveModeConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is LeverMoveMode mode)
-            {
-                return (int)mode;
-            }
-            else return 0;
-        }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is int i)
-            {
-                return (LeverMoveMode)i;
-            }
-            else return default(LeverMoveMode);
-        }
-    }
     public class AndConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -105,6 +69,26 @@ namespace Mageki.Views
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class StatusConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (Status)value switch
+            {
+                Status.None => AppResources.None,
+                Status.Disconnected => AppResources.Disconnected,
+                Status.Connected => AppResources.Connected,
+                Status.Error => AppResources.Error,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

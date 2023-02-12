@@ -1,11 +1,14 @@
 ﻿using Mageki.Drawables;
 using Mageki.Resources;
+
 using Rg.Plugins.Popup.Services;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+
 using Xamarin.CommunityToolkit.Effects;
 using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Essentials;
@@ -37,6 +40,8 @@ namespace Mageki
                 RaisePropertyChanged();
             }
         }
+
+        public Status Status => StaticIO.Status;
 
         public LeverMoveMode LeverMoveMode
         {
@@ -126,20 +131,20 @@ namespace Mageki
 
         public TouchState TestState
         {
-            get => (TouchState)(App.CurrentIO.Data.OptButtons & OptionButtons.Test);
+            get => (TouchState)(StaticIO.Data.OptButtons & OptionButtons.Test);
             set
             {
-                App.CurrentIO.SetOptionButton(OptionButtons.Test, value == TouchState.Pressed);
+                StaticIO.SetOptionButton(OptionButtons.Test, value == TouchState.Pressed);
                 RaisePropertyChanged();
             }
         }
 
         public TouchState ServiceState
         {
-            get => (TouchState)(App.CurrentIO.Data.OptButtons & OptionButtons.Service);
+            get => (TouchState)(StaticIO.Data.OptButtons & OptionButtons.Service);
             set
             {
-                App.CurrentIO.SetOptionButton(OptionButtons.Service, value == TouchState.Pressed);
+                StaticIO.SetOptionButton(OptionButtons.Service, value == TouchState.Pressed);
                 RaisePropertyChanged();
             }
         }
@@ -159,6 +164,12 @@ namespace Mageki
             FocusElement = new Command(FocusElementExecute);
             SelectProtocol = new Command(SelectProtocolExecute);
             SelectLeverMoveMode = new Command(SelectLeverMoveModeExecute);
+            StaticIO.OnStatusChanged += StaticIO_OnStatusChanged;
+        }
+
+        private void StaticIO_OnStatusChanged(object sender, OnStatusChangedEventArgs e)
+        {
+            RaisePropertyChanged(nameof(Status));
         }
 
         private void GoBackExecute(object obj)

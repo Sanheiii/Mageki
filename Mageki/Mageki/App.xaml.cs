@@ -18,7 +18,6 @@ namespace Mageki
 {
     public partial class App : Application
     {
-        public static IO CurrentIO { get; set; }
         /// <summary>
         /// 用于记录日志
         /// </summary>

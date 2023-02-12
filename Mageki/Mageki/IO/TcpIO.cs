@@ -27,7 +27,7 @@ namespace Mageki
         private byte[] _inBuffer = new byte[4];
         private bool disposedValue;
         public int Port { get; private set; }
-        public override bool IsConnected => isConnected;
+
         public TcpIO() : this(Settings.Port)
         {
 
@@ -38,20 +38,28 @@ namespace Mageki
         }
         public override void Init()
         {
-            helloRandomValue = (byte)(new Random().Next() % 255);
-            if (disposedValue) throw new ObjectDisposedException(GetType().Name);
+            try
+            {
+                helloRandomValue = (byte)(new Random().Next() % 255);
+                if (disposedValue) throw new ObjectDisposedException(GetType().Name);
 
-            heartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
-            heartbeatTimer.Start();
-            disconnectTimer.Elapsed += DisconnectTimer_Elapsed;
+                heartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
+                heartbeatTimer.Start();
+                disconnectTimer.Elapsed += DisconnectTimer_Elapsed;
 
-            IPAddress ip = new IPAddress(new byte[] { 0, 0, 0, 0 });
-            listener = new TcpListener(ip, Port);
-            listener.Start();
+                IPAddress ip = new IPAddress(new byte[] { 0, 0, 0, 0 });
+                listener = new TcpListener(ip, Port);
+                listener.Start();
 
-            readingThread = new Thread(PollThread);
-            readingThread.Start();
-
+                readingThread = new Thread(PollThread);
+                Status = Status.Disconnected;
+                readingThread.Start();
+            }
+            catch (Exception e)
+            {
+                App.Logger.Error(e);
+                Status = Status.Error;
+            }
 
         }
         private void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -65,7 +73,6 @@ namespace Mageki
         private void DisconnectTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             Disconnect();
-            RaiseOnDisconnected(EventArgs.Empty);
         }
 
         public async void Reconnect()
@@ -78,7 +85,6 @@ namespace Mageki
                 var newClient = await listener.AcceptTcpClientAsync();
                 networkStream = newClient.GetStream();
                 client = newClient;
-                RaiseOnConnected(EventArgs.Empty);
             }
             catch (Exception ex)
             {
@@ -97,7 +103,7 @@ namespace Mageki
                 networkStream = null;
                 tmpClient?.Dispose();
                 tmpStream?.Dispose();
-                RaiseOnDisconnected(EventArgs.Empty);
+                Status = Status.Disconnected;
             }
             isConnected = false;
         }
@@ -131,7 +137,7 @@ namespace Mageki
 
         private void SendMessage(byte[] data)
         {
-            if (!IsConnected && data[0] != (byte)MessageType.Hello)
+            if (Status != Status.Connected && data[0] != (byte)MessageType.Hello)
             {
                 return;
             }
@@ -190,11 +196,11 @@ namespace Mageki
             }
             else if (type == MessageType.Hello && networkStream.Read(_inBuffer, 0, 1) > 0)
             {
-                if (!IsConnected)
+                if (Status != Status.Connected)
                 {
                     isConnected = true;
                     RequestValues();
-                    RaiseOnConnected(EventArgs.Empty);
+                    Status = Status.Connected;
                 }
                 disconnectTimer.Stop();
                 disconnectTimer.Start();
@@ -214,8 +220,8 @@ namespace Mageki
                 if (disposing)
                 {
                     // TODO: 释放托管状态(托管对象)
-                    if (IsConnected)
-                        RaiseOnDisconnected(EventArgs.Empty);
+                    if (Status == Status.Connected)
+                        Status = Status.Disconnected;
                     networkStream?.Dispose();
                     client?.Dispose();
                     listener?.Stop();

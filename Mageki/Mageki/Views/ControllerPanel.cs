@@ -28,10 +28,10 @@ namespace Mageki
         private SideButton rSide = new SideButton() { Side = Side.Right, Color = SKColors.Purple };
 
         private SquareButton lMenu = new SquareButton()
-            { Color = ButtonColors.Red, BorderColor = new SKColor(0xFF880000) };
+        { Color = ButtonColors.Red, BorderColor = new SKColor(0xFF880000) };
 
         private SquareButton rMenu = new SquareButton()
-            { Color = ButtonColors.Yellow, BorderColor = new SKColor(0xFF888800) };
+        { Color = ButtonColors.Yellow, BorderColor = new SKColor(0xFF888800) };
 
         private Lever lever = new Lever();
         private MenuFrame lMenuFrame;
@@ -98,10 +98,12 @@ namespace Mageki
                     App.Logger.Error(ex);
                 }
             }
-
-            InitIO();
             Settings.ValueChanged += Settings_ValueChanged;
+            StaticIO.OnLedChanged += (sender, e) => SetLed(StaticIO.Colors);
+            SetLed(StaticIO.Colors);
+            ;
         }
+
 
         private void Settings_ValueChanged(string name)
         {
@@ -112,72 +114,6 @@ namespace Mageki
             {
                 ForceUpdate();
             }
-
-            if (name == nameof(Settings.Protocol) || name == nameof(Settings.Port))
-            {
-                InitIO();
-            }
-        }
-
-        public void InitIO()
-        {
-            bool protocolChanged = App.CurrentIO is null ||
-                                   App.CurrentIO.GetType().ToString().ToLower() != $"{Settings.Protocol}IO".ToLower();
-            bool portChanged =
-                (App.CurrentIO is UdpIO udpIO && udpIO.Port != Settings.Port) ||
-                (App.CurrentIO is TcpIO tcpIO && tcpIO.Port != Settings.Port);
-            if (protocolChanged || portChanged)
-            {
-                if (App.CurrentIO != null)
-                {
-                    App.CurrentIO.OnConnected -= OnConnected;
-                    App.CurrentIO.OnDisconnected -= OnDisconnected;
-                    App.CurrentIO.OnLedChanged -= OnLedChanged;
-                    App.CurrentIO.Dispose();
-                }
-
-                try
-                {
-                    App.CurrentIO = Settings.Protocol switch
-                    {
-                        Protocol.UDP => new UdpIO(),
-                        Protocol.TCP => new TcpIO(),
-                        _ => throw new NotImplementedException($"Unsupported protocols:{Settings.Protocol}"),
-                    };
-                    App.CurrentIO.OnConnected += OnConnected;
-                    App.CurrentIO.OnDisconnected += OnDisconnected;
-                    App.CurrentIO.OnLedChanged += OnLedChanged;
-                    OnDisconnected(this, EventArgs.Empty);
-                    OnLedChanged(this, EventArgs.Empty);
-                    App.CurrentIO.Init();
-                }
-                catch (Exception ex)
-                {
-                    App.Logger.Error(ex);
-                }
-            }
-        }
-
-        private void OnLedChanged(object sender, EventArgs e)
-        {
-            SetLed(App.CurrentIO.Colors);
-        }
-
-        private void OnConnected(object sender, EventArgs e)
-        {
-            //logo.Color = SKColors.Black;
-            InvalidateSurface();
-        }
-
-        private void OnDisconnected(object sender, EventArgs e)
-        {
-            //logo.Color = SKColors.LightGray;
-            InvalidateSurface();
-        }
-
-        public void InvalidateSurface()
-        {
-            canvasView.InvalidateSurface();
         }
 
         public void ForceUpdate()
@@ -197,9 +133,9 @@ namespace Mageki
                 $"FeliCa card is present\nIDm: {idmString}\nPMm: {pmMString}\nSystemCode: {systemCodeString}");
 
             nfcScanning = true;
-            App.CurrentIO.SetAime(2, packet);
+            StaticIO.SetAime(2, packet);
             await Task.Delay(3000);
-            App.CurrentIO.SetAime(0, new byte[0]);
+            StaticIO.SetAime(0, new byte[0]);
             nfcScanning = false;
         }
 
@@ -210,9 +146,9 @@ namespace Mageki
             App.Logger.Debug($"Mifare card is present\nAccessCode: {1}");
 
             nfcScanning = true;
-            App.CurrentIO.SetAime(1, packet);
+            StaticIO.SetAime(1, packet);
             await Task.Delay(3000);
-            App.CurrentIO.SetAime(0, new byte[0]);
+            StaticIO.SetAime(0, new byte[0]);
             nfcScanning = false;
         }
 
@@ -381,8 +317,7 @@ namespace Mageki
             //更新IO状态
             UpdateIO();
             //通知重绘画布
-            InvalidateSurface();
-            return;
+            canvasView.InvalidateSurface();
         }
 
         private void UpdateIO()
@@ -403,9 +338,9 @@ namespace Mageki
             // buttons
             for (int i = 0; i < buttons.Length; i++)
             {
-                if (App.CurrentIO.Data.GameButtons[i] != buttons[i].TouchCount)
+                if (StaticIO.Data.GameButtons[i] != buttons[i].TouchCount)
                 {
-                    App.CurrentIO.SetGameButton(i, buttons[i].TouchCount);
+                    StaticIO.SetGameButton(i, buttons[i].TouchCount);
                 }
             }
 
@@ -429,15 +364,14 @@ namespace Mageki
         private void MoveLever(float x)
         {
             short newValue = (short)(short.MaxValue * x);
-            short oldValue = App.CurrentIO.Data.Lever;
+            short oldValue = StaticIO.Data.Lever;
 
             var threshold = short.MaxValue / (Settings.LeverLinearity / 2f);
 
             // 仅在经过分界的时候发包
             if ((int)(newValue / threshold) != (int)(oldValue / threshold))
             {
-                App.CurrentIO.SetLever(newValue);
-                return;
+                StaticIO.SetLever(newValue);
             }
         }
 
