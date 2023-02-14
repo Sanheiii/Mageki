@@ -223,11 +223,29 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Hide Buttons 的本地化字符串。
+        ///   查找类似 Hide Game Buttons 的本地化字符串。
         /// </summary>
-        public static string HideButtons {
+        public static string HideGameButtons {
             get {
-                return ResourceManager.GetString("HideButtons", resourceCulture);
+                return ResourceManager.GetString("HideGameButtons", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Hide Menu Buttons 的本地化字符串。
+        /// </summary>
+        public static string HideMenuButtons {
+            get {
+                return ResourceManager.GetString("HideMenuButtons", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Hide Wall Action Devices 的本地化字符串。
+        /// </summary>
+        public static string HideWallActionDevices {
+            get {
+                return ResourceManager.GetString("HideWallActionDevices", resourceCulture);
             }
         }
         

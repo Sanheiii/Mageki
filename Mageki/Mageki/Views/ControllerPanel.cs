@@ -51,7 +51,7 @@ namespace Mageki
         const float MenuSizeCoef = 0.5f;
         const float SettingSizeCoef = 0.4f;
         const float MenuPaddingCoef = 1.125f;
-        const float LeverWidth = 0.6f;
+        const float LeverWidth = 0.5f;
 
         #endregion
 
@@ -108,8 +108,9 @@ namespace Mageki
         private void Settings_ValueChanged(string name)
         {
             if (name == nameof(Settings.ButtonBottomMargin) ||
-                name == nameof(Settings.HideButtons) ||
+                name == nameof(Settings.HideGameButtons) ||
                 name == nameof(Settings.EnableCompositeMode) ||
+                name == nameof(Settings.HideWallActionDevices) ||
                 name == nameof(Settings.LeverMoveMode))
             {
                 ForceUpdate();
@@ -217,7 +218,7 @@ namespace Mageki
 
             float bottomMargin = (height - baseLength) * Settings.ButtonBottomMargin;
 
-            if (Settings.HideButtons)
+            if (Settings.HideGameButtons)
             {
                 bottomMargin = 0;
                 buttonSideLength = 0;
@@ -228,12 +229,13 @@ namespace Mageki
             keyboard.Spacing = baseLength * LRSpacingCoef;
             keyboard.Size = new SKSize(width, height - keyboard.Position.Y);
             keyboard.Left.Spacing = keyboard.Right.Spacing = baseLength * ButtonSpacingCoef;
-            keyboard.Visible = !Settings.HideButtons;
+            keyboard.Visible = !Settings.HideGameButtons;
 
             lMenu.Size = rMenu.Size = new SKSize(menuSideLength, menuSideLength);
             lMenu.Position =
                 new SKPoint(menuPadding, keyboard.BoundingBox.Top - keyboardMarginTop - menuSideLength * 2);
             rMenu.Position = new SKPoint(width - menuPadding - menuSideLength, lMenu.Position.Y);
+            lMenu.Visible = rMenu.Visible = !Settings.HideMenuButtons;
 
             lSide.ButtonHeight = rSide.ButtonHeight = baseLength;
             lSide.Size = rSide.Size =
@@ -243,9 +245,9 @@ namespace Mageki
             lSide.Position = new SKPoint(0, 0);
             rSide.Position = new SKPoint(width / 2f, 0);
             lSide.Padding = rSide.Padding = new SKPoint(0, keyboardMarginTop);
-            lSide.Visible = rSide.Visible = LeverWidth != 1f;
+            lSide.Visible = rSide.Visible = !Settings.HideWallActionDevices;
 
-            if (Settings.EnableCompositeMode)
+            if (Settings.EnableCompositeMode || Settings.HideWallActionDevices)
             {
                 lever.Size = new SKSize(width, lSide.Size.Height);
                 lever.Position = new SKPoint(0, 0);

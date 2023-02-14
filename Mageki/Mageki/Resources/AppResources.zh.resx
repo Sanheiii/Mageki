@@ -228,4 +228,10 @@
   <data name="None" xml:space="preserve">
     <value>无</value>
   </data>
+  <data name="HideMenuButtons" xml:space="preserve">
+    <value>隐藏菜单按钮</value>
+  </data>
+  <data name="HideWallActionDevices" xml:space="preserve">
+    <value>隐藏墙键</value>
+  </data>
 </root>

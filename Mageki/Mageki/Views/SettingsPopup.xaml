@@ -133,8 +133,8 @@
                               xct:TouchEffect.Command="{Binding ToggleSwitch}"
                               xct:TouchEffect.CommandParameter="{x:Reference HideButtonsSwitch}">
                             <Label Style="{StaticResource SettingsLabelStyle}"
-                                   Text="{x:Static resources:AppResources.HideButtons}" />
-                            <Switch x:Name="HideButtonsSwitch" IsToggled="{Binding HideButtons}" Grid.Column="1"
+                                   Text="{x:Static resources:AppResources.HideGameButtons}" />
+                            <Switch x:Name="HideButtonsSwitch" IsToggled="{Binding HideGameButtons}" Grid.Column="1"
                                     HorizontalOptions="End" VerticalOptions="Center" />
                         </Grid>
                         <!--按钮下边距-->

@@ -107,12 +107,12 @@ namespace Mageki
             }
         }
 
-        public bool HideButtons
+        public bool HideGameButtons
         {
-            get => Settings.HideButtons;
+            get => Settings.HideGameButtons;
             set
             {
-                Settings.HideButtons = value;
+                Settings.HideGameButtons = value;
                 RaisePropertyChanged();
             }
         }
@@ -294,14 +294,41 @@ namespace Mageki
             }
         }
 
-        public static bool HideButtons
+        public static bool HideGameButtons
         {
-            get => Preferences.Get("hideButtons", false);
+            get => Preferences.Get("hideGameButtons", false);
             set
             {
-                if (value != HideButtons)
+                if (value != HideGameButtons)
                 {
-                    Preferences.Set("hideButtons", value);
+                    Preferences.Set("hideGameButtons", value);
+                    OnValueChanged();
+                }
+            }
+        }
+
+        public static bool HideWallActionDevices
+        {
+            get => Preferences.Get("hideWallActionDevices", false);
+            set
+            {
+                if (value != HideWallActionDevices)
+                {
+                    Preferences.Set("hideWallActionDevices", value);
+                    if (value) EnableCompositeMode = false;
+                    OnValueChanged();
+                }
+            }
+        }
+
+        public static bool HideMenuButtons
+        {
+            get => Preferences.Get("hideMenuButtons", false);
+            set
+            {
+                if (value != HideMenuButtons)
+                {
+                    Preferences.Set("hideMenuButtons", value);
                     OnValueChanged();
                 }
             }
