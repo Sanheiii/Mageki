@@ -66,12 +66,11 @@ namespace Mageki
         TouchEffect touchEffect = new TouchEffect { Capture = true };
 
         bool inRhythmGame;
-        private bool nfcScanning = false;
 
 
         public ControllerPanel()
         {
-            settingButton = new SettingButton(this);
+            settingButton = new SettingButton();
             circles = new Circles(keyboard);
             touchableObject = new List<TouchableObject>()
                 { settingButton, keyboard, lMenu, rMenu, lever, lSide, rSide };
@@ -86,18 +85,6 @@ namespace Mageki
             touchEffect.TouchAction += TouchEffect_TouchAction;
             Effects.Add(touchEffect);
 
-            // 安卓平台可以免提示使用NFC刷卡
-            if (DeviceInfo.Platform == DevicePlatform.Android)
-            {
-                try
-                {
-                    DependencyService.Get<INfcService>().StartReadAime(ScanFelica, ScanMifare, () => { });
-                }
-                catch (Exception ex)
-                {
-                    App.Logger.Error(ex);
-                }
-            }
             Settings.ValueChanged += Settings_ValueChanged;
             StaticIO.OnLedChanged += (sender, e) => SetLed(StaticIO.Colors);
             SetLed(StaticIO.Colors);
@@ -121,41 +108,6 @@ namespace Mageki
         {
             requireUpdate = true;
             MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
-        }
-
-        public async void ScanFelica(byte[] packet)
-        {
-            if (nfcScanning) return;
-
-            string idmString = "0x" + BitConverter.ToUInt64(packet[0..8].Reverse().ToArray(), 0).ToString("X16");
-            string pmMString = "0x" + BitConverter.ToUInt64(packet[8..16].Reverse().ToArray(), 0).ToString("X16");
-            string systemCodeString = BitConverter.ToUInt16(packet[16..18].Reverse().ToArray(), 0).ToString("X4");
-            App.Logger.Debug(
-                $"FeliCa card is present\nIDm: {idmString}\nPMm: {pmMString}\nSystemCode: {systemCodeString}");
-
-            nfcScanning = true;
-            StaticIO.SetAime(2, packet);
-            await Task.Delay(3000);
-            StaticIO.SetAime(0, new byte[0]);
-            nfcScanning = false;
-        }
-
-        public async void ScanMifare(byte[] packet)
-        {
-            if (nfcScanning) return;
-
-            App.Logger.Debug($"Mifare card is present\nAccessCode: {1}");
-
-            nfcScanning = true;
-            StaticIO.SetAime(1, packet);
-            await Task.Delay(3000);
-            StaticIO.SetAime(0, new byte[0]);
-            nfcScanning = false;
-        }
-
-        private void ScanFelicaInvalidated()
-        {
-            ScanMifare(GetSimulatedAimeId());
         }
 
         /// <summary>
@@ -348,19 +300,6 @@ namespace Mageki
 
             // lever
             MoveLever(lever.Value);
-        }
-
-        byte[] GetSimulatedAimeId()
-        {
-            byte[] aimeId = Enumerable.Range(0, 10).Select((i) => (byte)255).ToArray();
-            if (BigInteger.TryParse(Settings.AimeId, out BigInteger integer))
-            {
-                var bcd = integer.ToBcd();
-                var bytes = new byte[10 - bcd.Length].Concat(bcd);
-                aimeId = bytes.ToArray();
-            }
-
-            return aimeId;
         }
 
         private void MoveLever(float x)
