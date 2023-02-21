@@ -192,9 +192,6 @@
   <data name="BeginNfcSessionAlert" xml:space="preserve">
     <value>扫描Aime卡片，或取消以模拟刷卡。</value>
   </data>
-  <data name="HideButtons" xml:space="preserve">
-    <value>隐藏按钮</value>
-  </data>
   <data name="Absolute" xml:space="preserve">
     <value>绝对</value>
   </data>
@@ -233,5 +230,8 @@
   </data>
   <data name="HideWallActionDevices" xml:space="preserve">
     <value>隐藏墙键</value>
+  </data>
+  <data name="HideGameButtons" xml:space="preserve">
+    <value>隐藏按钮</value>
   </data>
 </root>

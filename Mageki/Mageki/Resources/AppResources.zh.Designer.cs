@@ -132,6 +132,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 已连接.
+        /// </summary>
+        public static string Connected {
+            get {
+                return ResourceManager.GetString("Connected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 连接.
         /// </summary>
         public static string Connection {
@@ -146,6 +155,15 @@ namespace Mageki.Resources {
         public static string Copy {
             get {
                 return ResourceManager.GetString("Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 未连接.
+        /// </summary>
+        public static string Disconnected {
+            get {
+                return ResourceManager.GetString("Disconnected", resourceCulture);
             }
         }
         
@@ -206,9 +224,27 @@ namespace Mageki.Resources {
         /// <summary>
         ///   Looks up a localized string similar to 隐藏按钮.
         /// </summary>
-        public static string HideButtons {
+        public static string HideGameButtons {
             get {
-                return ResourceManager.GetString("HideButtons", resourceCulture);
+                return ResourceManager.GetString("HideGameButtons", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 隐藏菜单按钮.
+        /// </summary>
+        public static string HideMenuButtons {
+            get {
+                return ResourceManager.GetString("HideMenuButtons", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 隐藏墙键.
+        /// </summary>
+        public static string HideWallActionDevices {
+            get {
+                return ResourceManager.GetString("HideWallActionDevices", resourceCulture);
             }
         }
         
@@ -276,6 +312,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 无.
+        /// </summary>
+        public static string None {
+            get {
+                return ResourceManager.GetString("None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 其它.
         /// </summary>
         public static string Others {
@@ -335,6 +380,15 @@ namespace Mageki.Resources {
         public static string Settings {
             get {
                 return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 状态.
+        /// </summary>
+        public static string Status {
+            get {
+                return ResourceManager.GetString("Status", resourceCulture);
             }
         }
         
