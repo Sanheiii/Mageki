@@ -96,6 +96,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 防误触（实验）.
+        /// </summary>
+        public static string AntiMisTouch {
+            get {
+                return ResourceManager.GetString("AntiMisTouch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 扫描Aime卡片，或取消以模拟刷卡。.
         /// </summary>
         public static string BeginNfcSessionAlert {
@@ -249,11 +258,11 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 布局.
+        ///   Looks up a localized string similar to 键盘.
         /// </summary>
-        public static string Layout {
+        public static string Keyboard {
             get {
-                return ResourceManager.GetString("Layout", resourceCulture);
+                return ResourceManager.GetString("Keyboard", resourceCulture);
             }
         }
         

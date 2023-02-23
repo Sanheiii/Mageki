@@ -123,9 +123,9 @@
                         </Grid>
                     </StackLayout>
                 </Frame>
-                <!--布局-->
+                <!--键盘-->
                 <Label Style="{StaticResource SettingsFrameHeaderStyle}"
-                       Text="{x:Static resources:AppResources.Layout}" />
+                       Text="{x:Static resources:AppResources.Keyboard}" />
                 <Frame CornerRadius="8" Style="{StaticResource SettingsFrameStyle}">
                     <StackLayout Spacing="0">
                         <!--隐藏按钮-->
@@ -152,7 +152,8 @@
                         <Grid Style="{StaticResource SettingsGridStyle}"
                               xct:TouchEffect.NativeAnimation="True"
                               xct:TouchEffect.Command="{Binding ToggleSwitch}"
-                              xct:TouchEffect.CommandParameter="{x:Reference AntiMisTouchSwitch}">
+                              xct:TouchEffect.CommandParameter="{x:Reference AntiMisTouchSwitch}"
+                              IsVisible="{Binding Source={x:Reference HideButtonsSwitch},Path=IsToggled,Converter={StaticResource NotConverter}}">
                             <Label Style="{StaticResource SettingsLabelStyle}"
                                    Text="{x:Static resources:AppResources.AntiMisTouch}" />
                             <Switch x:Name="AntiMisTouchSwitch" IsToggled="{Binding AntiMisTouch}" Grid.Column="1" HorizontalOptions="End"

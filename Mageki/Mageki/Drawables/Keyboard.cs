@@ -180,19 +180,19 @@ namespace Mageki.Drawables
 
         public override void HandleTouchReleased(long id)
         {
-            bool containsKey = touchPoints.ContainsKey(id);
-            base.HandleTouchReleased(id);
-            if (containsKey)
+            if (Settings.AntiMisTouch)
             {
-                if (Settings.AntiMisTouch)
-                {
-                    SetButtonsWithAntiMisTouch();
-                }
-                else
+                base.HandleTouchReleased(id);
+                SetButtonsWithAntiMisTouch();
+            }
+            else
+            {
+                if (touchPoints.ContainsKey(id))
                 {
                     var index = GetKeyIndexFromX(touchPoints[id].X);
                     this[index].TouchCount--;
                 }
+                base.HandleTouchReleased(id);
             }
         }
 

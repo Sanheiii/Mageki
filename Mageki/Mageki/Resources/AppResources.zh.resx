@@ -207,8 +207,8 @@
   <data name="CheckUpdateFailed" xml:space="preserve">
     <value>检查更新失败。</value>
   </data>
-  <data name="Layout" xml:space="preserve">
-    <value>布局</value>
+  <data name="Keyboard" xml:space="preserve">
+    <value>键盘</value>
   </data>
   <data name="MagekiIsUpToDate" xml:space="preserve">
     <value>Mageki已是最新版。</value>

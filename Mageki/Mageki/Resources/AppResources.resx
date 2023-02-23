@@ -213,8 +213,8 @@
   <data name="MagekiIsUpToDate" xml:space="preserve">
     <value>Mageki is up to date</value>
   </data>
-  <data name="Layout" xml:space="preserve">
-    <value>Layout</value>
+  <data name="Keyboard" xml:space="preserve">
+    <value>Keyboard</value>
   </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>
