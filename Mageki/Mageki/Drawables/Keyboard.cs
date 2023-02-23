@@ -148,7 +148,7 @@ namespace Mageki.Drawables
             }
             else if (points.Length == 2)
             {
-                if (MathF.Abs(points[0].X - points[1].X) < half[0].BoundingBox.Width + half.Spacing)
+                if (MathF.Abs(points[0].X - points[1].X) < (half.Size.Width - half.Padding.X * 2 + half.Spacing) / 2)
                 {
                     if ((points[0].X + points[1].X) / 2 < half.BoundingBox.MidX)
                     {
