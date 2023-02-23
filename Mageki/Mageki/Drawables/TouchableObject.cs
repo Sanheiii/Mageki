@@ -1,6 +1,7 @@
 ﻿using SkiaSharp;
 
 using System.Collections.Generic;
+using System.Linq;
 
 using Xamarin.Essentials;
 
@@ -42,7 +43,8 @@ namespace Mageki.Drawables
         {
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
-                foreach (var key in touchPoints.Keys)
+                var keys = touchPoints.Keys.ToArray();
+                foreach (var key in keys)
                 {
                     HandleTouchReleased(key);
                 }
