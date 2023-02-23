@@ -97,6 +97,16 @@ namespace Mageki
             }
         }
 
+        public bool AntiMisTouch
+        {
+            get => Settings.AntiMisTouch;
+            set
+            {
+                Settings.AntiMisTouch = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public string Aimeid
         {
             get => Settings.AimeId;
@@ -406,6 +416,19 @@ namespace Mageki
                 if (value != ButtonBottomMargin)
                 {
                     Preferences.Set("buttonBottomMargin", value);
+                    OnValueChanged();
+                }
+            }
+        }
+
+        public static bool AntiMisTouch
+        {
+            get => Preferences.Get("antiMisTouch", false);
+            set
+            {
+                if (value != AntiMisTouch)
+                {
+                    Preferences.Set("antiMisTouch", value);
                     OnValueChanged();
                 }
             }

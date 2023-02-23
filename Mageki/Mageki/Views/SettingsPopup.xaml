@@ -148,6 +148,16 @@
                             <Slider Style="{StaticResource SettingsSliderStyle}" Maximum="1" Minimum="0"
                                     Grid.Column="2" Value="{Binding ButtonBottomMargin}" />
                         </Grid>
+                        <!--防误触-->
+                        <Grid Style="{StaticResource SettingsGridStyle}"
+                              xct:TouchEffect.NativeAnimation="True"
+                              xct:TouchEffect.Command="{Binding ToggleSwitch}"
+                              xct:TouchEffect.CommandParameter="{x:Reference AntiMisTouchSwitch}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.AntiMisTouch}" />
+                            <Switch x:Name="AntiMisTouchSwitch" IsToggled="{Binding AntiMisTouch}" Grid.Column="1" HorizontalOptions="End"
+                                    VerticalOptions="Center" />
+                        </Grid>
                     </StackLayout>
                 </Frame>
                 <!--摇杆与侧键-->

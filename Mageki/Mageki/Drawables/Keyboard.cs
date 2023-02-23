@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 
@@ -69,8 +70,15 @@ namespace Mageki.Drawables
         public override bool HandleTouchPressed(long id, SKPoint point)
         {
             touchPoints.Add(id, point);
-            int index = GetKeyIndexFromX(point.X);
-            this[index].TouchCount++;
+            if (Settings.AntiMisTouch)
+            {
+                SetButtonsWithAntiMisTouch();
+            }
+            else
+            {
+                int index = GetKeyIndexFromX(point.X);
+                this[index].TouchCount++;
+            }
             return base.HandleTouchPressed(id, point);
         }
 
@@ -78,37 +86,125 @@ namespace Mageki.Drawables
         {
             if (touchPoints.ContainsKey(id))
             {
-                var oldIndex = GetKeyIndexFromX(touchPoints[id].X);
-                var newIndex = GetKeyIndexFromX(point.X);
-                if (oldIndex != newIndex)
+                if (Settings.AntiMisTouch)
                 {
-                    this[oldIndex].TouchCount--;
-                    this[newIndex].TouchCount++;
+                    SetButtonsWithAntiMisTouch();
+                }
+                else
+                {
+                    var oldIndex = GetKeyIndexFromX(touchPoints[id].X);
+                    var newIndex = GetKeyIndexFromX(point.X);
+                    if (oldIndex != newIndex)
+                    {
+                        this[oldIndex].TouchCount--;
+                        this[newIndex].TouchCount++;
+                    }
                 }
             }
+
             return base.HandleTouchMoved(id, point);
+        }
+
+        private void SetButtonsWithAntiMisTouch()
+        {
+            var points = touchPoints
+                .Select(p => p.Value);
+            var leftPoints = points.Where(p => GetKeyIndexFromX(p.X) < 3).ToArray();
+            var rightPoints = points.Except(leftPoints).ToArray();
+            if (ShowLeft)
+            {
+                SetHalfKeyboardWithAntiMisTouch(leftPoints, Left);
+            }
+            else
+            {
+                Left[0].TouchCount = Left[1].TouchCount = Left[2].TouchCount = 0;
+            }
+
+            if (ShowRight)
+            {
+                SetHalfKeyboardWithAntiMisTouch(rightPoints, Right);
+            }
+            else
+            {
+                Right[0].TouchCount = Right[1].TouchCount = Right[2].TouchCount = 0;
+            }
+        }
+
+        private void SetHalfKeyboardWithAntiMisTouch(SKPoint[] points, HalfKeyBoard half)
+        {
+            if (points.Length == 0)
+            {
+                half[0].TouchCount = 0;
+                half[1].TouchCount = 0;
+                half[2].TouchCount = 0;
+            }
+            else if (points.Length == 1)
+            {
+                var index = GetKeyIndexFromX(points[0].X) % 3;
+                for (int i = 0; i < 3; i++)
+                {
+                    half[i].TouchCount = i == index ? (byte)1 : (byte)0;
+                }
+            }
+            else if (points.Length == 2)
+            {
+                if (MathF.Abs(points[0].X - points[1].X) < half[0].BoundingBox.Width + half.Spacing)
+                {
+                    if ((points[0].X + points[1].X) / 2 < half.BoundingBox.MidX)
+                    {
+                        half[0].TouchCount = 1;
+                        half[1].TouchCount = 1;
+                        half[2].TouchCount = 0;
+                    }
+                    else
+                    {
+                        half[0].TouchCount = 0;
+                        half[1].TouchCount = 1;
+                        half[2].TouchCount = 1;
+                    }
+                }
+                else
+                {
+                    half[0].TouchCount = 1;
+                    half[1].TouchCount = 0;
+                    half[2].TouchCount = 1;
+                }
+            }
+            else if (points.Length >= 3)
+            {
+                half[0].TouchCount = (byte)(points.Length - 2);
+                half[1].TouchCount = (byte)(points.Length - 2);
+                half[2].TouchCount = (byte)(points.Length - 2);
+            }
         }
 
         public override void HandleTouchReleased(long id)
         {
-            if (touchPoints.ContainsKey(id))
-            {
-                var index = GetKeyIndexFromX(touchPoints[id].X);
-                this[index].TouchCount--;
-            }
+            bool containsKey = touchPoints.ContainsKey(id);
             base.HandleTouchReleased(id);
+            if (containsKey)
+            {
+                if (Settings.AntiMisTouch)
+                {
+                    SetButtonsWithAntiMisTouch();
+                }
+                else
+                {
+                    var index = GetKeyIndexFromX(touchPoints[id].X);
+                    this[index].TouchCount--;
+                }
+            }
         }
 
         public int GetKeyIndexFromX(float x)
         {
-            var n = BitConverter.GetBytes(ShowLeft)[0] + BitConverter.GetBytes(ShowRight)[0];
             List<float> separationXs = new List<float>();
             if (ShowLeft)
             {
                 separationXs.Add(Left[0].BoundingBox.Right + Left.Spacing / 2);
                 separationXs.Add(Left[1].BoundingBox.Right + Left.Spacing / 2);
             }
-            if (n == 2)
+            if (ShowLeft && ShowRight)
             {
                 separationXs.Add(Left[2].BoundingBox.Right + Spacing / 2);
             }

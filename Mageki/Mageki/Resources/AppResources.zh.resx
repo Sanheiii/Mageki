@@ -234,4 +234,7 @@
   <data name="HideGameButtons" xml:space="preserve">
     <value>隐藏按钮</value>
   </data>
+  <data name="AntiMisTouch" xml:space="preserve">
+    <value>防误触（实验）</value>
+  </data>
 </root>

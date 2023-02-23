@@ -234,4 +234,7 @@
   <data name="HideWallActionDevices" xml:space="preserve">
     <value>Hide Wall Action Devices</value>
   </data>
+  <data name="AntiMisTouch" xml:space="preserve">
+    <value>Anti-Mis-Touch</value>
+  </data>
 </root>
