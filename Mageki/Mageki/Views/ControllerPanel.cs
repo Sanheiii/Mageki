@@ -328,10 +328,9 @@ namespace Mageki
                 keyboard.Left[1].Color == keyboard.Right[1].Color &&
                 keyboard.Left[2].Color == keyboard.Right[2].Color &&
                 keyboard.Left[0].Color == ButtonColors.Red &&
-                keyboard.Left[1].Color == ButtonColors.Blue &&
-                keyboard.Left[2].Color == ButtonColors.Green;
+                keyboard.Left[1].Color == ButtonColors.Green &&
+                keyboard.Left[2].Color == ButtonColors.Blue;
 
-            if (temp != inRhythmGame) ForceUpdate();
             inRhythmGame = temp;
             lMenu.Visible = rMenu.Visible = settingButton.Visible = !inRhythmGame;
             MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
