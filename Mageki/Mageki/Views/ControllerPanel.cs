@@ -46,7 +46,7 @@ namespace Mageki
 
         const float PanelPaddingRatio = 0.5f;
         const float LRSpacingCoef = 0.5f;
-        const float KeyboardMarginTopCoef = 0.25f;
+        const float KeyboardMarginTopCoef = 0.5f;
         const float ButtonSpacingCoef = 0.25f;
         const float MenuSizeCoef = 0.5f;
         const float SettingSizeCoef = 0.4f;
@@ -192,7 +192,7 @@ namespace Mageki
             lSide.ButtonHeight = rSide.ButtonHeight = baseLength;
             lSide.Size = rSide.Size =
                 new SKSize(width / 2f,
-                    height - keyboard.BoundingBox.Height - keyboardMarginTop);
+                    height - keyboard.BoundingBox.Height);
             lSide.ButtonHeight = rSide.ButtonHeight = baseLength;
             lSide.Position = new SKPoint(0, 0);
             rSide.Position = new SKPoint(width / 2f, 0);
