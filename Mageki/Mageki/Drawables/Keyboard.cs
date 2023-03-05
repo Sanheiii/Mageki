@@ -113,7 +113,7 @@ namespace Mageki.Drawables
             var rightPoints = points.Except(leftPoints).ToArray();
             if (ShowLeft)
             {
-                SetHalfKeyboardWithAntiMisTouch(leftPoints, Left);
+                SetHalfKeyboardWithAntiMisTouch(leftPoints, Side.Left);
             }
             else
             {
@@ -122,16 +122,29 @@ namespace Mageki.Drawables
 
             if (ShowRight)
             {
-                SetHalfKeyboardWithAntiMisTouch(rightPoints, Right);
+                SetHalfKeyboardWithAntiMisTouch(rightPoints, Side.Right);
             }
             else
             {
                 Right[0].TouchCount = Right[1].TouchCount = Right[2].TouchCount = 0;
             }
         }
-
-        private void SetHalfKeyboardWithAntiMisTouch(SKPoint[] points, HalfKeyBoard half)
+        float[][] buttonBasePoints = new float[2][];
+        private void SetHalfKeyboardWithAntiMisTouch(SKPoint[] points, Side side)
         {
+            HalfKeyBoard half = (HalfKeyBoard)Children[(int)side];
+            if (buttonBasePoints[(int)side] == null)
+            {
+                buttonBasePoints[(int)side] = new float[3]
+                {
+                    half[0].BoundingBox.MidX,
+                    half[1].BoundingBox.MidX,
+                    half[2].BoundingBox.MidX
+                };
+            }
+            float[] separationXs = new float[2];
+            separationXs[0] = buttonBasePoints[(int)side][0] / 2 + buttonBasePoints[(int)side][1] / 2;
+            separationXs[1] = buttonBasePoints[(int)side][1] / 2 + buttonBasePoints[(int)side][2] / 2;
             if (points.Length == 0)
             {
                 half[0].TouchCount = 0;
@@ -140,7 +153,15 @@ namespace Mageki.Drawables
             }
             else if (points.Length == 1)
             {
-                var index = GetKeyIndexFromX(points[0].X) % 3;
+                int index = 2;
+                for (int i = 0; i < 2; i++)
+                {
+                    if (points[0].X < separationXs[i])
+                    {
+                        index = i;
+                        break;
+                    }
+                }
                 for (int i = 0; i < 3; i++)
                 {
                     half[i].TouchCount = i == index ? (byte)1 : (byte)0;
@@ -172,9 +193,10 @@ namespace Mageki.Drawables
             }
             else if (points.Length >= 3)
             {
-                half[0].TouchCount = (byte)(points.Length - 2);
-                half[1].TouchCount = (byte)(points.Length - 2);
-                half[2].TouchCount = (byte)(points.Length - 2);
+                buttonBasePoints[(int)side] = points.OrderBy(p => p.X).Take(3).Select(p => p.X).ToArray();
+                half[0].TouchCount = 1;
+                half[1].TouchCount = 1;
+                half[2].TouchCount = 1;
             }
         }
 
@@ -195,8 +217,7 @@ namespace Mageki.Drawables
                 base.HandleTouchReleased(id);
             }
         }
-
-        public int GetKeyIndexFromX(float x)
+        private List<float> GetSeparationXs()
         {
             List<float> separationXs = new List<float>();
             if (ShowLeft)
@@ -213,6 +234,11 @@ namespace Mageki.Drawables
                 separationXs.Add(Right[0].BoundingBox.Right + Right.Spacing / 2);
                 separationXs.Add(Right[1].BoundingBox.Right + Right.Spacing / 2);
             }
+            return separationXs;
+        }
+        public int GetKeyIndexFromX(float x)
+        {
+            List<float> separationXs = GetSeparationXs();
             int result = -1;
             for (int i = 0; i < separationXs.Count; i++)
             {
