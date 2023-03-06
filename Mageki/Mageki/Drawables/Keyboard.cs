@@ -20,6 +20,20 @@ namespace Mageki.Drawables
         public bool ShowLeft { get => GetValue(true); set => SetValueWithNotify(value); }
         public bool ShowRight { get => GetValue(true); set => SetValueWithNotify(value); }
 
+        private SKPaint basePointPaint = new SKPaint
+        {
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = 4,
+            Color = new SKColor(0xFF000000)
+        };
+
+        private SKPaint basePointStrokePaint = new SKPaint
+        {
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = 8,
+            Color = new SKColor(0xFFFFFFFF)
+        };
+
         public Keyboard() : base()
         {
             Children = new List<IDrawable>() { new HalfKeyBoard(), new HalfKeyBoard() };
@@ -65,6 +79,26 @@ namespace Mageki.Drawables
                 Right.Size = size;
             }
             base.Update();
+        }
+
+        public override void Draw(SKCanvas canvas)
+        {
+            base.Draw(canvas);
+            if (Settings.AntiMisTouch)
+            {
+                if (ShowLeft && buttonBasePoints[0] != null)
+                {
+                    var leftBasePoints = buttonBasePoints[0].Select(x => new SKPoint(x, Left[0].BoundingBox.MidY)).ToArray();
+                    canvas.DrawPoints(SKPointMode.Points, leftBasePoints, basePointStrokePaint);
+                    canvas.DrawPoints(SKPointMode.Points, leftBasePoints, basePointPaint);
+                }
+                if (ShowRight && buttonBasePoints[1] != null)
+                {
+                    var rightBasePoints = buttonBasePoints[1].Select(x => new SKPoint(x, Right[0].BoundingBox.MidY)).ToArray();
+                    canvas.DrawPoints(SKPointMode.Points, rightBasePoints, basePointStrokePaint);
+                    canvas.DrawPoints(SKPointMode.Points, rightBasePoints, basePointPaint);
+                }
+            }
         }
 
         public override bool HandleTouchPressed(long id, SKPoint point)
@@ -132,6 +166,7 @@ namespace Mageki.Drawables
         float[][] buttonBasePoints = new float[2][];
         private void SetHalfKeyboardWithAntiMisTouch(SKPoint[] points, Side side)
         {
+            points = points.OrderBy(p => p.X).ToArray();
             HalfKeyBoard half = (HalfKeyBoard)Children[(int)side];
             if (buttonBasePoints[(int)side] == null)
             {
@@ -142,9 +177,9 @@ namespace Mageki.Drawables
                     half[2].BoundingBox.MidX
                 };
             }
-            float[] separationXs = new float[2];
-            separationXs[0] = buttonBasePoints[(int)side][0] / 2 + buttonBasePoints[(int)side][1] / 2;
-            separationXs[1] = buttonBasePoints[(int)side][1] / 2 + buttonBasePoints[(int)side][2] / 2;
+            float[] xSeparations = new float[2];
+            xSeparations[0] = buttonBasePoints[(int)side][0] / 2 + buttonBasePoints[(int)side][1] / 2;
+            xSeparations[1] = buttonBasePoints[(int)side][1] / 2 + buttonBasePoints[(int)side][2] / 2;
             if (points.Length == 0)
             {
                 half[0].TouchCount = 0;
@@ -156,32 +191,40 @@ namespace Mageki.Drawables
                 int index = 2;
                 for (int i = 0; i < 2; i++)
                 {
-                    if (points[0].X < separationXs[i])
+                    if (points[0].X < xSeparations[i])
                     {
                         index = i;
                         break;
                     }
                 }
+                var offset = points[0].X - buttonBasePoints[(int)side][index];
                 for (int i = 0; i < 3; i++)
                 {
                     half[i].TouchCount = i == index ? (byte)1 : (byte)0;
+                    buttonBasePoints[(int)side][i] += offset;
                 }
             }
             else if (points.Length == 2)
             {
-                if (MathF.Abs(points[0].X - points[1].X) < (half.Size.Width - half.Padding.X * 2 + half.Spacing) / 2)
+                if (MathF.Abs(points[0].X - points[1].X) < (buttonBasePoints[(int)side][2] - buttonBasePoints[(int)side][0]) * 0.75f)
                 {
-                    if ((points[0].X + points[1].X) / 2 < half.BoundingBox.MidX)
+                    if ((points[0].X + points[1].X) / 2 < buttonBasePoints[(int)side][1])
                     {
                         half[0].TouchCount = 1;
                         half[1].TouchCount = 1;
                         half[2].TouchCount = 0;
+                        buttonBasePoints[(int)side][0] = points[0].X;
+                        buttonBasePoints[(int)side][1] = points[1].X;
+                        buttonBasePoints[(int)side][2] = points[1].X + (points[1].X - points[0].X);
                     }
                     else
                     {
                         half[0].TouchCount = 0;
                         half[1].TouchCount = 1;
                         half[2].TouchCount = 1;
+                        buttonBasePoints[(int)side][0] = points[0].X - (points[1].X - points[0].X);
+                        buttonBasePoints[(int)side][1] = points[0].X;
+                        buttonBasePoints[(int)side][2] = points[1].X;
                     }
                 }
                 else
@@ -189,11 +232,14 @@ namespace Mageki.Drawables
                     half[0].TouchCount = 1;
                     half[1].TouchCount = 0;
                     half[2].TouchCount = 1;
+                    buttonBasePoints[(int)side][0] = points[0].X;
+                    buttonBasePoints[(int)side][1] = points[0].X / 2 + points[1].X / 2;
+                    buttonBasePoints[(int)side][2] = points[1].X;
                 }
             }
             else if (points.Length >= 3)
             {
-                buttonBasePoints[(int)side] = points.OrderBy(p => p.X).Take(3).Select(p => p.X).ToArray();
+                buttonBasePoints[(int)side] = points.Take(3).Select(p => p.X).ToArray();
                 half[0].TouchCount = 1;
                 half[1].TouchCount = 1;
                 half[2].TouchCount = 1;
@@ -217,38 +263,38 @@ namespace Mageki.Drawables
                 base.HandleTouchReleased(id);
             }
         }
-        private List<float> GetSeparationXs()
+        private List<float> GetXSeparations()
         {
-            List<float> separationXs = new List<float>();
+            List<float> xSeparations = new List<float>();
             if (ShowLeft)
             {
-                separationXs.Add(Left[0].BoundingBox.Right + Left.Spacing / 2);
-                separationXs.Add(Left[1].BoundingBox.Right + Left.Spacing / 2);
+                xSeparations.Add(Left[0].BoundingBox.Right + Left.Spacing / 2);
+                xSeparations.Add(Left[1].BoundingBox.Right + Left.Spacing / 2);
             }
             if (ShowLeft && ShowRight)
             {
-                separationXs.Add(Left[2].BoundingBox.Right + Spacing / 2);
+                xSeparations.Add(Left[2].BoundingBox.Right + Spacing / 2);
             }
             if (ShowRight)
             {
-                separationXs.Add(Right[0].BoundingBox.Right + Right.Spacing / 2);
-                separationXs.Add(Right[1].BoundingBox.Right + Right.Spacing / 2);
+                xSeparations.Add(Right[0].BoundingBox.Right + Right.Spacing / 2);
+                xSeparations.Add(Right[1].BoundingBox.Right + Right.Spacing / 2);
             }
-            return separationXs;
+            return xSeparations;
         }
         public int GetKeyIndexFromX(float x)
         {
-            List<float> separationXs = GetSeparationXs();
+            List<float> xSeparations = GetXSeparations();
             int result = -1;
-            for (int i = 0; i < separationXs.Count; i++)
+            for (int i = 0; i < xSeparations.Count; i++)
             {
-                if (x < separationXs[i])
+                if (x < xSeparations[i])
                 {
                     result = i;
                     break;
                 }
             }
-            if (result == -1) result = separationXs.Count;
+            if (result == -1) result = xSeparations.Count;
             if (!ShowLeft) result += 3;
             return result;
         }

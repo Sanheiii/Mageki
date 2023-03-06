@@ -166,20 +166,27 @@ namespace Mageki
         /// </summary>
         private void PollThread()
         {
-            while (!disposedValue)
+            try
             {
-                if ((!client?.Connected) ?? true)
+                while (!disposedValue)
                 {
-                    Reconnect();
-                    continue;
+                    if ((!client?.Connected) ?? true)
+                    {
+                        Reconnect();
+                        continue;
+                    }
+                    int len = networkStream.Read(_inBuffer, 0, 1);
+                    if (len <= 0)
+                    {
+                        Reconnect();
+                        continue;
+                    }
+                    Receive((MessageType)_inBuffer[0]);
                 }
-                int len = networkStream.Read(_inBuffer, 0, 1);
-                if (len <= 0)
-                {
-                    Reconnect();
-                    continue;
-                }
-                Receive((MessageType)_inBuffer[0]);
+            }
+            catch(Exception ex)
+            {
+                Disconnect();
             }
         }
         private void Receive(MessageType type)
