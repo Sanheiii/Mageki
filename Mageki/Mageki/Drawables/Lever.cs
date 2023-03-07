@@ -1,6 +1,7 @@
 ﻿using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -343,7 +344,7 @@ namespace Mageki.Drawables
                                 sum = max;
                             }
 
-                            var diff = (point.X - touchPoints[id].X) / (boundingBox.Width / 2 - Padding.X);
+                            var diff = sum / (boundingBox.Width / 2 - Padding.X);
                             Value += diff * Settings.LeverSensitivity;
 
                             moveCache.Clear();
