@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -19,6 +20,15 @@ namespace Mageki.Drawables
         public HalfKeyBoard Right => Children[1] as HalfKeyBoard;
         public bool ShowLeft { get => GetValue(true); set => SetValueWithNotify(value); }
         public bool ShowRight { get => GetValue(true); set => SetValueWithNotify(value); }
+        public bool AntiMisTouch
+        {
+            get => GetValue(false);
+            set
+            {
+                if (!value) buttonBasePoints = new float[2][];
+                SetValueWithNotify(value);
+            }
+        }
 
         private SKPaint basePointPaint = new SKPaint
         {
@@ -84,7 +94,7 @@ namespace Mageki.Drawables
         public override void Draw(SKCanvas canvas)
         {
             base.Draw(canvas);
-            if (Settings.AntiMisTouch)
+            if (AntiMisTouch)
             {
                 if (ShowLeft && buttonBasePoints[0] != null)
                 {
@@ -104,7 +114,7 @@ namespace Mageki.Drawables
         public override bool HandleTouchPressed(long id, SKPoint point)
         {
             touchPoints.Add(id, point);
-            if (Settings.AntiMisTouch)
+            if (AntiMisTouch)
             {
                 SetButtonsWithAntiMisTouch();
             }
@@ -120,7 +130,7 @@ namespace Mageki.Drawables
         {
             if (touchPoints.ContainsKey(id))
             {
-                if (Settings.AntiMisTouch)
+                if (AntiMisTouch)
                 {
                     SetButtonsWithAntiMisTouch();
                 }
@@ -168,6 +178,7 @@ namespace Mageki.Drawables
         {
             points = points.OrderBy(p => p.X).ToArray();
             HalfKeyBoard half = (HalfKeyBoard)Children[(int)side];
+            var buttonWidth = half[1].BoundingBox.Right - half[0].BoundingBox.Right;
             if (buttonBasePoints[(int)side] == null)
             {
                 buttonBasePoints[(int)side] = new float[3]
@@ -206,25 +217,21 @@ namespace Mageki.Drawables
             }
             else if (points.Length == 2)
             {
-                if (MathF.Abs(points[0].X - points[1].X) < (buttonBasePoints[(int)side][2] - buttonBasePoints[(int)side][0]) * 0.75f)
+                if (MathF.Abs(points[0].X - points[1].X) < buttonWidth * 1.5f)
                 {
                     if ((points[0].X + points[1].X) / 2 < buttonBasePoints[(int)side][1])
                     {
                         half[0].TouchCount = 1;
                         half[1].TouchCount = 1;
                         half[2].TouchCount = 0;
-                        buttonBasePoints[(int)side][0] = points[0].X;
                         buttonBasePoints[(int)side][1] = points[1].X;
-                        buttonBasePoints[(int)side][2] = points[1].X + (points[1].X - points[0].X);
                     }
                     else
                     {
                         half[0].TouchCount = 0;
                         half[1].TouchCount = 1;
                         half[2].TouchCount = 1;
-                        buttonBasePoints[(int)side][0] = points[0].X - (points[1].X - points[0].X);
                         buttonBasePoints[(int)side][1] = points[0].X;
-                        buttonBasePoints[(int)side][2] = points[1].X;
                     }
                 }
                 else
@@ -232,23 +239,49 @@ namespace Mageki.Drawables
                     half[0].TouchCount = 1;
                     half[1].TouchCount = 0;
                     half[2].TouchCount = 1;
-                    buttonBasePoints[(int)side][0] = points[0].X;
                     buttonBasePoints[(int)side][1] = points[0].X / 2 + points[1].X / 2;
-                    buttonBasePoints[(int)side][2] = points[1].X;
                 }
+                buttonBasePoints[(int)side][0] = buttonBasePoints[(int)side][1] - buttonWidth;
+                buttonBasePoints[(int)side][2] = buttonBasePoints[(int)side][1] + buttonWidth;
             }
             else if (points.Length >= 3)
             {
-                buttonBasePoints[(int)side] = points.Take(3).Select(p => p.X).ToArray();
+                if (side == Side.Left)
+                {
+                    buttonBasePoints[(int)side][1] = points[^2].X;
+                }
+                if (side == Side.Right)
+                {
+                    buttonBasePoints[(int)side][1] = points[1].X;
+                }
+                buttonBasePoints[(int)side][0] = buttonBasePoints[(int)side][1] - buttonWidth;
+                buttonBasePoints[(int)side][2] = buttonBasePoints[(int)side][1] + buttonWidth;
                 half[0].TouchCount = 1;
                 half[1].TouchCount = 1;
                 half[2].TouchCount = 1;
+            }
+
+            if (buttonBasePoints[(int)side][0] < half.BoundingBox.Left)
+            {
+                float offset = half.BoundingBox.Left - buttonBasePoints[(int)side][0];
+                for (int i = 0; i < 3; i++)
+                {
+                    buttonBasePoints[(int)side][i] += offset;
+                }
+            }
+            if (buttonBasePoints[(int)side][2] > half.BoundingBox.Right)
+            {
+                float offset = half.BoundingBox.Right - buttonBasePoints[(int)side][2];
+                for (int i = 0; i < 3; i++)
+                {
+                    buttonBasePoints[(int)side][i] += offset;
+                }
             }
         }
 
         public override void HandleTouchReleased(long id)
         {
-            if (Settings.AntiMisTouch)
+            if (AntiMisTouch)
             {
                 base.HandleTouchReleased(id);
                 SetButtonsWithAntiMisTouch();

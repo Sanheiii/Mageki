@@ -333,6 +333,7 @@ namespace Mageki
 
             inRhythmGame = temp;
             lMenu.Visible = rMenu.Visible = settingButton.Visible = !inRhythmGame;
+            keyboard.AntiMisTouch = Settings.AntiMisTouch && inRhythmGame;
             MainThread.InvokeOnMainThreadAsync(canvasView.InvalidateSurface);
         }
     }
