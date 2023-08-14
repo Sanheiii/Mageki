@@ -25,7 +25,7 @@ namespace Mageki.Drawables
             get => GetValue(false);
             set
             {
-                if (!value) buttonBasePoints = new float[2][];
+                if (value && !AntiMisTouch) buttonBasePoints = new float[2][];
                 SetValueWithNotify(value);
             }
         }
