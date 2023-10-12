@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 
 using Xamarin.CommunityToolkit.Effects;
@@ -37,6 +38,16 @@ namespace Mageki
             set
             {
                 Settings.Port = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public IPAddress IP
+        {
+            get => Settings.IP;
+            set
+            {
+                Settings.IP = value;
                 RaisePropertyChanged();
             }
         }
@@ -299,6 +310,23 @@ namespace Mageki
                 if (value != Port)
                 {
                     Preferences.Set("port", value);
+                    OnValueChanged();
+                }
+            }
+        }
+
+        public static IPAddress IP
+        {
+            get
+            {
+                string str = Preferences.Get("ip", "255.255.255.255");
+                return IPAddress.TryParse(str, out IPAddress ip) ? ip : IPAddress.Broadcast;
+            }
+            set
+            {
+                if (value != IP)
+                {
+                    Preferences.Set("ip", value.ToString());
                     OnValueChanged();
                 }
             }

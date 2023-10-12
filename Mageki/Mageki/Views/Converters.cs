@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 using Xamarin.Forms;
@@ -48,11 +49,44 @@ namespace Mageki.Views
         }
     }
 
+    public class IPConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string str = (string)value;
+            if (IPAddress.TryParse(str, out IPAddress ip))
+            {
+                return ip;
+            }
+            else
+            {
+                return IPAddress.None;
+            }
+        }
+    }
     public class EnumSelectedConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return value.Equals(parameter);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class EquivalentConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value == parameter;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

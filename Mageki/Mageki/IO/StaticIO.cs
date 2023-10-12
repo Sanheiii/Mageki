@@ -25,7 +25,7 @@ namespace Mageki
 
         private static void Settings_ValueChanged(string name)
         {
-            if (name == nameof(Settings.Protocol) || name == nameof(Settings.Port))
+            if (name == nameof(Settings.Protocol) || name == nameof(Settings.Port) || name == nameof(Settings.IP))
             {
                 InitIO();
             }
@@ -34,9 +34,16 @@ namespace Mageki
         {
             bool protocolChanged = io is null ||
                                    io.GetType().ToString().ToLower() != $"{Settings.Protocol}IO".ToLower();
-            bool portChanged =
-                (io is UdpIO udpIO && udpIO.Port != Settings.Port) ||
+            bool portChanged;
+            {
+                portChanged = (io is UdpIO udpIO && udpIO.Port != Settings.Port) ||
                 (io is TcpIO tcpIO && tcpIO.Port != Settings.Port);
+            }
+
+            bool ipChanged;
+            {
+                ipChanged = io is UdpIO udpIO && udpIO.IP != Settings.IP;
+            }
             if (protocolChanged || portChanged)
             {
                 if (io != null)

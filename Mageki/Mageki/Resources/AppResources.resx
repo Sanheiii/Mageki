@@ -237,4 +237,7 @@
   <data name="AntiMisTouch" xml:space="preserve">
     <value>Anti-Mis-Touch</value>
   </data>
+  <data name="IPAddress" xml:space="preserve">
+    <value>IP Address</value>
+  </data>
 </root>

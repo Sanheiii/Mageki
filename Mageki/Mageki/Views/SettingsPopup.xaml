@@ -73,7 +73,9 @@
         <views:NotConverter x:Key="NotConverter" />
         <views:AndConverter x:Key="AndConverter" />
         <views:EnumSelectedConverter x:Key="EnumSelectedConverter" />
+        <views:EquivalentConverter x:Key="EquivalentConverter" />
         <views:PortConverter x:Key="PortConverter" />
+        <views:IPConverter x:Key="IPConverter" />
         <views:StatusConverter x:Key="StatusConverter" />
     </rg:PopupPage.Resources>
     <Grid RowDefinitions="Auto,*" BackgroundColor="Transparent">
@@ -113,6 +115,15 @@
                                    xct:TouchEffect.CommandParameter="{x:Static mageki:Protocol.UDP}">
                                 <Label Text="UDP" Style="{x:StaticResource SettingsSelectionLabelStyle}" />
                             </Frame>
+                        </Grid>
+                        <!--IP-->
+                        <Grid Style="{StaticResource SettingsGridStyle}" IsVisible="{Binding Protocol,Converter={StaticResource EquivalentConverter},ConverterParameter={x:Static mageki:Protocol.UDP}}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.IPAddress}" />
+                            <Entry Style="{StaticResource SettingsEntryStyle}" x:Name="IPEntry" Grid.Column="1"
+                                   Keyboard="Numeric"
+                                   Text="{Binding IP,Converter={StaticResource IPConverter}}"
+                                   Placeholder="255.255.255.255" />
                         </Grid>
                         <!--状态-->
                         <Grid Style="{StaticResource SettingsGridStyle}">

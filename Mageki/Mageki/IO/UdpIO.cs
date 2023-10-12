@@ -21,19 +21,21 @@ namespace Mageki
         private byte helloRandomValue;
         private Timer heartbeatTimer = new Timer(400) { AutoReset = true };
         private Timer disconnectTimer = new Timer(1500) { AutoReset = false };
-        private IPEndPoint remoteEP;
         private bool disposedValue;
 
+        public IPEndPoint RemoteEP { get; private set; }
+        public IPAddress IP { get; private set; }
         public int Port { get; private set; }
 
-        public UdpIO() : this(Settings.Port)
+        public UdpIO() : this(Settings.IP, Settings.Port)
         {
 
         }
-        public UdpIO(int port)
+        public UdpIO(IPAddress ip, int port)
         {
+            IP = ip;
             Port = port;
-            remoteEP = new IPEndPoint(IPAddress.Broadcast, Port);
+            RemoteEP = new IPEndPoint(IP, Port);
         }
         public override void Init()
         {
@@ -110,7 +112,7 @@ namespace Mageki
 
         private void DisconnectTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            remoteEP = new IPEndPoint(IPAddress.Broadcast, Port);
+            RemoteEP = new IPEndPoint(IP, Port);
             Status = Status.Disconnected;
         }
         private void SendMessage(byte[] data)
@@ -120,7 +122,7 @@ namespace Mageki
             {
                 return;
             }
-            client.Send(data, data.Length, remoteEP);
+            client.Send(data, data.Length, RemoteEP);
         }
 
         IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
@@ -141,7 +143,7 @@ namespace Mageki
             {
                 if (Status != Status.Connected)
                 {
-                    remoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
+                    RemoteEP.Address = new IPAddress(ep.Address.GetAddressBytes());
                     RequestValues();
                     Status = Status.Connected;
                 }
