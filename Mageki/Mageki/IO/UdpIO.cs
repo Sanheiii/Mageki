@@ -22,9 +22,19 @@ namespace Mageki
         private Timer heartbeatTimer = new Timer(400) { AutoReset = true };
         private Timer disconnectTimer = new Timer(1500) { AutoReset = false };
         private bool disposedValue;
+        IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
+        private IPAddress iP;
 
         public IPEndPoint RemoteEP { get; private set; }
-        public IPAddress IP { get; private set; }
+        public IPAddress IP 
+        { 
+            get => iP; 
+            set
+            {
+                iP = value;
+                RemoteEP.Address = value;
+            }
+        }
         public int Port { get; private set; }
 
         public UdpIO() : this(Settings.IP, Settings.Port)
@@ -125,7 +135,6 @@ namespace Mageki
             client.Send(data, data.Length, RemoteEP);
         }
 
-        IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
 
         private void ParseBuffer(byte[] buffer)
         {

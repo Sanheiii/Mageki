@@ -72,6 +72,13 @@ namespace Mageki
                     App.Logger.Error(ex);
                 }
             }
+            else if (ipChanged)
+            {
+                if (io is UdpIO udpIO)
+                {
+                    udpIO.IP = Settings.IP;
+                }
+            }
         }
 
         private static void RaiseOnStatusChanged(object sender, OnStatusChangedEventArgs e)
