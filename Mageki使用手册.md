@@ -2,6 +2,14 @@
 Mageki可以使用移动设备来连接到[ongeki-io](https://github.com/Sanheiii/ongeki-io)，来到这个页面的你一定已经迫不及待了，但是首先你需要一个能够成功运行并使用其它方式控制的游戏本体。如果还没有，请参阅：
 ### [最新最热的游戏下载与配置说明](https://sddt-dist.sys-all.xyz/135/app/SDDT_1.35.01_20220401114514_0.app)
 当游戏本体配置完备后，才可以进行下面的步骤。
+### 注意事项：[最新最热的游戏下载与配置说明](https://sddt-dist.sys-all.xyz/135/app/SDDT_1.35.01_20220401114514_0.app)
+- 适配
+  - 本教程仅适用于 [Mageki]([https://sddt-dist.sys-all.xyz/135/app/SDDT_1.35.01_20220401114514_0.app](https://github.com/Sanheiii/Mageki)) 的配置教程，请勿拿别的手台使用Mageki教程并配置，Its Useless。
+- 教程中的 [蓝字](https://sddt-dist.sys-all.xyz/135/app/SDDT_1.35.01_20220401114514_0.app)
+  - 教程中的所有 [蓝字](https://sddt-dist.sys-all.xyz/135/app/SDDT_1.35.01_20220401114514_0.app) 都是可以 [点击](https://sddt-dist.sys-all.xyz/135/app/SDDT_1.35.01_20220401114514_0.app) 的，如果你Stuck在哪个步骤了，不妨按下这个神奇的蓝色按钮呢？
+- 必要性
+  - 本教程是Mageki非常必要的一个Getting Start篇章，如果您在初次配置完后发现连接不上，请按照可能遇到的问题开始排查。
+
 ## 开始使用
 请前往 __[发布页](https://github.com/Sanheiii/Mageki/releases)__ 下载所需的文件。
 ### 安装程序
