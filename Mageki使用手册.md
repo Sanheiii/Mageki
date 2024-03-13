@@ -20,7 +20,7 @@ Mageki可以使用移动设备来连接到[ongeki-io](https://github.com/Sanheii
 - iOS
   - 进入 [发布页](https://github.com/Sanheiii/Mageki/releases) 按照提示操作。
 - UWP
-  - 缺少触屏设备无法调试，如有需求请自行编译，Debug并提交Pull request，在PR成功前下文不提供技术支持。
+  - 缺少触屏设备无法调试，如有需求请自行编译，Debug并提交Pull request。
 ### 配置ongeki-io
 1. 将你在[发布页](https://github.com/Sanheiii/Mageki/releases)上下载的__MU3Input_x.x.x.zip__ 的内容解压至 __SDDT\package__ 目录下。
 2. 修改在 __segatools.ini__ 中 __[mu3io]__ 与 __[aimeio]__ 下的内容，如果没有，则添加它们。
