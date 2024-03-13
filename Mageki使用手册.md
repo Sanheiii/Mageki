@@ -91,7 +91,6 @@ __解答以下问题的前提是您的游戏在配置Mageki之前能够正常运
   3. 使用指令 ./adb forward tcp:4354 tcp:4354 转发
   4. 请确认您的设备上正确设定了和[__mu3input_config.json__](https://github.com/Sanheiii/Mageki/wiki/mu3input_config.json)中相对应的值。
   5. 启动游戏/启动Test，您将会看见 连接 → 状态 图标显示为 已连接
-<br/>
 - ios
   1. 请在电脑上下载爱思助手[__爱思助手__](https://www.i4.cn/)，并且在上面成功显示你的设备。
   2. 在mu3input_config.json内更改Type为Usbmux模式
