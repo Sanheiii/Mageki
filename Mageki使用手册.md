@@ -46,7 +46,9 @@ path = MU3Input.dll
 　　Tcp、Usbmux： TCP
 
 </br>
-  -请注意：此处的含义为，当您在mu3input_config.json中使用UDP协议时，在客户端处应选择UDP连接，使用TCP/Usbmux时应选择TCP连接，而不是修改mu3input_config.json的内容
+    请注意：此处的含义为，当您在mu3input_config.json中使用UDP协议时，在客户端处应选择UDP连接，使用TCP/Usbmux时应选择TCP连接，而不是修改mu3input_config.json的内容
+
+  </br>
 
 __无线连接在这里即可完成，但由于某些未知的原因，不是所有人都能够成功无线连接，如果你没有连接成功，请使用Tcp或Usbmux协议进行有线连接。__
 
