@@ -45,6 +45,8 @@ path = MU3Input.dll
 
 　　Tcp、Usbmux： TCP
 
+</br>
+###请注意：此处的含义为，当您在[__mu3input_config.json__](https://github.com/Sanheiii/Mageki/wiki/mu3input_config.json)中使用UDP协议时，在客户端处应选择UDP连接，使用TCP/Usbmux时应选择TCP连接，而不是修改mu3input_config.json的内容
 __无线连接在这里即可完成，但由于某些未知的原因，不是所有人都能够成功无线连接，如果你没有连接成功，请使用Tcp或Usbmux协议进行有线连接。__
 
 __如需使用有线连接需要额外进行下面操作：__
