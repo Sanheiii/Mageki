@@ -38,7 +38,7 @@ path = MU3Input.dll
 1. 点击左上角的设置图标 打开设置页面。
 2. 在 __连接__ → __协议__ 中根据 __mu3input_config.json__ 中启用的协议选择：
 
-
+</br>
 　　Udp： UDP
 
 </br>
