@@ -32,7 +32,8 @@ namespace Mageki
             set
             {
                 iP = value;
-                RemoteEP.Address = value;
+                if(RemoteEP != null) RemoteEP.Address = value;
+
             }
         }
         public int Port { get; private set; }
