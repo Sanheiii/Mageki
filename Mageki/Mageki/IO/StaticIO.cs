@@ -42,7 +42,7 @@ namespace Mageki
 
             bool ipChanged;
             {
-                ipChanged = io is UdpIO udpIO && udpIO.IP != Settings.IP;
+                ipChanged = io is UdpIO udpIO && udpIO.IP != Settings.IPAddress;
             }
             if (protocolChanged || portChanged)
             {
@@ -76,7 +76,7 @@ namespace Mageki
             {
                 if (io is UdpIO udpIO)
                 {
-                    udpIO.IP = Settings.IP;
+                    udpIO.IP = Settings.IPAddress;
                 }
             }
         }

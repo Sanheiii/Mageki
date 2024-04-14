@@ -38,7 +38,7 @@ namespace Mageki
         }
         public int Port { get; private set; }
 
-        public UdpIO() : this(Settings.IP, Settings.Port)
+        public UdpIO() : this(Settings.IPAddress, Settings.Port)
         {
 
         }

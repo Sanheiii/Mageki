@@ -42,7 +42,7 @@ namespace Mageki
             }
         }
 
-        public IPAddress IP
+        public string IP
         {
             get => Settings.IP;
             set
@@ -315,22 +315,24 @@ namespace Mageki
             }
         }
 
-        public static IPAddress IP
+        public static string IP
         {
             get
             {
-                string str = Preferences.Get("ip", "255.255.255.255");
-                return IPAddress.TryParse(str, out IPAddress ip) ? ip : IPAddress.Broadcast;
+                return Preferences.Get("ip", string.Empty);
             }
             set
             {
                 if (value != IP)
                 {
-                    Preferences.Set("ip", value.ToString());
+                    Preferences.Set("ip", value);
                     OnValueChanged();
+                    OnValueChanged("IPAddress");
                 }
             }
         }
+
+        public static IPAddress IPAddress => IPAddress.TryParse(IP, out var ip) ? ip : IPAddress.Broadcast;
 
         public static bool HideGameButtons
         {

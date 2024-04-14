@@ -1,6 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-
-<rg:PopupPage
+﻿<rg:PopupPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:rg="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
@@ -75,7 +73,6 @@
         <views:EnumSelectedConverter x:Key="EnumSelectedConverter" />
         <views:EquivalentConverter x:Key="EquivalentConverter" />
         <views:PortConverter x:Key="PortConverter" />
-        <views:IPConverter x:Key="IPConverter" />
         <views:StatusConverter x:Key="StatusConverter" />
     </rg:PopupPage.Resources>
     <Grid RowDefinitions="Auto,*" BackgroundColor="Transparent">
@@ -121,9 +118,8 @@
                             <Label Style="{StaticResource SettingsLabelStyle}"
                                    Text="{x:Static resources:AppResources.IPAddress}" />
                             <Entry Style="{StaticResource SettingsEntryStyle}" x:Name="IPEntry" Grid.Column="1"
-                                   Keyboard="Numeric"
-                                   Text="{Binding IP,Converter={StaticResource IPConverter}}"
-                                   Placeholder="255.255.255.255" />
+                                   Text="{Binding IP}"
+                                   Placeholder="Broadcast" />
                         </Grid>
                         <!--状态-->
                         <Grid Style="{StaticResource SettingsGridStyle}">
