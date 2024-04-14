@@ -61,11 +61,21 @@ namespace Mageki.Drawables
             get => GetValue(default(float));
             set
             {
-                if (value < -1) value = -1;
-                else if (value > 1) value = 1;
+                if (value < -1)
+                {
+                    valueOverflow += value + 1;
+                    value = -1;
+                }
+                else if (value > 1)
+                {
+                    valueOverflow += value - 1;
+                    value = 1;
+                }
                 SetValueWithNotify(value);
             }
         }
+
+        public float valueOverflow = 0;
 
         private SKPath capTopPath = new SKPath();
         private SKPath capSidePath = new SKPath();
@@ -344,8 +354,26 @@ namespace Mageki.Drawables
                                 sum = max;
                             }
 
-                            var diff = sum / (boundingBox.Width / 2 - Padding.X);
-                            Value += diff * Settings.LeverSensitivity;
+                            var diffPx = sum / (boundingBox.Width / 2 - Padding.X);
+                            var diff = diffPx * Settings.LeverSensitivity;
+                            // 如果溢出值有剩余优先抵消溢出值
+                            if(valueOverflow * diff < 0)
+                            {
+                                if(Math.Abs(valueOverflow) < Math.Abs(diff))
+                                {
+                                    diff += valueOverflow;
+                                    valueOverflow = 0;
+                                }
+                                else
+                                {
+                                    valueOverflow += diff;
+                                    diff = 0;
+                                }
+                            }
+                            if(diff != 0)
+                            {
+                                Value += diff;
+                            }
 
                             moveCache.Clear();
                         }
@@ -356,6 +384,12 @@ namespace Mageki.Drawables
             }
 
             return base.HandleTouchMoved(id, point);
+        }
+
+        public override void HandleTouchReleased(long id)
+        {
+            base.HandleTouchReleased(id);
+            if (touchPoints.Count == 0) valueOverflow = 0;
         }
     }
 }
