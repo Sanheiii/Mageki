@@ -240,4 +240,7 @@
   <data name="IPAddress" xml:space="preserve">
     <value>IP地址</value>
   </data>
+  <data name="EnableLeverOverflowHandling" xml:space="preserve">
+    <value>摇杆溢出处理</value>
+  </data>
 </root>

@@ -74,6 +74,16 @@ namespace Mageki
             }
         }
 
+        public bool EnableLeverOverflowHandling
+        {
+            get => Settings.EnableLeverOverflowHandling;
+            set
+            {
+                Settings.EnableLeverOverflowHandling = value;
+                RaisePropertyChanged();
+            }
+        }
+
         // 0 => 1 , -10 => 0.1 , 10 => 10
         public float LeverSensitivity
         {
@@ -406,6 +416,17 @@ namespace Mageki
             {
                 if (value == EnableCompositeMode) return;
                 Preferences.Set("enableCompositeMode", value);
+                OnValueChanged();
+            }
+        }
+
+        public static bool EnableLeverOverflowHandling
+        {
+            get => Preferences.Get("enableLeverOverflowHandling", false);
+            set
+            {
+                if (value == EnableLeverOverflowHandling) return;
+                Preferences.Set("enableLeverOverflowHandling", value);
                 OnValueChanged();
             }
         }

@@ -217,6 +217,17 @@
                             <Slider Style="{StaticResource SettingsSliderStyle}" Maximum="10" Minimum="-10"
                                     Grid.Column="2" Value="{Binding LeverSensitivity}" />
                         </Grid>
+                        <!--处理摇杆溢出值-->
+                        <Grid Style="{StaticResource SettingsGridStyle}"
+                              IsVisible="{Binding LeverMoveMode,Converter={StaticResource EnumSelectedConverter},ConverterParameter={x:Static mageki:LeverMoveMode.Relative}}"
+                              xct:TouchEffect.NativeAnimation="True"
+                              xct:TouchEffect.Command="{Binding ToggleSwitch}"
+                              xct:TouchEffect.CommandParameter="{x:Reference HandleLeverOverflow}">
+                            <Label Style="{StaticResource SettingsLabelStyle}"
+                                   Text="{x:Static resources:AppResources.EnableLeverOverflowHandling}" />
+                            <Switch x:Name="HandleLeverOverflow" IsToggled="{Binding EnableLeverOverflowHandling}"
+                                    Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center" />
+                        </Grid>
                         <!--合并摇杆与侧键-->
                         <Grid Style="{StaticResource SettingsGridStyle}"
                               IsVisible="{Binding LeverMoveMode,Converter={StaticResource EnumSelectedConverter},ConverterParameter={x:Static mageki:LeverMoveMode.Relative}}"

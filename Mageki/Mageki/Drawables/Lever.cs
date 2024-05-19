@@ -357,7 +357,7 @@ namespace Mageki.Drawables
                             var diffPx = sum / (boundingBox.Width / 2 - Padding.X);
                             var diff = diffPx * Settings.LeverSensitivity;
                             // 如果溢出值有剩余优先抵消溢出值
-                            if(valueOverflow * diff < 0)
+                            if(Settings.EnableLeverOverflowHandling && valueOverflow * diff < 0)
                             {
                                 if(Math.Abs(valueOverflow) < Math.Abs(diff))
                                 {
@@ -389,7 +389,7 @@ namespace Mageki.Drawables
         public override void HandleTouchReleased(long id)
         {
             base.HandleTouchReleased(id);
-            if (touchPoints.Count == 0) valueOverflow = 0;
+            if (Settings.EnableLeverOverflowHandling && touchPoints.Count == 0) valueOverflow = 0;
         }
     }
 }

@@ -205,6 +205,15 @@ namespace Mageki.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Enable Lever Overflow Handling 的本地化字符串。
+        /// </summary>
+        public static string EnableLeverOverflowHandling {
+            get {
+                return ResourceManager.GetString("EnableLeverOverflowHandling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Error 的本地化字符串。
         /// </summary>
         public static string Error {

@@ -240,4 +240,7 @@
   <data name="IPAddress" xml:space="preserve">
     <value>IP Address</value>
   </data>
+  <data name="EnableLeverOverflowHandling" xml:space="preserve">
+    <value>Enable Lever Overflow Handling</value>
+  </data>
 </root>
