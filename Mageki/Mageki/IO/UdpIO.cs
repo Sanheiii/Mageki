@@ -140,10 +140,9 @@ namespace Mageki
         private void ParseBuffer(byte[] buffer)
         {
             if (disposedValue || (buffer?.Length ?? 0) == 0) return;
-            if (buffer[0] == (byte)MessageType.SetLed && buffer.Length == 5)
+            if (buffer[0] == (byte)MessageType.SetLed && buffer.Length == 19)
             {
-                uint ledData = BitConverter.ToUInt32(buffer, 1);
-                SetLed(ledData);
+                SetLed(buffer[1..]);
             }
             else if (buffer[0] == (byte)MessageType.SetLever && buffer.Length == 3)
             {

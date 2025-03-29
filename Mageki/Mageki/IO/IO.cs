@@ -96,14 +96,15 @@ namespace Mageki
             else
                 data.OptButtons &= ~button;
         }
-        public void SetLed(uint data)
+        public void SetLed(byte[] data)
         {
-            Colors[0] = (ButtonColors)((data >> 23 & 1) << 2 | (data >> 19 & 1) << 1 | (data >> 22 & 1) << 0);
-            Colors[1] = (ButtonColors)((data >> 20 & 1) << 2 | (data >> 21 & 1) << 1 | (data >> 18 & 1) << 0);
-            Colors[2] = (ButtonColors)((data >> 17 & 1) << 2 | (data >> 16 & 1) << 1 | (data >> 15 & 1) << 0);
-            Colors[3] = (ButtonColors)((data >> 14 & 1) << 2 | (data >> 13 & 1) << 1 | (data >> 12 & 1) << 0);
-            Colors[4] = (ButtonColors)((data >> 11 & 1) << 2 | (data >> 10 & 1) << 1 | (data >> 9 & 1) << 0);
-            Colors[5] = (ButtonColors)((data >> 8 & 1) << 2 | (data >> 7 & 1) << 1 | (data >> 6 & 1) << 0);
+            for (int i = 0; i < 6; i++)
+            {
+                Colors[i] = (ButtonColors)(
+                    BitConverter.GetBytes(BitConverter.ToBoolean(data, i * 3 + 0))[0] << 2 |
+                    BitConverter.GetBytes(BitConverter.ToBoolean(data, i * 3 + 1))[0] << 1 |
+                    BitConverter.GetBytes(BitConverter.ToBoolean(data, i * 3 + 2))[0] << 0);
+            }
             RaiseOnLedChanged(EventArgs.Empty);
         }
 

@@ -71,7 +71,7 @@ namespace Mageki.Droid
                 var idm = tag.GetId();
                 var pmm = nfc.GetManufacturer();
                 var systemCode = nfc.GetSystemCode();
-                (DependencyService.Get<INfcService>() as DependencyServices.NfcService).OnFelicaScan(idm.Concat(pmm).Concat(systemCode).ToArray());
+                (DependencyService.Get<INfcService>() as DependencyServices.NfcService).OnFelicaScan(idm.Reverse().Concat(pmm.Reverse()).Concat(systemCode.Reverse()).ToArray());
             }
             else if (techList.Contains("android.nfc.tech.MifareClassic"))
             {

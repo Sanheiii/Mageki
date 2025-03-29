@@ -173,9 +173,9 @@ namespace Mageki.Drawables
         {
             if (nfcScanning) return;
 
-            string idmString = "0x" + BitConverter.ToUInt64(packet[0..8].Reverse().ToArray(), 0).ToString("X16");
-            string pmMString = "0x" + BitConverter.ToUInt64(packet[8..16].Reverse().ToArray(), 0).ToString("X16");
-            string systemCodeString = BitConverter.ToUInt16(packet[16..18].Reverse().ToArray(), 0).ToString("X4");
+            string idmString = "0x" + BitConverter.ToUInt64(packet[0..8].ToArray(), 0).ToString("X16");
+            string pmMString = "0x" + BitConverter.ToUInt64(packet[8..16].ToArray(), 0).ToString("X16");
+            string systemCodeString = BitConverter.ToUInt16(packet[16..18].ToArray(), 0).ToString("X4");
             App.Logger.Debug(
                 $"FeliCa card is present\nIDm: {idmString}\nPMm: {pmMString}\nSystemCode: {systemCodeString}");
 

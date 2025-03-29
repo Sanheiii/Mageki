@@ -24,7 +24,7 @@ namespace Mageki
         private NetworkStream networkStream;
         private bool connecting = false;
         private Thread readingThread;
-        private byte[] _inBuffer = new byte[4];
+        private byte[] _inBuffer = new byte[32];
         private bool disposedValue;
         public int Port { get; private set; }
 
@@ -191,10 +191,10 @@ namespace Mageki
         }
         private void Receive(MessageType type)
         {
-            if (type == MessageType.SetLed && networkStream.Read(_inBuffer, 0, 4) > 0)
+            int i = 0;
+            if (type == MessageType.SetLed && (i = networkStream.Read(_inBuffer, 0, 18)) > 0)
             {
-                uint ledData = BitConverter.ToUInt32(_inBuffer, 0);
-                SetLed(ledData);
+                SetLed(_inBuffer);
             }
             else if (type == MessageType.SetLever && networkStream.Read(_inBuffer, 0, 2) > 0)
             {
