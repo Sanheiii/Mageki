@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    x:Class="Mageki.NavigationBar"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://schemas.microsoft.com/dotnet/2021/maui/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:touch="clr-namespace:MarketAlly.TouchEffect.Maui;assembly=MarketAlly.TouchEffect.Maui"
+    x:Name="this"
+    mc:Ignorable="d">
+    <Grid HorizontalOptions="Fill" VerticalOptions="Center" MinimumHeightRequest="48">
+        <ContentView
+            x:Name="BackButton"
+            Padding="16"
+            HorizontalOptions="Start"
+            VerticalOptions="Fill"
+            touch:TouchEffect.NativeAnimation="True"
+            touch:TouchEffect.Command="{Binding Source={x:Reference this}, Path=GoBackCommand}"
+            touch:TouchEffect.CommandParameter="{Binding Source={x:Reference this}, Path=GoBackCommandParameter}">
+            <Label
+                FontAutoScalingEnabled="False"
+                FontFamily="MaterialIconsRound"
+                FontSize="20"
+                Text="&#xE5E0;"
+                TextColor="{AppThemeBinding Light=#FF222222, Dark=#FFDDDDDD}"
+                VerticalOptions="Center" />
+        </ContentView>
+        <Label
+            FontSize="18"
+            HorizontalOptions="Center"
+            Text="{Binding Source={x:Reference this}, Path=Title}"
+            TextColor="{AppThemeBinding Light=#FF222222, Dark=#FFDDDDDD}"
+            VerticalOptions="Center" />
+    </Grid>
+</ContentView>

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../IO/*.cs" Link="IO/%(Filename)%(Extension)" />
+    <Compile Include="../../Drawables/*.cs" Link="Drawables/%(Filename)%(Extension)" />
+    <Compile Include="../../NotifyingEntity.cs" Link="NotifyingEntity.cs" />
+    <Compile Include="../../Utils/Extensions.cs" Link="Extensions.cs" />
+    <Compile Include="../../Services/INfcService.cs" Link="INfcService.cs" />
+    <Compile Include="../../Services/ISettingsPopupService.cs" Link="ISettingsPopupService.cs" />
+    <EmbeddedResource Include="../../Resources/Fonts/MaterialIconsRound-Regular.otf" LogicalName="Mageki.MaterialIconsRound" />
+    <PackageReference Include="SkiaSharp" Version="4.148.0" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="4.148.0" />
+    <PackageReference Include="NLog" Version="6.1.3" />
+  </ItemGroup>
+</Project>
